@@ -10,10 +10,6 @@ public class UserRepoService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
-
     public User save(User conversationGroup) {
         return userRepository.save(conversationGroup);
     }

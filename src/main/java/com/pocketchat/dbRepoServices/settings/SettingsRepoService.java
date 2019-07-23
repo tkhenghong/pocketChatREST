@@ -11,10 +11,6 @@ public class SettingsRepoService {
     @Autowired
     private SettingsRepository settingsRepository;
 
-    public SettingsRepository getSettingsRepository() {
-        return settingsRepository;
-    }
-
     public Settings save(Settings conversationGroup) {
         return settingsRepository.save(conversationGroup);
     }

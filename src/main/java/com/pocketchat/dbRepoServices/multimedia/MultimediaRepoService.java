@@ -11,10 +11,6 @@ public class MultimediaRepoService {
     @Autowired
     MultimediaRepository multimediaRepository;
 
-    public MultimediaRepository getMultimediaRepository() {
-        return multimediaRepository;
-    }
-
     public Multimedia save(Multimedia conversationGroup) {
         return multimediaRepository.save(conversationGroup);
     }

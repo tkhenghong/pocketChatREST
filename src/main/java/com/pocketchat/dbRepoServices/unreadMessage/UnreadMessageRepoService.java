@@ -10,10 +10,6 @@ public class UnreadMessageRepoService {
     @Autowired
     private UnreadMessageRepository unreadMessageRepository;
 
-    public UnreadMessageRepository getUnreadMessageRepository() {
-        return unreadMessageRepository;
-    }
-
     public UnreadMessage save(UnreadMessage conversationGroup) {
         return unreadMessageRepository.save(conversationGroup);
     }

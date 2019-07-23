@@ -11,10 +11,6 @@ public class MessageRepoService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public MessageRepository getMessageRepository() {
-        return messageRepository;
-    }
-
     public Message save(Message conversationGroup) {
         return messageRepository.save(conversationGroup);
     }
