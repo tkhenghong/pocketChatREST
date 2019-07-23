@@ -11,22 +11,23 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @Builder
 @EqualsAndHashCode
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "user")
 public class User {
 
     @Id
-    String id;
+    private String id;
 
     @NotBlank
-    String displayName;
+    private String displayName;
 
     @NotBlank
-    String realName;
+    private String realName;
 
     @NotBlank
-    String mobileNo;
+    private String mobileNo;
 
     @NotBlank
-    String googleAccountId;
+    private String googleAccountId;
 }

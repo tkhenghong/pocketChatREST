@@ -6,24 +6,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 
+// Should use User Contact from now on
+@Deprecated
 @Getter
 @Setter
 @ToString
 @Builder
 @EqualsAndHashCode
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "group_member")
 public class GroupMember {
 
     @Id
-    String id;
+    private String id;
 
     @NotBlank
-    String conversationId;
+    private String conversationId;
 
     @NotBlank
-    String name;
+    private String name;
 
     @NotBlank
-    String contactNo;
+    private String contactNo;
 }

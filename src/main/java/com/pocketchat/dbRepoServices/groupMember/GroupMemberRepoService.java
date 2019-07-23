@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+// Should use User Contact from now on
+@Deprecated
 @Service
 public class GroupMemberRepoService {
 

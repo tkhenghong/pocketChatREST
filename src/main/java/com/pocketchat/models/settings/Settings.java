@@ -11,16 +11,17 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @Builder
 @EqualsAndHashCode
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "settings")
 public class Settings {
 
     @Id
-    String id;
+    private String id;
 
     @NotBlank
-    String userId;
+    private String userId;
 
     @NotBlank
-    boolean notification;
+    private boolean notification;
 }

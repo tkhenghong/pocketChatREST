@@ -11,31 +11,32 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @Builder
 @EqualsAndHashCode
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "user_contact")
 public class UserContact {
 
     @Id
-    String id;
+    private String id;
 
     @NotBlank
-    String conversationId;
+    private String conversationId;
 
     @NotBlank
-    String displayName;
+    private String displayName;
 
     @NotBlank
-    String realName;
+    private String realName;
 
     @NotBlank
-    String userId;
+    private String userId;
 
     @NotBlank
-    String mobileNo;
+    private String mobileNo;
 
     @NotBlank
-    String lastSeenDate;
+    private String lastSeenDate;
 
     @NotBlank
-    boolean block;
+    private boolean block;
 }

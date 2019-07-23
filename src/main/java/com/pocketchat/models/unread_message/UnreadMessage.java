@@ -11,25 +11,26 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @Builder
 @EqualsAndHashCode
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "unread_message")
 public class UnreadMessage {
 
     @Id
-    String id;
+    private String id;
 
     @NotBlank
-    String conversationId;
+    private String conversationId;
 
     @NotBlank
-    String userId;
+    private String userId;
 
     @NotBlank
-    String lastMessage;
+    private String lastMessage;
 
     @NotBlank
-    int date;
+    private int date;
 
     @NotBlank
-    int count;
+    private int count;
 }

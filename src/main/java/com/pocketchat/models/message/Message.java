@@ -11,46 +11,47 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @Builder
 @EqualsAndHashCode
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "message")
 public class Message {
 
     @Id
-    String id;
+    private String id;
 
     @NotBlank
-    String conversationId;
+    private String conversationId;
 
     @NotBlank
-    String senderId;
+    private String senderId;
 
     @NotBlank
-    String senderName;
+    private String senderName;
 
     @NotBlank
-    String senderMobileNo;
+    private String senderMobileNo;
 
     @NotBlank
-    String receiverId;
+    private String receiverId;
 
     @NotBlank
-    String receiverName;
+    private String receiverName;
 
     @NotBlank
-    String receiverMobileNo;
+    private String receiverMobileNo;
 
     @NotBlank
-    String type;
+    private String type;
 
     @NotBlank
-    String status; // Sent, received, unread, read
+    private String status; // Sent, received, unread, read
 
     @NotBlank
-    String messageContent;
+    private String messageContent;
 
     @NotBlank
-    String multimediaId;
+    private String multimediaId;
 
     @NotBlank
-    String timestamp;
+    private String timestamp;
 }

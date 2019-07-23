@@ -11,38 +11,39 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @Builder
 @EqualsAndHashCode
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "multimedia")
 public class Multimedia {
 
     // Image, Video, Gifs, Sticker, Recording, links
     @Id
-    String id;
+    private String id;
 
     @NotBlank
-    String localFullFileUrl;
+    private String localFullFileUrl;
 
     @NotBlank
-    String localThumbnailUrl;
+    private String localThumbnailUrl;
 
     @NotBlank
-    String remoteThumbnailUrl;
+    private String remoteThumbnailUrl;
 
     @NotBlank
-    String remoteFullFileUrl;
+    private String remoteFullFileUrl;
 
     @NotBlank
-    String imageDataId;
+    private String imageDataId;
 
     @NotBlank
-    String imageFileId;
+    private String imageFileId;
 
     @NotBlank
-    String messageId;
+    private String messageId;
 
     @NotBlank
-    String userContactId;
+    private String userContactId;
 
     @NotBlank
-    String conversationId;
+    private String conversationId;
 }
