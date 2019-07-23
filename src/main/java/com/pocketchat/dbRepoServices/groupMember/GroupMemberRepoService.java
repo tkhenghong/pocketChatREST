@@ -30,4 +30,12 @@ public class GroupMemberRepoService {
 
         return mongoTemplate.find(query, GroupMember.class);
     }
+
+    public GroupMember save(GroupMember conversationGroup) {
+        return groupMemberRepository.save(conversationGroup);
+    }
+
+    public void delete(GroupMember conversationGroup) {
+        groupMemberRepository.delete(conversationGroup);
+    }
 }

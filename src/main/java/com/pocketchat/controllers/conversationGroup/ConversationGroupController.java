@@ -1,7 +1,9 @@
 package com.pocketchat.controllers.conversationGroup;
 
 import com.pocketchat.dbRepoServices.conversationGroup.ConversationGroupRepoService;
+import com.pocketchat.dbRepoServices.userContact.UserContactRepoService;
 import com.pocketchat.models.conversation_group.ConversationGroup;
+import com.pocketchat.models.user_contact.UserContact;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,18 +12,27 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/conversationGroup")
 public class ConversationGroupController {
 
+    private final ConversationGroupRepoService conversationGroupRepoService;
+
+    private final UserContactRepoService userContactRepoService;
+
+    // Avoid Field Injection
     @Autowired
-    ConversationGroupRepoService conversationGroupRepoService;
+    public ConversationGroupController(ConversationGroupRepoService conversationGroupRepoService, UserContactRepoService userContactRepoService) {
+        this.conversationGroupRepoService = conversationGroupRepoService;
+        this.userContactRepoService = userContactRepoService;
+    }
 
     @PostMapping("")
     public ResponseEntity<Object> addConversation(@Valid @RequestBody ConversationGroup conversationGroup) {
-        ConversationGroup savedConversationGroup = conversationGroupRepoService.getConversationGroupRepository().save(conversationGroup);
+        ConversationGroup savedConversationGroup = conversationGroupRepoService.save(conversationGroup);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedConversationGroup.getId())
                 .toUri();
@@ -31,33 +42,38 @@ public class ConversationGroupController {
 
     @PutMapping(value = "")
     public void editConversation(@Valid @RequestBody ConversationGroup conversationGroup) {
-        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.getConversationGroupRepository().findById(conversationGroup.getId());
+        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroup.getId());
 
-        if(!conversationGroupOptional.isPresent()) {
+        if (!conversationGroupOptional.isPresent()) {
             throw new UserNotFoundException("conversationId-" + conversationGroup.getId());
         }
-        conversationGroupRepoService.getConversationGroupRepository().save(conversationGroup);
+        conversationGroupRepoService.save(conversationGroup);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteConversation(@PathVariable String id) {
-        conversationGroupRepoService.getConversationGroupRepository().deleteById(id);
+    @DeleteMapping("/{conversationId}")
+    public void deleteConversation(@PathVariable String conversationId) {
+        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationId);
+        if (!conversationGroupOptional.isPresent()) {
+            throw new UserNotFoundException("conversationId-" + conversationId);
+        }
+
+        conversationGroupRepoService.delete(conversationGroupOptional.get());
     }
 
     @GetMapping("/{conversationId}")
     public ConversationGroup getSingleConversation(@PathVariable String conversationId) {
-        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.getConversationGroupRepository().findById(conversationId);
+        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationId);
 
-        if(!conversationGroupOptional.isPresent()) {
+        if (!conversationGroupOptional.isPresent()) {
             throw new UserNotFoundException("conversationId-" + conversationId);
         }
 
         return conversationGroupOptional.get();
     }
 
-    @GetMapping("/delete/{userId}")
+    @GetMapping("/user/{userId}")
     public void getConversationsForUser(@PathVariable String userId) {
-//        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.getConversationGroupRepository().f(userId);
+        List<UserContact> userContactList = userContactRepoService.findByUserId(userId);
 
 
 
