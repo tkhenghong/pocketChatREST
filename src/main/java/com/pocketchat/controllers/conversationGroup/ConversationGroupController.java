@@ -49,7 +49,6 @@ public class ConversationGroupController {
     @PutMapping(value = "")
     public void editConversation(@Valid @RequestBody ConversationGroup conversationGroup) {
         Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroup.getId());
-
         validateConversationGroupNotFound(conversationGroupOptional, conversationGroup.getId());
         conversationGroupRepoService.save(conversationGroup);
     }
@@ -57,18 +56,14 @@ public class ConversationGroupController {
     @DeleteMapping("/{conversationGroupId}")
     public void deleteConversation(@PathVariable String conversationGroupId) {
         Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
-
         validateConversationGroupNotFound(conversationGroupOptional, conversationGroupId);
-
         conversationGroupRepoService.delete(conversationGroupOptional.get());
     }
 
     @GetMapping("/{conversationGroupId}")
     public ConversationGroup getSingleConversation(@PathVariable String conversationGroupId) {
         Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
-
         validateConversationGroupNotFound(conversationGroupOptional, conversationGroupId);
-
         return conversationGroupOptional.get();
     }
 

@@ -5,17 +5,31 @@ import com.pocketchat.models.settings.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class SettingsRepoService {
 
-    @Autowired
-    private SettingsRepository settingsRepository;
+    private final SettingsRepository settingsRepository;
 
-    public Settings save(Settings conversationGroup) {
-        return settingsRepository.save(conversationGroup);
+    @Autowired
+    public SettingsRepoService(SettingsRepository settingsRepository) {
+        this.settingsRepository = settingsRepository;
     }
 
-    public void delete(Settings conversationGroup) {
-        settingsRepository.delete(conversationGroup);
+    public Optional<Settings> findById(String settingsId) {
+        return settingsRepository.findById(settingsId);
+    }
+
+    public Optional<Settings> findByUserId(String userId) {
+        return settingsRepository.findByUserId(userId);
+    }
+
+    public Settings save(Settings settings) {
+        return settingsRepository.save(settings);
+    }
+
+    public void delete(Settings settings) {
+        settingsRepository.delete(settings);
     }
 }
