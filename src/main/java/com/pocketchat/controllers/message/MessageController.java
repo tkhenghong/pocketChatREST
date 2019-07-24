@@ -62,12 +62,17 @@ public class MessageController {
     }
 
     @GetMapping("/conversation/{conversationGroupId}")
-    public void getMessagesOfAConversation(String conversationGroupId) {
+    public List<Message> getMessagesOfAConversation(String conversationGroupId) {
         Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
         if (!conversationGroupOptional.isPresent()) {
             throw new ConversationGroupNotFoundException("conversationGroupId:-" + conversationGroupId);
         }
-        // List<Message> messageRepoService.findAllMessagesByConversationId(conversationGroupId);
+        List<Message> messageList = messageRepoService.findAllMessagesByConversationId(conversationGroupId);
+        if (messageList.isEmpty()) {
+            throw new MessageNotFoundException("No message found for this conversationGroupId:-" + conversationGroupId);
+        }
+
+        return messageList;
     }
 
     // Research it's definition for more usages

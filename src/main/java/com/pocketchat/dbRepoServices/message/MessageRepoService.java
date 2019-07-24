@@ -5,6 +5,7 @@ import com.pocketchat.models.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -15,6 +16,10 @@ public class MessageRepoService {
 
     public Optional<Message> findById(String messageId) {
         return messageRepository.findById(messageId);
+    }
+
+    public List<Message> findAllMessagesByConversationId (String conversationId) {
+        return messageRepository.findAllByConversationId(conversationId);
     }
 
     public Message save(Message conversationGroup) {
