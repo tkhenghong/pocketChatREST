@@ -4,7 +4,7 @@ import com.pocketchat.dbRepoServices.conversationGroup.ConversationGroupRepoServ
 import com.pocketchat.dbRepoServices.userContact.UserContactRepoService;
 import com.pocketchat.models.conversation_group.ConversationGroup;
 import com.pocketchat.models.user_contact.UserContact;
-import com.pocketchat.server.exceptions.user.UserNotFoundException;
+import com.pocketchat.server.exceptions.conversationGroup.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.userContact.UserContactNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -50,29 +50,24 @@ public class ConversationGroupController {
     public void editConversation(@Valid @RequestBody ConversationGroup conversationGroup) {
         Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroup.getId());
 
-        if (!conversationGroupOptional.isPresent()) {
-            throw new UserNotFoundException("conversationId-" + conversationGroup.getId());
-        }
+        validateConversationGroupNotFound(conversationGroupOptional, conversationGroup.getId());
         conversationGroupRepoService.save(conversationGroup);
     }
 
-    @DeleteMapping("/{conversationId}")
-    public void deleteConversation(@PathVariable String conversationId) {
-        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationId);
-        if (!conversationGroupOptional.isPresent()) {
-            throw new UserNotFoundException("conversationId-" + conversationId);
-        }
+    @DeleteMapping("/{conversationGroupId}")
+    public void deleteConversation(@PathVariable String conversationGroupId) {
+        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
+
+        validateConversationGroupNotFound(conversationGroupOptional, conversationGroupId);
 
         conversationGroupRepoService.delete(conversationGroupOptional.get());
     }
 
-    @GetMapping("/{conversationId}")
-    public ConversationGroup getSingleConversation(@PathVariable String conversationId) {
-        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationId);
+    @GetMapping("/{conversationGroupId}")
+    public ConversationGroup getSingleConversation(@PathVariable String conversationGroupId) {
+        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
 
-        if (!conversationGroupOptional.isPresent()) {
-            throw new UserNotFoundException("conversationId-" + conversationId);
-        }
+        validateConversationGroupNotFound(conversationGroupOptional, conversationGroupId);
 
         return conversationGroupOptional.get();
     }
@@ -90,5 +85,11 @@ public class ConversationGroupController {
         List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllConversationGroupsByGroupMemberId(conversationIds);
 
         return conversationGroupList;
+    }
+
+    private void validateConversationGroupNotFound(Optional<ConversationGroup> conversationGroupOptional, String conversationGroupId) {
+        if (!conversationGroupOptional.isPresent()) {
+            throw new ConversationGroupNotFoundException("conversationGroupId-" + conversationGroupId);
+        }
     }
 }
