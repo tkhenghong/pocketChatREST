@@ -25,6 +25,7 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
     @ExceptionHandler(UserNotFoundException.class)
     public final ResponseEntity<Object> handleUserNotFoundExceptions(UserNotFoundException ex, WebRequest request)
             throws Exception {
+        System.out.println("Test handleUserNotFoundExceptions log here.");
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
                 request.getDescription(false));
 
