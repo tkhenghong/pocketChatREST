@@ -1,9 +1,9 @@
 package com.pocketchat.controllers.settings;
 
-import com.pocketchat.dbRepoServices.settings.SettingsRepoService;
-import com.pocketchat.dbRepoServices.user.UserRepoService;
-import com.pocketchat.models.settings.Settings;
-import com.pocketchat.models.user.User;
+import com.pocketchat.db.repoServices.settings.SettingsRepoService;
+import com.pocketchat.db.repoServices.user.UserRepoService;
+import com.pocketchat.db.models.settings.Settings;
+import com.pocketchat.db.models.user.User;
 import com.pocketchat.server.exceptions.settings.SettingsNotFoundException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

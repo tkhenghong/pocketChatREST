@@ -1,7 +1,7 @@
 package com.pocketchat.controllers.userContact;
 
-import com.pocketchat.dbRepoServices.userContact.UserContactRepoService;
-import com.pocketchat.models.user_contact.UserContact;
+import com.pocketchat.db.repoServices.userContact.UserContactRepoService;
+import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.server.exceptions.userContact.UserContactNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
