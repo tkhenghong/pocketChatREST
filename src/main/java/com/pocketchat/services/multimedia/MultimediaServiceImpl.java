@@ -1,29 +1,31 @@
 package com.pocketchat.services.multimedia;
 
+import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.user.User;
-import com.pocketchat.db.repoServices.conversationGroup.ConversationGroupRepoService;
 import com.pocketchat.db.repoServices.multimedia.MultimediaRepoService;
-import com.pocketchat.db.repoServices.user.UserRepoService;
 import com.pocketchat.server.exceptions.multimedia.MultimediaNotFoundException;
-import com.pocketchat.server.exceptions.user.UserNotFoundException;
+import com.pocketchat.services.conversationGroup.ConversationGroupService;
+import com.pocketchat.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MultimediaServiceImpl implements MultimediaService {
     private final MultimediaRepoService multimediaRepoService;
-    private final UserRepoService userRepoService;
-    private final ConversationGroupRepoService conversationGroupRepoService;
+
+    private final ConversationGroupService conversationGroupService;
+    private final UserService userService;
 
     @Autowired
-    public MultimediaServiceImpl(MultimediaRepoService multimediaRepoService, UserRepoService userRepoService, ConversationGroupRepoService conversationGroupRepoService) {
+    public MultimediaServiceImpl(MultimediaRepoService multimediaRepoService, ConversationGroupService conversationGroupService, UserService userService) {
         this.multimediaRepoService = multimediaRepoService;
-        this.userRepoService = userRepoService;
-        this.conversationGroupRepoService = conversationGroupRepoService;
+        this.conversationGroupService = conversationGroupService;
+        this.userService = userService;
     }
 
     @Override
@@ -47,25 +49,23 @@ public class MultimediaServiceImpl implements MultimediaService {
 
     @Override
     public List<Multimedia> getMultimediaOfAUser(String userId) {
-        // Go to the user's conversation groups and get all multimedia, merge them to list and send back to front end
-        // TODO: Change this part to UserService.getUser****
-        Optional<User> userOptional = userRepoService.findById(userId);
-        if(!userOptional.isPresent()) {
-            throw new UserNotFoundException("User not found. userId:-" + userId);
-        }
-        // TDDO: END ***************************
-
-        // This part related to getConversationForUser in MultimediaController class.
-        // Make all implementations of ConversationGroupController into a service class
-        // To bring all conversationIds to here, and search through multimedia table for all multimedias
-//        multimediaRepoService.findBy
-//        userOptional
-        return null;
+        // Validate user first
+        User user = userService.getUser(userId);
+        // Get all conversations of the user
+        List<ConversationGroup> conversationGroupList = conversationGroupService.getConversationsForUser(user.getId());
+        List<String> conversationGroupIds = new ArrayList<>();
+        // Map conversationGroupList to a bunch of conversation group IDs
+        conversationGroupList.forEach(conversationGroup -> conversationGroupIds.add(conversationGroup.getId()));
+        // Get all multimedia from matching the list of conversationIds
+        List<Multimedia> multimediaList = multimediaRepoService.findAllByConversationId(conversationGroupIds);
+        return multimediaList;
     }
 
     @Override
-    public List<Multimedia> getMultimediaOfAConversation(String conversationId) {
-        return null;
+    public List<Multimedia> getMultimediaOfAConversation(String conversationGroupId) {
+        ConversationGroup conversationGroup = conversationGroupService.getSingleConversation(conversationGroupId);
+        List<Multimedia> multimediaList = multimediaRepoService.findAllByConversationGroupId(conversationGroup.getId());
+        return multimediaList;
     }
 
     private void validateMultimediaNotFound(Optional<Multimedia> multimediaOptional, String multimediaId) {
