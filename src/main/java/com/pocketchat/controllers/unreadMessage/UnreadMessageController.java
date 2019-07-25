@@ -1,24 +1,47 @@
 package com.pocketchat.controllers.unreadMessage;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.pocketchat.db.models.unread_message.UnreadMessage;
+import com.pocketchat.services.unreadMessage.UnreadMessageService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/unreadMessage")
 public class UnreadMessageController {
-    public void addUnreadMessage() {
 
+    private final UnreadMessageService unreadMessageService;
+
+    public UnreadMessageController(UnreadMessageService unreadMessageService) {
+        this.unreadMessageService = unreadMessageService;
     }
 
-    public void editUnreadMessage() {
+    @PostMapping("")
+    public ResponseEntity<Object> addUnreadMessage(@Valid @RequestBody UnreadMessage unreadMessage) {
+        UnreadMessage savedUnreadMessage = unreadMessageService.addUnreadMessage(unreadMessage);
 
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUnreadMessage.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
-    public void deleteUnreadMessage() {
-
+    @PutMapping("")
+    public void editUnreadMessage(@Valid @RequestBody UnreadMessage unreadMessage) {
+        unreadMessageService.editUnreadMessage(unreadMessage);
     }
 
-    public void getUnreadMessagesOfAUser() {
+    @DeleteMapping("/{unreadMessageId}")
+    public void deleteUnreadMessage(@PathVariable String unreadMessageId) {
+        unreadMessageService.deleteUnreadMessage(unreadMessageId);
+    }
 
+    @GetMapping("/{userId}")
+    public List<UnreadMessage> getUnreadMessagesOfAUser(String userId) {
+        return unreadMessageService.getUnreadMessagesOfAUser(userId);
     }
 }

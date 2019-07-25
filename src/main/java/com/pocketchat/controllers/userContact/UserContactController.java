@@ -1,8 +1,7 @@
 package com.pocketchat.controllers.userContact;
 
-import com.pocketchat.db.repoServices.userContact.UserContactRepoService;
 import com.pocketchat.db.models.user_contact.UserContact;
-import com.pocketchat.server.exceptions.userContact.UserContactNotFoundException;
+import com.pocketchat.services.userContact.UserContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,22 +9,20 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/userContact")
 public class UserContactController {
-
-    private final UserContactRepoService userContactRepoService;
+    private final UserContactService userContactService;
 
     @Autowired
-    public UserContactController(UserContactRepoService userContactRepoService) {
-        this.userContactRepoService = userContactRepoService;
+    public UserContactController(UserContactService userContactService) {
+        this.userContactService = userContactService;
     }
 
     @PostMapping("")
     public ResponseEntity<Object> addUserContact(@Valid @RequestBody UserContact userContact) {
-        UserContact savedUserContact = userContactRepoService.save(userContact);
+        UserContact savedUserContact = userContactService.addUserContact(userContact);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUserContact.getId())
                 .toUri();
@@ -42,33 +39,16 @@ public class UserContactController {
 
     @PutMapping("")
     public void editUserContact(@Valid @RequestBody UserContact userContact) {
-        Optional<UserContact> userContactOptional = userContactRepoService.findById(userContact.getId());
-
-        if (!userContactOptional.isPresent()) {
-            throw new UserContactNotFoundException("userIdContactId:-" + userContact.getId());
-        }
-
-        userContactRepoService.save(userContact);
+        userContactService.editUserContact(userContact);
     }
 
     @DeleteMapping("/{userContactId}")
     public void deleteUserContact(@PathVariable String userContactId) {
-        Optional<UserContact> userContactOptional = userContactRepoService.findById(userContactId);
-        if (!userContactOptional.isPresent()) {
-            throw new UserContactNotFoundException("userContactId-" + userContactId);
-        }
-
-        userContactRepoService.delete(userContactOptional.get());
+        userContactService.deleteUserContact(userContactId);
     }
 
     @GetMapping("/{userContactId}")
     public UserContact getUserContact(@PathVariable String userContactId) {
-        Optional<UserContact> userContactOptional = userContactRepoService.findById(userContactId);
-
-        if (!userContactOptional.isPresent()) {
-            throw new UserContactNotFoundException("userContactId-" + userContactId);
-        }
-
-        return userContactOptional.get();
+        return userContactService.getUserContact(userContactId);
     }
 }
