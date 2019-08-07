@@ -40,7 +40,7 @@ public class UnreadMessageController {
         unreadMessageService.deleteUnreadMessage(unreadMessageId);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public List<UnreadMessage> getUnreadMessagesOfAUser(String userId) {
         return unreadMessageService.getUnreadMessagesOfAUser(userId);
     }
