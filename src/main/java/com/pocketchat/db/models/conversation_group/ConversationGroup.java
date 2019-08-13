@@ -37,10 +37,10 @@ public class ConversationGroup {
     @NotBlank
     String description;
 
-    @NotBlank
+//    @NotBlank
     boolean block;
 
-    @NotBlank
+//    @NotBlank
     int notificationExpireDate;
 
     @NotBlank
