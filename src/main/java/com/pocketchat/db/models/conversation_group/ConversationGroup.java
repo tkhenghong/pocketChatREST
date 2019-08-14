@@ -32,9 +32,6 @@ public class ConversationGroup {
     String type;
 
     @NotBlank
-    String unreadMessageId;
-
-    @NotBlank
     String description;
 
 //    @NotBlank
