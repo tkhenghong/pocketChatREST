@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public class MongoDBConfiguration extends AbstractMongoConfiguration {
     @Override
     protected String getDatabaseName() {
-        return "test";
+        return "pocketChatDB";
     }
 
     @Override
