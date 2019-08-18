@@ -42,13 +42,18 @@ public class MultimediaController {
         multimediaService.deleteMultimedia(multimediaId);
     }
 
-    //
+    @GetMapping("/{multimediaId}")
+    public Multimedia getSingleMultimedia(@PathVariable String multimediaId) {
+        return multimediaService.getSingleMultimedia(multimediaId);
+    }
+
     @GetMapping("/user/{userId}")
     public List<Multimedia> getMultimediaOfAUser(@PathVariable String userId) {
         return multimediaService.getMultimediaOfAUser(userId);
     }
 
-    public void getMultimediaOfAConversation() {
-
+    @GetMapping("/conversationGroup/{conversationGroupId}")
+    public List<Multimedia> getMultimediaOfAConversation(@PathVariable String conversationGroupId) {
+        return multimediaService.getMultimediaOfAConversation(conversationGroupId);
     }
 }

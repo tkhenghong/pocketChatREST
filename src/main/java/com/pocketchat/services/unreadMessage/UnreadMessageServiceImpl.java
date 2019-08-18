@@ -22,7 +22,6 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
         this.userService = userService;
     }
 
-
     @Override
     public UnreadMessage addUnreadMessage(UnreadMessage unreadMessage) {
         return unreadMessageRepoService.save(unreadMessage);
@@ -30,16 +29,23 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
 
     @Override
     public void editUnreadMessage(UnreadMessage unreadMessage) {
-        Optional<UnreadMessage> settingsOptional = unreadMessageRepoService.findById(unreadMessage.getId());
-        validateUnreadMessageNotFound(settingsOptional, unreadMessage.getId());
+        Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findById(unreadMessage.getId());
+        validateUnreadMessageNotFound(unreadMessageOptional, unreadMessage.getId());
         addUnreadMessage(unreadMessage);
     }
 
     @Override
     public void deleteUnreadMessage(String unreadMessageId) {
-        Optional<UnreadMessage> settingsOptional = unreadMessageRepoService.findById(unreadMessageId);
-        validateUnreadMessageNotFound(settingsOptional, unreadMessageId);
-        unreadMessageRepoService.delete(settingsOptional.get());
+        Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findById(unreadMessageId);
+        validateUnreadMessageNotFound(unreadMessageOptional, unreadMessageId);
+        unreadMessageRepoService.delete(unreadMessageOptional.get());
+    }
+
+    @Override
+    public UnreadMessage getSingleMultimedia(String unreadMessageId) {
+        Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findById(unreadMessageId);
+        validateUnreadMessageNotFound(unreadMessageOptional, unreadMessageId);
+        return unreadMessageOptional.get();
     }
 
     @Override
@@ -49,9 +55,9 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
         return unreadMessageList;
     }
 
-    private void validateUnreadMessageNotFound(Optional<UnreadMessage> unreadMessageOptional, String settingsId) {
+    private void validateUnreadMessageNotFound(Optional<UnreadMessage> unreadMessageOptional, String unreadMessageId) {
         if (!unreadMessageOptional.isPresent()) {
-            throw new UnreadMessageNotFoundException("Unread Message not found, id:-" + settingsId);
+            throw new UnreadMessageNotFoundException("Unread Message not found, id:-" + unreadMessageId);
         }
     }
 }

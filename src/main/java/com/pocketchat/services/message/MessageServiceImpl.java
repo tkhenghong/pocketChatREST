@@ -40,19 +40,14 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void deleteMessage(String messageId) {
         Optional<Message> messageOptional = messageRepoService.findById(messageId);
-        if (!messageOptional.isPresent()) {
-            throw new MessageNotFoundException("messageId-" + messageId);
-        }
+        validateMessageNotFound(messageOptional, messageId);
         messageRepoService.delete(messageOptional.get());
     }
 
     @Override
     public Message getSingleMessage(String messageId) {
         Optional<Message> messageOptional = messageRepoService.findById(messageId);
-        if (!messageOptional.isPresent()) {
-            throw new MessageNotFoundException("messageId-" + messageId);
-        }
-
+        validateMessageNotFound(messageOptional, messageId);
         return messageOptional.get();
     }
 
@@ -67,5 +62,11 @@ public class MessageServiceImpl implements MessageService {
             throw new MessageNotFoundException("No message found for this conversationGroupId:-" + conversationGroupId);
         }
         return messageList;
+    }
+
+    private void validateMessageNotFound(Optional<Message> messageOptional, String messageId) {
+        if (!messageOptional.isPresent()) {
+            throw new MessageNotFoundException("messageId-" + messageId);
+        }
     }
 }

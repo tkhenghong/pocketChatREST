@@ -28,9 +28,7 @@ public class UnreadMessage {
     @NotBlank
     private String lastMessage;
 
-    @NotBlank
     private int date;
 
-    @NotBlank
     private int count;
 }

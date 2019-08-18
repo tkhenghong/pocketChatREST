@@ -22,6 +22,5 @@ public class Settings {
     @NotBlank
     private String userId;
 
-    @NotBlank
     private boolean notification;
 }

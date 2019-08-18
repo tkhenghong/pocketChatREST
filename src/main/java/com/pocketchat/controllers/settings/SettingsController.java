@@ -36,9 +36,14 @@ public class SettingsController {
         settingsService.editSettings(settings);
     }
 
-    @DeleteMapping("/{settingsId")
+    @DeleteMapping("/{settingsId}")
     public void deleteSettings(@PathVariable String settingsId) {
         settingsService.deleteSettings(settingsId);
+    }
+
+    @GetMapping("/{settingsId}")
+    public Settings getSingleSettings(@PathVariable String settingsId) {
+        return settingsService.getSingleSettings(settingsId);
     }
 
     @GetMapping("/user/{userId}")

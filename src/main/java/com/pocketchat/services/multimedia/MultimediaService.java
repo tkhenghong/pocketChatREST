@@ -11,7 +11,9 @@ public interface MultimediaService {
 
     void deleteMultimedia(String multimediaId);
 
+    Multimedia getSingleMultimedia(String multimediaId);
+
     List<Multimedia> getMultimediaOfAUser(String userId);
 
-    List<Multimedia> getMultimediaOfAConversation(String conversationId);
+    List<Multimedia> getMultimediaOfAConversation(String conversationGroupId);
 }

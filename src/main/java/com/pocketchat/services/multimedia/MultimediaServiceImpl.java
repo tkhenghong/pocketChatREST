@@ -48,6 +48,13 @@ public class MultimediaServiceImpl implements MultimediaService {
     }
 
     @Override
+    public Multimedia getSingleMultimedia(String multimediaId) {
+        Optional<Multimedia> multimediaOptional = multimediaRepoService.findById(multimediaId);
+        validateMultimediaNotFound(multimediaOptional, multimediaId);
+        return multimediaOptional.get();
+    }
+
+    @Override
     public List<Multimedia> getMultimediaOfAUser(String userId) {
         // Validate user first
         User user = userService.getUser(userId);

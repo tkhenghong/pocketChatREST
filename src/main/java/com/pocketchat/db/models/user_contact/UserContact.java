@@ -37,6 +37,5 @@ public class UserContact {
     @NotBlank
     private String lastSeenDate;
 
-    @NotBlank
     private boolean block;
 }

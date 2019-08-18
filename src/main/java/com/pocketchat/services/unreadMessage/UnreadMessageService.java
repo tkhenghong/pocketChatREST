@@ -11,5 +11,7 @@ public interface UnreadMessageService {
 
     void deleteUnreadMessage(String unreadMessageId);
 
+    UnreadMessage getSingleMultimedia(String unreadMessageId);
+
     List<UnreadMessage> getUnreadMessagesOfAUser(String userId);
 }

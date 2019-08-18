@@ -44,6 +44,13 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    public Settings getSingleSettings(String settingsId) {
+        Optional<Settings> settingsOptional = settingsRepoService.findById(settingsId);
+        validateSettingsNotFound(settingsOptional, settingsId);
+        return settingsOptional.get();
+    }
+
+    @Override
     public Settings getSettingsOfAUser(String userId) {
         Optional<User> userOptional = userRepoService.findById(userId);
         if (!userOptional.isPresent()) {

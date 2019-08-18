@@ -40,6 +40,11 @@ public class UnreadMessageController {
         unreadMessageService.deleteUnreadMessage(unreadMessageId);
     }
 
+    @GetMapping("/{unreadMessageId}")
+    public UnreadMessage getSingleMultimedia(@PathVariable String unreadMessageId) {
+        return unreadMessageService.getSingleMultimedia(unreadMessageId);
+    }
+
     @GetMapping("/user/{userId}")
     public List<UnreadMessage> getUnreadMessagesOfAUser(String userId) {
         return unreadMessageService.getUnreadMessagesOfAUser(userId);
