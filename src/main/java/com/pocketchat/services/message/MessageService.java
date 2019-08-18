@@ -11,5 +11,7 @@ public interface MessageService {
 
     void deleteMessage(String messageId);
 
+    Message getSingleMessage(String messageId);
+
     List<Message> getMessagesOfAConversation(String conversationGroupId);
 }

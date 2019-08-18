@@ -43,6 +43,11 @@ public class MessageController {
         messageService.deleteMessage(messageId);
     }
 
+    @GetMapping("/{messageId}")
+    public Message getSingleMessage(@PathVariable String messageId) {
+        return messageService.getSingleMessage(messageId);
+    }
+
     @GetMapping("/conversation/{conversationGroupId}")
     public List<Message> getMessagesOfAConversation(String conversationGroupId) {
         return messageService.getMessagesOfAConversation(conversationGroupId);

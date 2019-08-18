@@ -39,12 +39,21 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void deleteMessage(String messageId) {
-        Optional<Message> conversationGroupOptional = messageRepoService.findById(messageId);
-        if (!conversationGroupOptional.isPresent()) {
+        Optional<Message> messageOptional = messageRepoService.findById(messageId);
+        if (!messageOptional.isPresent()) {
+            throw new MessageNotFoundException("messageId-" + messageId);
+        }
+        messageRepoService.delete(messageOptional.get());
+    }
+
+    @Override
+    public Message getSingleMessage(String messageId) {
+        Optional<Message> messageOptional = messageRepoService.findById(messageId);
+        if (!messageOptional.isPresent()) {
             throw new MessageNotFoundException("messageId-" + messageId);
         }
 
-        messageRepoService.delete(conversationGroupOptional.get());
+        return messageOptional.get();
     }
 
     @Override
