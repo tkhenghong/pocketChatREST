@@ -44,6 +44,13 @@ public class UserServiceImpl implements UserService {
         return userOptional.get();
     }
 
+    @Override
+    public User getUserbyGoogleAccountId(String googleAccountId) {
+        Optional<User> userOptional = userRepoService.findByGoogleAccountId(googleAccountId);
+        validateUserNotFound(userOptional, googleAccountId);
+        return userOptional.get();
+    }
+
     private void validateUserNotFound(Optional<User> userOptional, String userId) {
         if (!userOptional.isPresent()) {
             throw new UserNotFoundException("userId-" + userId);

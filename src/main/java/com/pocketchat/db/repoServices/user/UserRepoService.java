@@ -23,4 +23,6 @@ public class UserRepoService {
     public void delete(User conversationGroup) {
         userRepository.delete(conversationGroup);
     }
+
+    public Optional<User> findByGoogleAccountId(String googleAccountId) { return userRepository.findFirstByGoogleAccountId(googleAccountId);}
 }

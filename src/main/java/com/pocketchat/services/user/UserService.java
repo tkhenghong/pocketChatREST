@@ -10,4 +10,6 @@ public interface UserService {
     void deleteUser(String userId);
 
     User getUser(String userId);
+
+    User getUserbyGoogleAccountId(String googleAccountId);
 }
