@@ -48,7 +48,12 @@ public class UserController {
     }
 
     @GetMapping("/googleAccountId/{googleAccountId}")
-    public User getUserbyGoogleAccountId(@PathVariable String googleAccountId) {
+    public User getUserByGoogleAccountId(@PathVariable String googleAccountId) {
         return userService.getUserbyGoogleAccountId(googleAccountId);
+    }
+
+    @GetMapping("/mobileNo/{mobileNo}")
+    public User getUserByMobileNo(@PathVariable String mobileNo) {
+        return userService.getUserByMobileNo(mobileNo);
     }
 }

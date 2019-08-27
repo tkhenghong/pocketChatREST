@@ -62,7 +62,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         }
         List<String> conversationIds = new ArrayList<>();
         userContactList.forEach((UserContact userContact) -> conversationIds.add(userContact.getConversationId()));
-        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllConversationGroupsByGroupMemberId(conversationIds);
+        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllConversationGroupsByIds(conversationIds);
         return conversationGroupList;
     }
 

@@ -53,6 +53,13 @@ public class UserServiceImpl implements UserService {
         return userOptional.get();
     }
 
+    @Override
+    public User getUserByMobileNo(String mobileNo) {
+        Optional<User> userOptional = userRepoService.findByMobileNo(mobileNo);
+        validateUserNotFound(userOptional, mobileNo);
+        return userOptional.get();
+    }
+
     private void validateUserNotFound(Optional<User> userOptional, String userId) {
         if (!userOptional.isPresent()) {
             throw new UserNotFoundException("userId-" + userId);

@@ -15,9 +15,8 @@ public class ConversationGroupRepoService {
     @Autowired
     private ConversationGroupRepository conversationGroupRepository;
 
-    // TODO: This method is not useful, change it to findAllConversationGroupsByConversationGroupIds
-    public List<ConversationGroup> findAllConversationGroupsByGroupMemberId(List<String> groupMemberIds) {
-        Iterable<String> iterable = groupMemberIds;
+    public List<ConversationGroup> findAllConversationGroupsByIds(List<String> ids) {
+        Iterable<String> iterable = ids;
         Iterable<ConversationGroup> conversationGroupIterable = conversationGroupRepository.findAllById(iterable);
 
         // TODO: Need expert review for possibly better options
