@@ -46,6 +46,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserbyGoogleAccountId(String googleAccountId) {
+        // NOTE: normally you wouldn't find multiple Users with same googleAccountId back from database,
+        // But for safety, I have used findFirst in MongoRepository of User class.
         Optional<User> userOptional = userRepoService.findByGoogleAccountId(googleAccountId);
         validateUserNotFound(userOptional, googleAccountId);
         return userOptional.get();
