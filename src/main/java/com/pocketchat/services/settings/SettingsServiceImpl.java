@@ -26,28 +26,25 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public Settings addSettings(Settings settings) {
-        return settingsRepoService.save(settings);
+        Optional<Settings> settingsOptional = settingsRepoService.findByUserId(settings.getUserId());
+        return settingsOptional.orElseGet(() -> settingsRepoService.save(settings));
     }
 
     @Override
     public void editSettings(Settings settings) {
-        Optional<Settings> settingsOptional = settingsRepoService.findById(settings.getId());
-        validateSettingsNotFound(settingsOptional, settings.getId());
+        getSingleSettings(settings.getId());
         addSettings(settings);
     }
 
     @Override
     public void deleteSettings(String settingsId) {
-        Optional<Settings> settingsOptional = settingsRepoService.findById(settingsId);
-        validateSettingsNotFound(settingsOptional, settingsId);
-        settingsRepoService.delete(settingsOptional.get());
+        settingsRepoService.delete(getSingleSettings(settingsId));
     }
 
     @Override
     public Settings getSingleSettings(String settingsId) {
         Optional<Settings> settingsOptional = settingsRepoService.findById(settingsId);
-        validateSettingsNotFound(settingsOptional, settingsId);
-        return settingsOptional.get();
+        return validateSettingsNotFound(settingsOptional, settingsId);
     }
 
     @Override
@@ -59,14 +56,15 @@ public class SettingsServiceImpl implements SettingsService {
 
         Optional<Settings> settingsOptional = settingsRepoService.findByUserId(userOptional.get().getId());
 
-        validateSettingsNotFound(settingsOptional, "");
-        return settingsOptional.get();
+        return validateSettingsNotFound(settingsOptional, "");
     }
 
 
-    private void validateSettingsNotFound(Optional<Settings> settingsOptional, String settingsId) {
+    private Settings validateSettingsNotFound(Optional<Settings> settingsOptional, String settingsId) {
         if (!settingsOptional.isPresent()) {
             throw new SettingsNotFoundException("Settings not found, id:-" + settingsId);
+        } else {
+            return settingsOptional.get();
         }
     }
 }

@@ -26,8 +26,8 @@ public class MessageRepoService {
         return messageRepository.save(conversationGroup);
     }
 
-    public void delete(Message conversationGroup) {
-        messageRepository.delete(conversationGroup);
+    public void delete(Message message) {
+        messageRepository.delete(message);
     }
 
 }

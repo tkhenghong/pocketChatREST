@@ -34,30 +34,25 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     @Override
     public void editConversation(ConversationGroup conversationGroup) {
-        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroup.getId());
-        validateConversationGroupNotFound(conversationGroupOptional, conversationGroup.getId());
+        getSingleConversation(conversationGroup.getId());
         addConversation(conversationGroup);
     }
 
     @Override
     public void deleteConversation(String conversationGroupId) {
-        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
-        validateConversationGroupNotFound(conversationGroupOptional, conversationGroupId);
-        conversationGroupRepoService.delete(conversationGroupOptional.get());
+        conversationGroupRepoService.delete(getSingleConversation(conversationGroupId));
     }
 
     @Override
     public ConversationGroup getSingleConversation(String conversationGroupId) {
         Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
-        validateConversationGroupNotFound(conversationGroupOptional, conversationGroupId);
-        return conversationGroupOptional.get();
+        return validateConversationGroupNotFound(conversationGroupOptional, conversationGroupId);
     }
 
     @Override
     public List<ConversationGroup> getConversationsForUser(String userId) {
         List<UserContact> userContactList = userContactRepoService.findByUserId(userId);
         if (userContactList.isEmpty()) {
-            // throws UserContact not Found error
             throw new UserContactNotFoundException("UserContact not found: " + userId);
         }
         List<String> conversationIds = new ArrayList<>();
@@ -66,10 +61,11 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         return conversationGroupList;
     }
 
-    @Override
-    public void validateConversationGroupNotFound(Optional<ConversationGroup> conversationGroupOptional, String conversationGroupId) {
+    private ConversationGroup validateConversationGroupNotFound(Optional<ConversationGroup> conversationGroupOptional, String conversationGroupId) {
         if (!conversationGroupOptional.isPresent()) {
             throw new ConversationGroupNotFoundException("conversationGroupId-" + conversationGroupId);
+        } else {
+            return conversationGroupOptional.get();
         }
     }
 }

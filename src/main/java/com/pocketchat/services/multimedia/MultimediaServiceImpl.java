@@ -35,23 +35,19 @@ public class MultimediaServiceImpl implements MultimediaService {
 
     @Override
     public void editMultimedia(Multimedia multimedia) {
-        Optional<Multimedia> multimediaOptional = multimediaRepoService.findById(multimedia.getId());
-        validateMultimediaNotFound(multimediaOptional, multimedia.getId());
-        multimediaRepoService.save(multimedia);
+        getSingleMultimedia(multimedia.getId());
+        addMultimedia(multimedia);
     }
 
     @Override
     public void deleteMultimedia(String multimediaId) {
-        Optional<Multimedia> multimediaOptional = multimediaRepoService.findById(multimediaId);
-        validateMultimediaNotFound(multimediaOptional, multimediaId);
-        multimediaRepoService.delete(multimediaOptional.get());
+        multimediaRepoService.delete(getSingleMultimedia(multimediaId));
     }
 
     @Override
     public Multimedia getSingleMultimedia(String multimediaId) {
         Optional<Multimedia> multimediaOptional = multimediaRepoService.findById(multimediaId);
-        validateMultimediaNotFound(multimediaOptional, multimediaId);
-        return multimediaOptional.get();
+        return validateMultimediaNotFound(multimediaOptional, multimediaId);
     }
 
     @Override
@@ -75,9 +71,11 @@ public class MultimediaServiceImpl implements MultimediaService {
         return multimediaList;
     }
 
-    private void validateMultimediaNotFound(Optional<Multimedia> multimediaOptional, String multimediaId) {
+    private Multimedia validateMultimediaNotFound(Optional<Multimedia> multimediaOptional, String multimediaId) {
         if (!multimediaOptional.isPresent()) {
             throw new MultimediaNotFoundException("multimediaId-" + multimediaId);
+        } else {
+            return multimediaOptional.get();
         }
     }
 }

@@ -30,25 +30,19 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void editMessage(Message message) {
-        Optional<Message> userContactOptional = messageRepoService.findById(message.getId());
-        if (!userContactOptional.isPresent()) {
-            throw new MessageNotFoundException("messageId:-" + message.getId());
-        }
+        getSingleMessage(message.getId());
         addMessage(message);
     }
 
     @Override
     public void deleteMessage(String messageId) {
-        Optional<Message> messageOptional = messageRepoService.findById(messageId);
-        validateMessageNotFound(messageOptional, messageId);
-        messageRepoService.delete(messageOptional.get());
+        messageRepoService.delete(getSingleMessage(messageId));
     }
 
     @Override
     public Message getSingleMessage(String messageId) {
         Optional<Message> messageOptional = messageRepoService.findById(messageId);
-        validateMessageNotFound(messageOptional, messageId);
-        return messageOptional.get();
+        return validateMessageNotFound(messageOptional, messageId);
     }
 
     @Override
@@ -64,9 +58,11 @@ public class MessageServiceImpl implements MessageService {
         return messageList;
     }
 
-    private void validateMessageNotFound(Optional<Message> messageOptional, String messageId) {
+    private Message validateMessageNotFound(Optional<Message> messageOptional, String messageId) {
         if (!messageOptional.isPresent()) {
             throw new MessageNotFoundException("messageId-" + messageId);
+        } else {
+            return messageOptional.get();
         }
     }
 }

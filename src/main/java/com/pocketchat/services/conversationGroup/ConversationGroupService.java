@@ -15,6 +15,4 @@ public interface ConversationGroupService {
     ConversationGroup getSingleConversation(String conversationId);
 
     List<ConversationGroup> getConversationsForUser(String userId);
-
-    void validateConversationGroupNotFound(Optional<ConversationGroup> conversationGroupOptional, String conversationGroupId);
 }

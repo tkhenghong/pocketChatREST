@@ -20,28 +20,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUser(User user) {
-        return userRepoService.save(user);
+        Optional<User> userOptional = userRepoService.findByGoogleAccountId(user.getGoogleAccountId());
+        return userOptional.orElseGet(() -> userRepoService.save(user)); // userOptional.isPresent() ? userOptional.get() : userRepoService.save(user)
     }
 
     @Override
     public void editUser(User user) {
-        Optional<User> userOptional = userRepoService.findById(user.getId());
-        validateUserNotFound(userOptional, user.getId());
-        userRepoService.save(user);
+        getUser(user.getId());
+        addUser(user);
     }
 
     @Override
     public void deleteUser(String userId) {
-        Optional<User> userOptional = userRepoService.findById(userId);
-        validateUserNotFound(userOptional, userId);
-        userRepoService.delete(userOptional.get());
+        userRepoService.delete(getUser(userId));
     }
 
     @Override
     public User getUser(String userId) {
         Optional<User> userOptional = userRepoService.findById(userId);
-        validateUserNotFound(userOptional, userId);
-        return userOptional.get();
+        return validateUserNotFound(userOptional, userId);
     }
 
     @Override
@@ -49,20 +46,20 @@ public class UserServiceImpl implements UserService {
         // NOTE: normally you wouldn't find multiple Users with same googleAccountId back from database,
         // But for safety, I have used findFirst in MongoRepository of User class.
         Optional<User> userOptional = userRepoService.findByGoogleAccountId(googleAccountId);
-        validateUserNotFound(userOptional, googleAccountId);
-        return userOptional.get();
+        return validateUserNotFound(userOptional, googleAccountId);
     }
 
     @Override
     public User getUserByMobileNo(String mobileNo) {
         Optional<User> userOptional = userRepoService.findByMobileNo(mobileNo);
-        validateUserNotFound(userOptional, mobileNo);
-        return userOptional.get();
+        return validateUserNotFound(userOptional, mobileNo);
     }
 
-    private void validateUserNotFound(Optional<User> userOptional, String userId) {
+    private User validateUserNotFound(Optional<User> userOptional, String userId) {
         if (!userOptional.isPresent()) {
             throw new UserNotFoundException("userId-" + userId);
+        } else {
+            return userOptional.get();
         }
     }
 }

@@ -24,28 +24,26 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     public void editUserContact(UserContact userContact) {
-        Optional<UserContact> userContactOptional = userContactRepoService.findById(userContact.getId());
-        validateUserContactNotFound(userContactOptional, userContact.getId());
-        userContactRepoService.save(userContact);
+        getUserContact(userContact.getId());
+        addUserContact(userContact);
     }
 
     @Override
     public void deleteUserContact(String userContactId) {
-        Optional<UserContact> userContactOptional = userContactRepoService.findById(userContactId);
-        validateUserContactNotFound(userContactOptional, userContactId);
-        userContactRepoService.delete(userContactOptional.get());
+        userContactRepoService.delete(getUserContact(userContactId));
     }
 
     @Override
     public UserContact getUserContact(String userContactId) {
         Optional<UserContact> userContactOptional = userContactRepoService.findById(userContactId);
-        validateUserContactNotFound(userContactOptional, userContactId);
-        return userContactOptional.get();
+        return validateUserContactNotFound(userContactOptional, userContactId);
     }
 
-    private void validateUserContactNotFound(Optional<UserContact> userContactOptional, String userContactId) {
+    private UserContact validateUserContactNotFound(Optional<UserContact> userContactOptional, String userContactId) {
         if (!userContactOptional.isPresent()) {
             throw new UserContactNotFoundException("userContactId-" + userContactId);
+        } else {
+            return userContactOptional.get();
         }
     }
 }

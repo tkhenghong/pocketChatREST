@@ -29,23 +29,19 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
 
     @Override
     public void editUnreadMessage(UnreadMessage unreadMessage) {
-        Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findById(unreadMessage.getId());
-        validateUnreadMessageNotFound(unreadMessageOptional, unreadMessage.getId());
+        getSingleMultimedia(unreadMessage.getId());
         addUnreadMessage(unreadMessage);
     }
 
     @Override
     public void deleteUnreadMessage(String unreadMessageId) {
-        Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findById(unreadMessageId);
-        validateUnreadMessageNotFound(unreadMessageOptional, unreadMessageId);
-        unreadMessageRepoService.delete(unreadMessageOptional.get());
+        unreadMessageRepoService.delete(getSingleMultimedia(unreadMessageId));
     }
 
     @Override
     public UnreadMessage getSingleMultimedia(String unreadMessageId) {
         Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findById(unreadMessageId);
-        validateUnreadMessageNotFound(unreadMessageOptional, unreadMessageId);
-        return unreadMessageOptional.get();
+        return validateUnreadMessageNotFound(unreadMessageOptional, unreadMessageId);
     }
 
     @Override
@@ -55,9 +51,11 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
         return unreadMessageList;
     }
 
-    private void validateUnreadMessageNotFound(Optional<UnreadMessage> unreadMessageOptional, String unreadMessageId) {
+    private UnreadMessage validateUnreadMessageNotFound(Optional<UnreadMessage> unreadMessageOptional, String unreadMessageId) {
         if (!unreadMessageOptional.isPresent()) {
             throw new UnreadMessageNotFoundException("Unread Message not found, id:-" + unreadMessageId);
+        } else {
+            return unreadMessageOptional.get();
         }
     }
 }
