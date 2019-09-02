@@ -21,8 +21,8 @@ public class UserContactRepoService {
         return userContactRepository.findById(userContactId);
     }
 
-    public List<UserContact> findByUserId(String userId) {
-        return userContactRepository.findByUserId(userId);
+    public List<UserContact> findByUserIdsContaining(String userId) {
+        return userContactRepository.findByUserIdsContaining(userId);
     }
 
     public UserContact save(UserContact conversationGroup) {

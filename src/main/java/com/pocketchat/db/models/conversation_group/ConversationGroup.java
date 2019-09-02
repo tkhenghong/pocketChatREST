@@ -52,7 +52,4 @@ public class ConversationGroup {
 
     //    @NotBlank
     int notificationExpireDate;
-
-    @NotBlank
-    String timestamp;
 }

@@ -51,7 +51,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     @Override
     public List<ConversationGroup> getConversationsForUser(String userId) {
-        List<UserContact> userContactList = userContactRepoService.findByUserId(userId);
+        List<UserContact> userContactList = userContactRepoService.findByUserIdsContaining(userId);
         if (userContactList.isEmpty()) {
             throw new UserContactNotFoundException("UserContact not found: " + userId);
         }

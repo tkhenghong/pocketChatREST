@@ -4,7 +4,11 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,8 +32,10 @@ public class UserContact {
     @NotBlank
     private String realName;
 
-    @NotBlank
-    private String userId;
+    @Valid
+    @NotEmpty
+    @Size(min = 1)
+    private String[] userIds;
 
     @NotBlank
     private String mobileNo;
@@ -38,4 +44,7 @@ public class UserContact {
     private String lastSeenDate;
 
     private boolean block;
+
+    @NotBlank
+    private String multimediaId;
 }
