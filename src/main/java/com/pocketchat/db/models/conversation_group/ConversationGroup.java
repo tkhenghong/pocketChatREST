@@ -20,19 +20,19 @@ import javax.validation.constraints.Size;
 public class ConversationGroup {
 
     @Id
-    String id;
+    private String id;
 
     @NotBlank
-    String creatorUserId;
+    private String creatorUserId;
 
     @NotBlank
-    String createdDate;
+    private String createdDate;
 
     @NotBlank
-    String name;
+    private String name;
 
     @NotBlank
-    String type;
+    private String type;
 
     @NotBlank
     String description;
@@ -40,16 +40,16 @@ public class ConversationGroup {
     @Valid
     @NotEmpty
     @Size(min = 1) // If 1 of 2 persons group left, that person still can have this group
-    String[] memberIds;
+    private String[] memberIds;
 
     @Valid
     @NotEmpty
     @Size(min = 1)
-    String[] adminMemberIds;
+    private String[] adminMemberIds;
 
     //    @NotBlank
-    boolean block;
+    private boolean block;
 
     //    @NotBlank
-    int notificationExpireDate;
+    private int notificationExpireDate;
 }
