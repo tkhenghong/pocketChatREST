@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,12 +41,12 @@ public class ConversationGroup {
     @Valid
     @NotEmpty
     @Size(min = 1) // If 1 of 2 persons group left, that person still can have this group
-    private String[] memberIds;
+    private List<String> memberIds;
 
     @Valid
     @NotEmpty
     @Size(min = 1)
-    private String[] adminMemberIds;
+    private List<String> adminMemberIds;
 
     //    @NotBlank
     private boolean block;

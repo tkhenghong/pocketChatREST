@@ -35,7 +35,7 @@ public class UserContact {
     @Valid
     @NotEmpty
     @Size(min = 1)
-    private String[] userIds;
+    private List<String> userIds;
 
     @NotBlank
     private String mobileNo;

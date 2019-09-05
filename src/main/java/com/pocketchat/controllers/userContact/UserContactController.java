@@ -51,4 +51,9 @@ public class UserContactController {
     public UserContact getUserContact(@PathVariable String userContactId) {
         return userContactService.getUserContact(userContactId);
     }
+
+    @GetMapping("/mobileNo/{mobileNo}")
+    public UserContact getUserContactByMobileNo(@PathVariable String mobileNo) {
+        return userContactService.getUserContact(mobileNo);
+    }
 }

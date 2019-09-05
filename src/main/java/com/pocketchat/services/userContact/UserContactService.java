@@ -10,4 +10,6 @@ public interface UserContactService {
     void deleteUserContact(String userContactId);
 
     UserContact getUserContact(String userContactId);
+
+    UserContact getUserContactByMobileNo(String mobileNo);
 }

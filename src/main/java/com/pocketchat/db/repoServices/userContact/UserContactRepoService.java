@@ -1,10 +1,12 @@
 package com.pocketchat.db.repoServices.userContact;
 
+import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.repositories.userContact.UserContactRepository;
 import com.pocketchat.db.models.user_contact.UserContact;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,10 @@ public class UserContactRepoService {
 
     public Optional<UserContact> findById(String userContactId) {
         return userContactRepository.findById(userContactId);
+    }
+
+    public Optional<UserContact> findByMobileNo(String mobileNo) {
+        return userContactRepository.findByMobileNo(mobileNo);
     }
 
     public List<UserContact> findByUserIdsContaining(String userId) {
