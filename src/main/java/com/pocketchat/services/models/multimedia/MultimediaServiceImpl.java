@@ -1,18 +1,19 @@
-package com.pocketchat.services.multimedia;
+package com.pocketchat.services.models.multimedia;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.repoServices.multimedia.MultimediaRepoService;
 import com.pocketchat.server.exceptions.multimedia.MultimediaNotFoundException;
-import com.pocketchat.services.conversationGroup.ConversationGroupService;
-import com.pocketchat.services.user.UserService;
+import com.pocketchat.services.models.conversationGroup.ConversationGroupService;
+import com.pocketchat.services.models.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MultimediaServiceImpl implements MultimediaService {
@@ -52,15 +53,22 @@ public class MultimediaServiceImpl implements MultimediaService {
 
     @Override
     public List<Multimedia> getMultimediaOfAUser(String userId) {
+        System.out.println("MultimediaServiceImpl.java getMultimediaOfAUser()");
+        System.out.println("MultimediaServiceImpl.java userId: " + userId);
         // Validate user first
         User user = userService.getUser(userId);
         // Get all conversations of the user
         List<ConversationGroup> conversationGroupList = conversationGroupService.getConversationsForUser(user.getId());
-        List<String> conversationGroupIds = new ArrayList<>();
+        System.out.println("MultimediaServiceImpl.java conversationGroupList.size(): " + conversationGroupList.size());
+//        List<String> conversationGroupIds = new ArrayList<>();
         // Map conversationGroupList to a bunch of conversation group IDs
-        conversationGroupList.forEach(conversationGroup -> conversationGroupIds.add(conversationGroup.getId()));
+//        conversationGroupList.forEach(conversationGroup -> conversationGroupIds.add(conversationGroup.getId()));
+        List<String> conversationGroupIds = conversationGroupList.stream()
+                .map((ConversationGroup conversationGroup) -> conversationGroup.getId()).collect(Collectors.toList());
+        System.out.println("MultimediaServiceImpl.java conversationGroupIds.size(): " + conversationGroupIds.size());
         // Get all multimedia from matching the list of conversationIds
         List<Multimedia> multimediaList = multimediaRepoService.findAllByConversationId(conversationGroupIds);
+        System.out.println("MultimediaServiceImpl.java multimediaList.size(): " + multimediaList.size());
         return multimediaList;
     }
 

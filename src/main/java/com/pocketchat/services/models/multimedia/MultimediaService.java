@@ -1,4 +1,4 @@
-package com.pocketchat.services.multimedia;
+package com.pocketchat.services.models.multimedia;
 
 import com.pocketchat.db.models.multimedia.Multimedia;
 

@@ -1,4 +1,4 @@
-package com.pocketchat.services.message;
+package com.pocketchat.services.models.message;
 
 import com.pocketchat.db.models.message.Message;
 

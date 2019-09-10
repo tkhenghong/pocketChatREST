@@ -1,4 +1,4 @@
-package com.pocketchat.services.user;
+package com.pocketchat.services.models.user;
 
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.repoServices.user.UserRepoService;

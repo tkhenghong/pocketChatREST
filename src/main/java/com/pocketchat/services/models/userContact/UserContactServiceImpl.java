@@ -1,4 +1,4 @@
-package com.pocketchat.services.userContact;
+package com.pocketchat.services.models.userContact;
 
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repoServices.userContact.UserContactRepoService;

@@ -1,4 +1,4 @@
-package com.pocketchat.services.unreadMessage;
+package com.pocketchat.services.models.unreadMessage;
 
 import com.pocketchat.db.models.unread_message.UnreadMessage;
 
