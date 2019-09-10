@@ -15,4 +15,6 @@ public interface ConversationGroupService {
     ConversationGroup getSingleConversation(String conversationId);
 
     List<ConversationGroup> getConversationsForUser(String userId);
+
+    List<ConversationGroup> findByMemberIdsContaining(String userContactId);
 }

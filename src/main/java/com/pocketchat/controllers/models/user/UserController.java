@@ -1,7 +1,7 @@
 package com.pocketchat.controllers.user;
 
 import com.pocketchat.db.models.user.User;
-import com.pocketchat.services.user.UserService;
+import com.pocketchat.services.models.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

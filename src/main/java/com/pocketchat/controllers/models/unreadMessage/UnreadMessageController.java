@@ -1,7 +1,9 @@
-package com.pocketchat.controllers.unreadMessage;
+package com.pocketchat.controllers.models.unreadMessage;
 
+import com.pocketchat.controllers.response.unreadMessage.UnreadMessageResponse;
+import com.pocketchat.controllers.response.userContact.UserContactResponse;
 import com.pocketchat.db.models.unread_message.UnreadMessage;
-import com.pocketchat.services.unreadMessage.UnreadMessageService;
+import com.pocketchat.services.models.unreadMessage.UnreadMessageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -9,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/unreadMessage")
@@ -41,12 +44,24 @@ public class UnreadMessageController {
     }
 
     @GetMapping("/{unreadMessageId}")
-    public UnreadMessage getSingleMultimedia(@PathVariable String unreadMessageId) {
-        return unreadMessageService.getSingleMultimedia(unreadMessageId);
+    public UnreadMessageResponse getSingleMultimedia(@PathVariable String unreadMessageId) {
+        return unreadMessageResponseMapper(unreadMessageService.getSingleMultimedia(unreadMessageId));
     }
 
     @GetMapping("/user/{userId}")
-    public List<UnreadMessage> getUnreadMessagesOfAUser(String userId) {
-        return unreadMessageService.getUnreadMessagesOfAUser(userId);
+    public List<UnreadMessageResponse> getUnreadMessagesOfAUser(String userId) {
+        List<UnreadMessage> unreadMessageList = unreadMessageService.getUnreadMessagesOfAUser(userId);
+        return unreadMessageList.stream().map(this::unreadMessageResponseMapper).collect(Collectors.toList());
+    }
+
+    private UnreadMessageResponse unreadMessageResponseMapper(UnreadMessage unreadMessage) {
+        return UnreadMessageResponse.builder()
+                .id(unreadMessage.getId())
+                .lastMessage(unreadMessage.getLastMessage())
+                .count(unreadMessage.getCount())
+                .userId(unreadMessage.getUserId())
+                .conversationId(unreadMessage.getConversationId())
+                .date(unreadMessage.getDate().getMillis())
+                .build();
     }
 }

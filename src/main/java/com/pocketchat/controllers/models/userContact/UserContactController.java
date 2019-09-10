@@ -1,7 +1,7 @@
 package com.pocketchat.controllers.userContact;
 
 import com.pocketchat.db.models.user_contact.UserContact;
-import com.pocketchat.services.userContact.UserContactService;
+import com.pocketchat.services.models.userContact.UserContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

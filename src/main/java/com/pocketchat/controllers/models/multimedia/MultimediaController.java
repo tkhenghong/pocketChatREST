@@ -1,7 +1,7 @@
 package com.pocketchat.controllers.multimedia;
 
 import com.pocketchat.db.models.multimedia.Multimedia;
-import com.pocketchat.services.multimedia.MultimediaService;
+import com.pocketchat.services.models.multimedia.MultimediaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

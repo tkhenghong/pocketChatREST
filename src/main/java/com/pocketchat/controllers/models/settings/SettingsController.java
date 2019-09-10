@@ -1,7 +1,7 @@
 package com.pocketchat.controllers.settings;
 
 import com.pocketchat.db.models.settings.Settings;
-import com.pocketchat.services.settings.SettingsService;
+import com.pocketchat.services.models.settings.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
