@@ -1,4 +1,4 @@
-package com.pocketchat.controllers.settings;
+package com.pocketchat.controllers.models.settings;
 
 import com.pocketchat.db.models.settings.Settings;
 import com.pocketchat.services.models.settings.SettingsService;

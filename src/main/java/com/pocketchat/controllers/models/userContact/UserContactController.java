@@ -1,5 +1,6 @@
-package com.pocketchat.controllers.userContact;
+package com.pocketchat.controllers.models.userContact;
 
+import com.pocketchat.controllers.response.userContact.UserContactResponse;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.services.models.userContact.UserContactService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,12 +49,25 @@ public class UserContactController {
     }
 
     @GetMapping("/{userContactId}")
-    public UserContact getUserContact(@PathVariable String userContactId) {
-        return userContactService.getUserContact(userContactId);
+    public UserContactResponse getUserContact(@PathVariable String userContactId) {
+        return userContactResponseMapper(userContactService.getUserContact(userContactId));
     }
 
     @GetMapping("/mobileNo/{mobileNo}")
-    public UserContact getUserContactByMobileNo(@PathVariable String mobileNo) {
-        return userContactService.getUserContact(mobileNo);
+    public UserContactResponse getUserContactByMobileNo(@PathVariable String mobileNo) {
+        return userContactResponseMapper(userContactService.getUserContactByMobileNo(mobileNo));
+    }
+
+    private UserContactResponse userContactResponseMapper(UserContact userContact) {
+        return UserContactResponse.builder()
+                .id(userContact.getId())
+                .displayName(userContact.getDisplayName())
+                .realName(userContact.getRealName())
+                .block(userContact.isBlock())
+                .mobileNo(userContact.getMobileNo())
+                .multimediaId(userContact.getMultimediaId())
+                .userIds(userContact.getUserIds())
+                .lastSeenDate(userContact.getLastSeenDate().getMillis())
+                .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.pocketchat.controllers.user;
+package com.pocketchat.controllers.models.user;
 
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.services.models.user.UserService;
