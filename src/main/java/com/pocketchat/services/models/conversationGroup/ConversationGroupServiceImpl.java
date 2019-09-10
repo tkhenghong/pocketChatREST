@@ -1,4 +1,4 @@
-package com.pocketchat.services.conversationGroup;
+package com.pocketchat.services.models.conversationGroup;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.user_contact.UserContact;
@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ConversationGroupServiceImpl implements ConversationGroupService {
@@ -30,7 +30,27 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     @Override
     public ConversationGroup addConversation(ConversationGroup conversationGroup) {
-        return conversationGroupRepoService.save(conversationGroup);
+        if (conversationGroup.getType().equals("Personal")) {
+            // 1. Find a list of conversationGroup that has same memberIds
+            List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findByMemberIdsContaining(conversationGroup.getMemberIds());
+            // 2. Filter to get the Personal ConversationGroup
+            List<ConversationGroup> personalConversationGroupList = conversationGroupList
+                    .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getType().equals("Personal")
+                            && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())
+                            && conversationGroup1.getName().equals(conversationGroup.getName())).collect(Collectors.toList());
+            // 3. Should found the exact group
+            if (personalConversationGroupList.size() == 1) {
+                return personalConversationGroupList.iterator().next();
+            } else if (personalConversationGroupList.isEmpty()) { // Must be 0 conversationGroup
+                return conversationGroupRepoService.save(conversationGroup);
+            } else {
+                return null;
+            }
+        } else {
+            System.out.println("ConversationGroupServiceImpl.java if (conversationGroup.getType().equals(\"Group/Broadcast\"))");
+            // Group/Broadcast
+            return conversationGroupRepoService.save(conversationGroup);
+        }
     }
 
     @Override

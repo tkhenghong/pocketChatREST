@@ -1,9 +1,8 @@
-package com.pocketchat.services.conversationGroup;
+package com.pocketchat.services.models.conversationGroup;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ConversationGroupService {
     ConversationGroup addConversation(ConversationGroup conversationGroup);

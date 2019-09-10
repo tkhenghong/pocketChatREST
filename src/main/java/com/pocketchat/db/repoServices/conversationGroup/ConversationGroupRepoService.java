@@ -31,8 +31,16 @@ public class ConversationGroupRepoService {
         return conversationGroupRepository.findById(conversationId);
     }
 
-    //deleteById
+    // Find all conversationGroup objects by their memberIds array has the mentioned userContactId or not
+    // 1 User has 1 UserContact
+    public List<ConversationGroup> findByMemberIdsContaining(String userContactId) {
+        return conversationGroupRepository.findByMemberIdsContaining(userContactId);
+    }
 
+    // Used for finding conversationGroup that has exact same member
+    public List<ConversationGroup> findByMemberIdsContaining(List<String> memberIds) {
+        return conversationGroupRepository.findByMemberIdsContaining(memberIds);
+    }
 
     public ConversationGroup save(ConversationGroup conversationGroup) {
         return conversationGroupRepository.save(conversationGroup);
