@@ -1,10 +1,13 @@
 package com.pocketchat.db.models.message;
 
 import lombok.*;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -52,6 +55,6 @@ public class Message {
     @NotBlank
     private String multimediaId;
 
-    @NotBlank
-    private String timestamp;
+    @NotNull
+    private DateTime timestamp;
 }

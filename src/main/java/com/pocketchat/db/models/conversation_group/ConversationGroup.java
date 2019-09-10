@@ -1,13 +1,16 @@
 package com.pocketchat.db.models.conversation_group;
 
 import lombok.*;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -26,8 +29,8 @@ public class ConversationGroup {
     @NotBlank
     private String creatorUserId;
 
-    @NotBlank
-    private String createdDate;
+    @NotNull
+    private DateTime createdDate;
 
     @NotBlank
     private String name;
@@ -35,7 +38,6 @@ public class ConversationGroup {
     @NotBlank
     private String type;
 
-    @NotBlank
     String description;
 
     @Valid
@@ -48,9 +50,7 @@ public class ConversationGroup {
     @Size(min = 1)
     private List<String> adminMemberIds;
 
-    //    @NotBlank
     private boolean block;
 
-    //    @NotBlank
-    private int notificationExpireDate;
+    private DateTime notificationExpireDate;
 }

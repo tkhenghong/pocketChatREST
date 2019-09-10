@@ -1,10 +1,13 @@
 package com.pocketchat.db.models.unread_message;
 
 import lombok.*;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -25,10 +28,10 @@ public class UnreadMessage {
     @NotBlank
     private String userId;
 
-    @NotBlank
     private String lastMessage;
 
-    private int date;
+    @NotNull
+    private DateTime date;
 
     private int count;
 }

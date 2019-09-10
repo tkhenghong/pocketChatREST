@@ -15,35 +15,32 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @Document(collection = "multimedia")
 public class Multimedia {
-
     // Image, Video, Gifs, Sticker, Recording, links
     @Id
     private String id;
 
-    @NotBlank
+    // Don't have to upload local directory to server
     private String localFullFileUrl;
 
-    @NotBlank
     private String localThumbnailUrl;
 
-    @NotBlank
+    // If Personal Conversation UserContact stranger has not set up photo yet
+//    @NotBlank
     private String remoteThumbnailUrl;
 
-    @NotBlank
+//    @NotBlank
     private String remoteFullFileUrl;
 
-    @NotBlank
+    // Will be removed soon
     private String imageDataId;
 
-    @NotBlank
+    // Will be removed soon
     private String imageFileId;
 
-    @NotBlank
+    // Can be optionally linked to a Message
     private String messageId;
-
-    @NotBlank
+    // Can be optionally linked to a UserContact
     private String userContactId;
-
-    @NotBlank
+    // Can be optionally linked to a conversationGroup
     private String conversationId;
 }

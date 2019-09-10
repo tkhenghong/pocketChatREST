@@ -1,6 +1,7 @@
 package com.pocketchat.db.models.user_contact;
 
 import lombok.*;
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,9 +25,6 @@ public class UserContact {
     private String id;
 
     @NotBlank
-    private String conversationId;
-
-    @NotBlank
     private String displayName;
 
     @NotBlank
@@ -40,11 +38,9 @@ public class UserContact {
     @NotBlank
     private String mobileNo;
 
-    @NotBlank
-    private String lastSeenDate;
+    private DateTime lastSeenDate;
 
     private boolean block;
 
-    @NotBlank
     private String multimediaId;
 }
