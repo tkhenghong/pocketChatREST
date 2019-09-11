@@ -10,6 +10,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/userContact")
@@ -56,6 +58,12 @@ public class UserContactController {
     @GetMapping("/mobileNo/{mobileNo}")
     public UserContactResponse getUserContactByMobileNo(@PathVariable String mobileNo) {
         return userContactResponseMapper(userContactService.getUserContactByMobileNo(mobileNo));
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<UserContactResponse> getUserContactsByUserId(@PathVariable String userId) {
+        List<UserContact> userContactList = userContactService.getUserContactsByUserId(userId);
+        return userContactList.stream().map(this::userContactResponseMapper).collect(Collectors.toList());
     }
 
     private UserContactResponse userContactResponseMapper(UserContact userContact) {

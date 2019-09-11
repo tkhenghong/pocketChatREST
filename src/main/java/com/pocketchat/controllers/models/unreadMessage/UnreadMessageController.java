@@ -49,7 +49,7 @@ public class UnreadMessageController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<UnreadMessageResponse> getUnreadMessagesOfAUser(String userId) {
+    public List<UnreadMessageResponse> getUnreadMessagesOfAUser(@PathVariable String userId) {
         List<UnreadMessage> unreadMessageList = unreadMessageService.getUnreadMessagesOfAUser(userId);
         return unreadMessageList.stream().map(this::unreadMessageResponseMapper).collect(Collectors.toList());
     }

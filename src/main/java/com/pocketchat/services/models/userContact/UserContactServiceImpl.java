@@ -61,6 +61,12 @@ public class UserContactServiceImpl implements UserContactService {
         return validateUserContactNotFound(userContactOptional, mobileNo);
     }
 
+    @Override
+    public List<UserContact> getUserContactsByUserId(String userId) {
+        List<UserContact> userContactList = userContactRepoService.findByUserIdsContaining(userId);
+        return userContactList;
+    }
+
     private UserContact validateUserContactNotFound(Optional<UserContact> userContactOptional, String userContactId) {
         if (!userContactOptional.isPresent()) {
             throw new UserContactNotFoundException("userContactId-" + userContactId);
