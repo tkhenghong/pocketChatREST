@@ -43,4 +43,6 @@ public class Multimedia {
     private String userContactId;
     // Can be optionally linked to a conversationGroup
     private String conversationId;
+
+    private String userId;
 }

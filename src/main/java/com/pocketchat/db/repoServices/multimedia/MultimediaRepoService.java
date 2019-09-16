@@ -35,6 +35,14 @@ public class MultimediaRepoService {
         return multimediaList;
     }
 
+    public Optional<Multimedia> findByUserId(String userId) {
+        return multimediaRepository.findByUserId(userId);
+    }
+
+    public Optional<Multimedia> findByUserContactId(String userContactId) {
+        return multimediaRepository.findByUserContactId(userContactId);
+    }
+
     public Multimedia save(Multimedia conversationGroup) {
         return multimediaRepository.save(conversationGroup);
     }

@@ -2,6 +2,7 @@ package com.pocketchat.controllers.models.message;
 
 import com.pocketchat.controllers.response.message.MessageResponse;
 import com.pocketchat.db.models.message.Message;
+import com.pocketchat.services.kafka.KafkaConsumerService;
 import com.pocketchat.services.models.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +20,19 @@ public class MessageController {
 
     private final MessageService messageService;
 
+    KafkaConsumerService kafkaConsumerService;
+
     @Autowired
-    public MessageController(MessageService messageService) {
+    public MessageController(MessageService messageService, KafkaConsumerService kafkaConsumerService) {
         this.messageService = messageService;
+        this.kafkaConsumerService = kafkaConsumerService;
     }
 
 
     @PostMapping("")
     public ResponseEntity<Object> addMessage(@Valid @RequestBody Message message) {
         Message savedMessage = messageService.addMessage(message);
+        kafkaConsumerService.consume(savedMessage);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedMessage.getId())
                 .toUri();

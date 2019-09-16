@@ -51,33 +51,34 @@ public class MultimediaServiceImpl implements MultimediaService {
         return validateMultimediaNotFound(multimediaOptional, multimediaId);
     }
 
+
+    // Simply get multimediaList using userNo
     @Override
-    public List<Multimedia> getMultimediaOfAUser(String userId) {
+    public Multimedia getMultimediaOfAUser(String userId) {
         System.out.println("MultimediaServiceImpl.java getMultimediaOfAUser()");
         System.out.println("MultimediaServiceImpl.java userId: " + userId);
-        // Validate user first
-        User user = userService.getUser(userId);
-        // Get all conversations of the user
-        List<ConversationGroup> conversationGroupList = conversationGroupService.getConversationsForUser(user.getId());
-        System.out.println("MultimediaServiceImpl.java conversationGroupList.size(): " + conversationGroupList.size());
-//        List<String> conversationGroupIds = new ArrayList<>();
-        // Map conversationGroupList to a bunch of conversation group IDs
-//        conversationGroupList.forEach(conversationGroup -> conversationGroupIds.add(conversationGroup.getId()));
-        List<String> conversationGroupIds = conversationGroupList.stream()
-                .map((ConversationGroup conversationGroup) -> conversationGroup.getId()).collect(Collectors.toList());
-        System.out.println("MultimediaServiceImpl.java conversationGroupIds.size(): " + conversationGroupIds.size());
-        // Get all multimedia from matching the list of conversationIds
-        List<Multimedia> multimediaList = multimediaRepoService.findAllByConversationId(conversationGroupIds);
-        System.out.println("MultimediaServiceImpl.java multimediaList.size(): " + multimediaList.size());
-        return multimediaList;
+        User user = userService.getUser(userId); // Validate user first
+        Optional<Multimedia> multimediaOptional = multimediaRepoService.findByUserId(user.getId());
+        return validateMultimediaNotFound(multimediaOptional, user.getId());
     }
 
     @Override
     public List<Multimedia> getMultimediaOfAConversation(String conversationGroupId) {
         ConversationGroup conversationGroup = conversationGroupService.getSingleConversation(conversationGroupId);
         List<Multimedia> multimediaList = multimediaRepoService.findAllByConversationGroupId(conversationGroup.getId());
+        if(multimediaList.isEmpty()) {
+            // To tell no multimedia is found using this conversationGroupId.
+            throw new MultimediaNotFoundException("conversationGroupId-" + conversationGroupId);
+        }
         return multimediaList;
     }
+
+    // Find a UserContact's multimedia
+    public Multimedia getMultimediaOfAUserContact(String userContactId) {
+        Optional<Multimedia> multimediaOptional = multimediaRepoService.findByUserContactId(userContactId);
+        return validateMultimediaNotFound(multimediaOptional, userContactId);
+    }
+
 
     private Multimedia validateMultimediaNotFound(Optional<Multimedia> multimediaOptional, String multimediaId) {
         if (!multimediaOptional.isPresent()) {

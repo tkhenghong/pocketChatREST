@@ -48,12 +48,17 @@ public class MultimediaController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<Multimedia> getMultimediaOfAUser(@PathVariable String userId) {
+    public Multimedia getMultimediaOfAUser(@PathVariable String userId) {
         return multimediaService.getMultimediaOfAUser(userId);
     }
 
     @GetMapping("/conversationGroup/{conversationGroupId}")
     public List<Multimedia> getMultimediaOfAConversation(@PathVariable String conversationGroupId) {
         return multimediaService.getMultimediaOfAConversation(conversationGroupId);
+    }
+
+    @GetMapping("/userContact/{userContactId}")
+    public Multimedia getMultimediaOfAUserContact(@PathVariable String userContactId) {
+        return multimediaService.getMultimediaOfAUserContact(userContactId);
     }
 }

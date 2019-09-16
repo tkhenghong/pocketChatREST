@@ -13,7 +13,9 @@ public interface MultimediaService {
 
     Multimedia getSingleMultimedia(String multimediaId);
 
-    List<Multimedia> getMultimediaOfAUser(String userId);
+    Multimedia getMultimediaOfAUser(String userId);
 
     List<Multimedia> getMultimediaOfAConversation(String conversationGroupId);
+
+    Multimedia getMultimediaOfAUserContact(String userContactId);
 }
