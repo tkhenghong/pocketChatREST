@@ -23,22 +23,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // Create a endpoint for the Websocket
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        System.out.println("WebSocketConfig.java registerStompEndpoints()");
 //        System.out.println("WebSocketConfig.java  webSocketEndPoint: " + webSocketEndPoint);
         // IMPORTANT: When frontend user connects to Websocket, they need to mention this endpoint to be correctly connected.
 //        registry.addEndpoint(webSocketEndPoint).withSockJS();
         registry.addEndpoint("/websocket-example").withSockJS();
-        System.out.println("WebSocketConfig.java Registered Websocket endpoints.");
     }
 
     // Create a topic for the Websocket
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        System.out.println("WebSocketConfig.java configureMessageBroker()");
-//        System.out.println("WebSocketConfig.java  websocketMessageBrokerTopicName: " + websocketMessageBrokerTopicName);
 //        registry.enableSimpleBroker(websocketMessageBrokerTopicName);
         registry.enableSimpleBroker("/topic");
         registry.setApplicationDestinationPrefixes("/app");
-        System.out.println("WebSocketConfig.java Registered WebSocket Message BrokerTopic Name.");
     }
 }
