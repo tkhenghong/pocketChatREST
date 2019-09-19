@@ -48,7 +48,7 @@ public class PocketchatApplicationTests {
 
 			@Override
 			public void onMessage(ConsumerRecord<Integer, String> message) {
-				logger.info("received: " + message);
+				logger.info("Hellow received: " + message);
 				latch.countDown();
 			}
 
