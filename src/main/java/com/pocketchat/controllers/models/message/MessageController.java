@@ -2,12 +2,9 @@ package com.pocketchat.controllers.models.message;
 
 import com.pocketchat.controllers.response.message.MessageResponse;
 import com.pocketchat.db.models.message.Message;
-//import com.pocketchat.services.kafka.KafkaConsumerService;
 import com.pocketchat.services.models.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -22,14 +19,6 @@ public class MessageController {
 
     private final MessageService messageService;
 
-//    KafkaConsumerService kafkaConsumerService;
-//
-//    @Autowired
-//    public MessageController(MessageService messageService, KafkaConsumerService kafkaConsumerService) {
-//        this.messageService = messageService;
-//        this.kafkaConsumerService = kafkaConsumerService;
-//    }
-
     @Autowired
     public MessageController(MessageService messageService) {
         this.messageService = messageService;
@@ -37,12 +26,8 @@ public class MessageController {
 
 
     @PostMapping("")
-    @MessageMapping("/user")
-    @SendTo("/topic/user")
     public ResponseEntity<Object> addMessage(@Valid @RequestBody Message message) {
-        System.out.println("Reach here?");
         Message savedMessage = messageService.addMessage(message);
-//        kafkaConsumerService.consume(savedMessage);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedMessage.getId())
                 .toUri();
