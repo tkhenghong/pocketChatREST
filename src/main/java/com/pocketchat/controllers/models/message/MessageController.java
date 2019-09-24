@@ -5,6 +5,8 @@ import com.pocketchat.db.models.message.Message;
 import com.pocketchat.services.models.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,6 +28,8 @@ public class MessageController {
 
 
     @PostMapping("")
+    @MessageMapping("/chat.sendMessage")
+    @SendTo("/topic/public")
     public ResponseEntity<Object> addMessage(@Valid @RequestBody Message message) {
         Message savedMessage = messageService.addMessage(message);
 
