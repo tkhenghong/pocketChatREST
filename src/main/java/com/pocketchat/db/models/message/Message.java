@@ -34,25 +34,19 @@ public class Message {
     @NotBlank
     private String senderMobileNo;
 
-    @NotBlank
     private String receiverId;
 
-    @NotBlank
     private String receiverName;
 
-    @NotBlank
     private String receiverMobileNo;
 
-    @NotBlank
     private String type;
 
-    @NotBlank
     private String status; // Sent, received, unread, read
 
     @NotBlank
     private String messageContent;
 
-    @NotBlank
     private String multimediaId;
 
     @NotNull
