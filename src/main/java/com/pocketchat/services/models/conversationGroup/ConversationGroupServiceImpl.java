@@ -36,8 +36,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             // 2. Filter to get the Personal ConversationGroup
             List<ConversationGroup> personalConversationGroupList = conversationGroupList
                     .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getType().equals("Personal")
-                            && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())
-                            && conversationGroup1.getName().equals(conversationGroup.getName())).collect(Collectors.toList());
+                            && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())).collect(Collectors.toList());
             // 3. Should found the exact group
             if (personalConversationGroupList.size() == 1) {
                 return personalConversationGroupList.iterator().next();
