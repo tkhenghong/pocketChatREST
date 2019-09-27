@@ -52,13 +52,23 @@ public class MultimediaController {
         return multimediaService.getMultimediaOfAUser(userId);
     }
 
-    @GetMapping("/conversationGroup/{conversationGroupId}")
-    public List<Multimedia> getMultimediaOfAConversation(@PathVariable String conversationGroupId) {
-        return multimediaService.getMultimediaOfAConversation(conversationGroupId);
-    }
-
     @GetMapping("/userContact/{userContactId}")
     public Multimedia getMultimediaOfAUserContact(@PathVariable String userContactId) {
         return multimediaService.getMultimediaOfAUserContact(userContactId);
+    }
+
+    @GetMapping("/conversationGroup/photo/{conversationGroupId}")
+    public Multimedia getConversationGroupPhotoMultimedia(@PathVariable String conversationGroupId) {
+        return multimediaService.getConversationGroupMultimedia(conversationGroupId);
+    }
+
+    @GetMapping("/message/{conversationGroupId}/{messageId}")
+    public Multimedia getMessageMultimedia(@PathVariable String conversationGroupId, @PathVariable String messageId) {
+        return multimediaService.getMessageMultimedia(conversationGroupId, messageId);
+    }
+
+    @GetMapping("/conversationGroup/{conversationGroupId}")
+    public List<Multimedia> getMultimediaOfAConversation(@PathVariable String conversationGroupId) {
+        return multimediaService.getMultimediaOfAConversation(conversationGroupId);
     }
 }

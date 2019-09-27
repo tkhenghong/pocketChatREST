@@ -24,7 +24,9 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
 
     @Override
     public UnreadMessage addUnreadMessage(UnreadMessage unreadMessage) {
-        return unreadMessageRepoService.save(unreadMessage);
+        // Find the unreadMessage that has the same conversationId in the DB
+        Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findByConversationGroupId(unreadMessage.getConversationId());
+        return unreadMessageOptional.orElseGet(() -> unreadMessageRepoService.save(unreadMessage));
     }
 
     @Override

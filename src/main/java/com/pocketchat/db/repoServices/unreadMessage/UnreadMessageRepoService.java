@@ -21,6 +21,10 @@ public class UnreadMessageRepoService {
         return unreadMessageRepository.findAllByUserId(userId);
     }
 
+    public Optional<UnreadMessage> findByConversationGroupId(String conversationGroupId) {
+        return unreadMessageRepository.findByConversationId(conversationGroupId);
+    }
+
     public UnreadMessage save(UnreadMessage conversationGroup) {
         return unreadMessageRepository.save(conversationGroup);
     }

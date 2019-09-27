@@ -11,4 +11,5 @@ public interface MultimediaRepository extends MongoRepository<Multimedia, String
     List<Multimedia> findAllByConversationId(String conversationId);
     Optional<Multimedia> findByUserId(String userId);
     Optional<Multimedia> findByUserContactId(String userContactId);
+    Optional<Multimedia> findByConversationIdAndMessageId(String conversationGroupId, String messageId);
 }

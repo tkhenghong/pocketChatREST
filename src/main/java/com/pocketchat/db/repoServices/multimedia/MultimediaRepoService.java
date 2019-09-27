@@ -43,6 +43,14 @@ public class MultimediaRepoService {
         return multimediaRepository.findByUserContactId(userContactId);
     }
 
+    public Optional<Multimedia> findGroupPhotoMultimedia(String conversationGroupId) {
+        return multimediaRepository.findByConversationIdAndMessageId(conversationGroupId, null);
+    }
+
+    public Optional<Multimedia> findMessageMultimedia(String conversationGroupId, String messageId) {
+        return multimediaRepository.findByConversationIdAndMessageId(conversationGroupId, messageId);
+    }
+
     public Multimedia save(Multimedia conversationGroup) {
         return multimediaRepository.save(conversationGroup);
     }
