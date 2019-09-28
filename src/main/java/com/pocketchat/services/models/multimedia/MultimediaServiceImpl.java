@@ -34,20 +34,13 @@ public class MultimediaServiceImpl implements MultimediaService {
 
         Optional<Multimedia> multimediaOptional = Optional.empty();
 
-        // If this message is a User Multimedia
-        if (!StringUtils.isEmpty(multimedia.getUserId())) {
+        if (isUserMultimedia(multimedia)) {
             multimediaOptional = multimediaRepoService.findByUserId(multimedia.getUserId());
-        }
-        // If this message is a UserContact Multimedia
-        else if (!StringUtils.isEmpty(multimedia.getUserContactId())) {
+        } else if (isUserContactMultimedia(multimedia)) {
             multimediaOptional = multimediaRepoService.findByUserContactId(multimedia.getUserContactId());
-        }
-        // If this message is a Group Photo Multimedia
-        else if (!StringUtils.isEmpty(multimedia.getConversationId()) && StringUtils.isEmpty(multimedia.getMessageId())) {
+        } else if (isGroupPhotoMultimedia(multimedia)) {
             multimediaOptional = multimediaRepoService.findGroupPhotoMultimedia(multimedia.getConversationId());
-        }
-        // If this message is a Message Multimedia (both must not be empty)
-        else if (!StringUtils.isEmpty(multimedia.getConversationId()) && !StringUtils.isEmpty(multimedia.getMessageId())) {
+        } else if (isMessageMultimedia(multimedia)) {
             multimediaOptional = multimediaRepoService.findMessageMultimedia(multimedia.getConversationId(), multimedia.getMessageId());
         }
 
@@ -110,6 +103,22 @@ public class MultimediaServiceImpl implements MultimediaService {
             throw new MultimediaNotFoundException("conversationGroupId-" + conversationGroupId);
         }
         return multimediaList;
+    }
+
+    boolean isUserMultimedia(Multimedia multimedia) {
+        return !StringUtils.isEmpty(multimedia.getUserId());
+    }
+
+    boolean isUserContactMultimedia(Multimedia multimedia) {
+        return !StringUtils.isEmptyOrWhitespace(multimedia.getUserContactId());
+    }
+
+    boolean isGroupPhotoMultimedia(Multimedia multimedia) {
+        return !StringUtils.isEmptyOrWhitespace(multimedia.getConversationId()) && StringUtils.isEmptyOrWhitespace(multimedia.getMessageId());
+    }
+
+    boolean isMessageMultimedia(Multimedia multimedia) {
+        return !StringUtils.isEmptyOrWhitespace(multimedia.getConversationId()) && !StringUtils.isEmptyOrWhitespace(multimedia.getMessageId());
     }
 
     private Multimedia validateMultimediaNotFound(Optional<Multimedia> multimediaOptional, String multimediaId) {
