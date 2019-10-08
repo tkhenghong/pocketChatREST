@@ -55,9 +55,9 @@ public class ConversationGroupController {
         return conversationGroupResponseMapper(conversationGroupService.getSingleConversation(conversationGroupId));
     }
 
-    @GetMapping("/user/{userId}")
-    public List<ConversationGroupResponse> getConversationsForUser(@PathVariable String userId) {
-        List<ConversationGroup> conversationGroupList = conversationGroupService.getConversationsForUser(userId);
+    @GetMapping("/user/mobileNo/{mobileNo}")
+    public List<ConversationGroupResponse> getConversationsForUserByMobileNo(@PathVariable String mobileNo) {
+        List<ConversationGroup> conversationGroupList = conversationGroupService.getConversationsForUserByMobileNo(mobileNo);
         return conversationGroupList.stream().map(this::conversationGroupResponseMapper).collect(Collectors.toList());
     }
 

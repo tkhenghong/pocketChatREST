@@ -32,7 +32,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     public ConversationGroup addConversation(ConversationGroup conversationGroup) {
         if (conversationGroup.getType().equals("Personal")) {
             // 1. Find a list of conversationGroup that has same memberIds
-            List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findByMemberIdsContaining(conversationGroup.getMemberIds());
+            List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(conversationGroup.getMemberIds());
             // 2. Filter to get the Personal ConversationGroup
             List<ConversationGroup> personalConversationGroupList = conversationGroupList
                     .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getType().equals("Personal")
@@ -70,16 +70,17 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     }
 
     @Override
-    public List<ConversationGroup> getConversationsForUser(String userId) {
-        System.out.println("ConversationGroupServiceImpl.java getConversationsForUser()");
+    public List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo) {
+        System.out.println("ConversationGroupServiceImpl.java getConversationsForUserByMobileNo()");
+        System.out.println("ConversationGroupServiceImpl.java mobileNo:" + mobileNo);
         // Retreive conversations for the user
-        List<UserContact> userContactList = userContactRepoService.findByUserIdsContaining(userId);
-        if (userContactList.isEmpty()) {
-            throw new UserContactNotFoundException("UserContact not found: " + userId);
+        Optional<UserContact> userContactOptional = userContactRepoService.findByMobileNo(mobileNo);
+        if (!userContactOptional.isPresent()) {
+            throw new UserContactNotFoundException("UserContact not found: " + mobileNo);
         }
-        System.out.println("userContactList.size(): " + userContactList.size());
-        List<ConversationGroup> conversationGroupList = new ArrayList<>();
-        userContactList.forEach((UserContact userContact) -> conversationGroupList.addAll(findByMemberIdsContaining(userContact.getId())));
+        System.out.println("ConversationGroupServiceImpl.java Checkpoint 1.");
+        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContactOptional.get().getId());
+        System.out.println("ConversationGroupServiceImpl.java Checkpoint 2.");
         System.out.println("conversationGroupList.size(): " + conversationGroupList.size());
         conversationGroupList.forEach(this::printConversationGroupDetails);
         return conversationGroupList;
@@ -96,15 +97,13 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     }
 
     @Override
-    public List<ConversationGroup> findByMemberIdsContaining(String userContactId) {
-        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findByMemberIdsContaining(userContactId);
+    public List<ConversationGroup> findAllByMemberIds(String userContactId) {
+        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContactId);
         if (conversationGroupList.isEmpty()) {
             throw new UserContactNotFoundException("UserContactId not found: " + userContactId);
         }
         return conversationGroupList;
     }
-
-    // findByMemberIdsContaining(userContact.id)
 
     private ConversationGroup validateConversationGroupNotFound(Optional<ConversationGroup> conversationGroupOptional, String conversationGroupId) {
         if (!conversationGroupOptional.isPresent()) {

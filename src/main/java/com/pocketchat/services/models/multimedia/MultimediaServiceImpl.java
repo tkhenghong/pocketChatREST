@@ -9,7 +9,6 @@ import com.pocketchat.services.models.conversationGroup.ConversationGroupService
 import com.pocketchat.services.models.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.List;

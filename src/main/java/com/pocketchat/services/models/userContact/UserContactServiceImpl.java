@@ -63,7 +63,7 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     public List<UserContact> getUserContactsByUserId(String userId) {
-        List<UserContact> userContactList = userContactRepoService.findByUserIdsContaining(userId);
+        List<UserContact> userContactList = userContactRepoService.findByUserIds(userId);
         return userContactList;
     }
 

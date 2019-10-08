@@ -13,7 +13,7 @@ public interface ConversationGroupService {
 
     ConversationGroup getSingleConversation(String conversationId);
 
-    List<ConversationGroup> getConversationsForUser(String userId);
+    List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo);
 
-    List<ConversationGroup> findByMemberIdsContaining(String userContactId);
+    List<ConversationGroup> findAllByMemberIds(String userContactId);
 }

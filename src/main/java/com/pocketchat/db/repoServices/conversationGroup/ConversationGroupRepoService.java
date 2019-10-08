@@ -32,14 +32,15 @@ public class ConversationGroupRepoService {
     }
 
     // Find all conversationGroup objects by their memberIds array has the mentioned userContactId or not
-    // 1 User has 1 UserContact
-    public List<ConversationGroup> findByMemberIdsContaining(String userContactId) {
-        return conversationGroupRepository.findByMemberIdsContaining(userContactId);
+    // Because 1 User has 1 UserContact, and the memberIds/adminIds of the ConversationGroup are userContactId
+    public List<ConversationGroup> findAllByMemberIds(String userContactId) {
+        return conversationGroupRepository.findAllByMemberIds(userContactId);
     }
 
     // Used for finding conversationGroup that has exact same member
-    public List<ConversationGroup> findByMemberIdsContaining(List<String> memberIds) {
-        return conversationGroupRepository.findByMemberIdsContaining(memberIds);
+    // For conversationGroup creation
+    public List<ConversationGroup> findAllByMemberIds(List<String> memberIds) {
+        return conversationGroupRepository.findAllByMemberIds(memberIds);
     }
 
     public ConversationGroup save(ConversationGroup conversationGroup) {

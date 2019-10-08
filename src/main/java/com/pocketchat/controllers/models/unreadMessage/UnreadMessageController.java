@@ -1,7 +1,6 @@
 package com.pocketchat.controllers.models.unreadMessage;
 
 import com.pocketchat.controllers.response.unreadMessage.UnreadMessageResponse;
-import com.pocketchat.controllers.response.userContact.UserContactResponse;
 import com.pocketchat.db.models.unread_message.UnreadMessage;
 import com.pocketchat.services.models.unreadMessage.UnreadMessageService;
 import org.springframework.http.ResponseEntity;

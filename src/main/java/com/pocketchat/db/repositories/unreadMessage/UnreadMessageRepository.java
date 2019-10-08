@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface UnreadMessageRepository extends MongoRepository<UnreadMessage, String> {
     List<UnreadMessage> findAllByUserId(String userId);
+
     Optional<UnreadMessage> findByConversationId(String conversationGroupId);
 }

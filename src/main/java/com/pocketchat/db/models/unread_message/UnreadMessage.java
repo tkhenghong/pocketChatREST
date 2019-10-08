@@ -25,6 +25,7 @@ public class UnreadMessage {
     @NotBlank
     private String conversationId;
 
+    // TODO: Shouldn't be here and it belongs to everyone
     @NotBlank
     private String userId;
 
