@@ -52,21 +52,25 @@ public class MultimediaController {
         return multimediaService.getMultimediaOfAUser(userId);
     }
 
+    // Get multimedia of the UserContact (One at the time)
     @GetMapping("/userContact/{userContactId}")
     public Multimedia getMultimediaOfAUserContact(@PathVariable String userContactId) {
         return multimediaService.getMultimediaOfAUserContact(userContactId);
     }
 
+    // Get multimedia of the Group Photo (One at the time)
     @GetMapping("/conversationGroup/photo/{conversationGroupId}")
     public Multimedia getConversationGroupPhotoMultimedia(@PathVariable String conversationGroupId) {
         return multimediaService.getConversationGroupMultimedia(conversationGroupId);
     }
 
+    // Retrieve the multimedia of the message if frontend user doesn't have it
     @GetMapping("/message/{conversationGroupId}/{messageId}")
     public Multimedia getMessageMultimedia(@PathVariable String conversationGroupId, @PathVariable String messageId) {
         return multimediaService.getMessageMultimedia(conversationGroupId, messageId);
     }
 
+    // Retrieve multiple Multimedia object of a conversationGroup (Not including the group profile photo)
     @GetMapping("/conversationGroup/{conversationGroupId}")
     public List<Multimedia> getMultimediaOfAConversation(@PathVariable String conversationGroupId) {
         return multimediaService.getMultimediaOfAConversation(conversationGroupId);
