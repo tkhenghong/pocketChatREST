@@ -99,7 +99,7 @@ public class MultimediaServiceImpl implements MultimediaService {
         List<Multimedia> multimediaList = multimediaRepoService.findAllByConversationGroupId(conversationGroup.getId());
         if (multimediaList.isEmpty()) {
             // To tell no multimedia is found using this conversationGroupId.
-            throw new MultimediaNotFoundException("conversationGroupId-" + conversationGroupId);
+            throw new MultimediaNotFoundException("Unable to find multimedia of this conversationGroupId: " + conversationGroupId);
         }
         return multimediaList;
     }
