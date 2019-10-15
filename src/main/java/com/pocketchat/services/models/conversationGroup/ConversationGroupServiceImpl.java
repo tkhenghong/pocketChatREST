@@ -45,7 +45,6 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 return null;
             }
         } else {
-            System.out.println("ConversationGroupServiceImpl.java if (conversationGroup.getType().equals(\"Group/Broadcast\"))");
             // Group/Broadcast
             return conversationGroupRepoService.save(conversationGroup);
         }
@@ -70,18 +69,16 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     @Override
     public List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo) {
-        System.out.println("ConversationGroupServiceImpl.java getConversationsForUserByMobileNo()");
-        System.out.println("ConversationGroupServiceImpl.java mobileNo:" + mobileNo);
-        // Retreive conversations for the user
+        // Retrieve conversations for the user
         Optional<UserContact> userContactOptional = userContactRepoService.findByMobileNo(mobileNo);
+
         if (!userContactOptional.isPresent()) {
             throw new UserContactNotFoundException("UserContact not found: " + mobileNo);
         }
-        System.out.println("ConversationGroupServiceImpl.java Checkpoint 1.");
+
         List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContactOptional.get().getId());
-        System.out.println("ConversationGroupServiceImpl.java Checkpoint 2.");
-        System.out.println("conversationGroupList.size(): " + conversationGroupList.size());
         conversationGroupList.forEach(this::printConversationGroupDetails);
+
         return conversationGroupList;
     }
 

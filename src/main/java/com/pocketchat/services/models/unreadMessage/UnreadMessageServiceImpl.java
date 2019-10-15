@@ -64,14 +64,13 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
     // TODO: Validate how fast this process is
     @Override
     public List<UnreadMessage> getUnreadMessagesOfAUser(String userId) {
-        System.out.println("UnreadMessageServiceImpl.java getUnreadMessagesOfAUser()");
-        System.out.println("UnreadMessageServiceImpl.java userId: " + userId);
         // Identify user in DB
         User user = userService.getUser(userId);
 
         // Get UserContact of the User, validate it exists or not
         Optional<UserContact> userContactOptional = userContactRepoService.findByMobileNo(user.getMobileNo());
-        if(!userContactOptional.isPresent()) {
+
+        if (!userContactOptional.isPresent()) {
             throw new UserContactNotFoundException("Unread Message not found. userId:-" + userId);
         }
 
@@ -81,9 +80,10 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
         // Get ConversationGroups' id, get UnreadMessage using ConversationGroup id, and retrieve those objects.
         List<UnreadMessage> unreadMessageList =
                 conversationGroupList.stream()
-                .map(ConversationGroup::getId).collect(Collectors.toList())
-                .stream().map((String conversationGroupId) -> unreadMessageRepoService.findByConversationGroupId(conversationGroupId)).collect(Collectors.toList())
-                .stream().map(Optional::get).collect(Collectors.toList());
+                        .map(ConversationGroup::getId).collect(Collectors.toList())
+                        .stream().map(unreadMessageRepoService::findByConversationGroupId).collect(Collectors.toList())
+                        .stream().map(Optional::get).collect(Collectors.toList());
+
         return unreadMessageList;
     }
 
