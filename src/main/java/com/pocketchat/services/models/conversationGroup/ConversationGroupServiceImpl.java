@@ -53,7 +53,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     @Override
     public void editConversation(ConversationGroup conversationGroup) {
         getSingleConversation(conversationGroup.getId());
-        addConversation(conversationGroup);
+        conversationGroupRepoService.save(conversationGroup);
     }
 
     @Override

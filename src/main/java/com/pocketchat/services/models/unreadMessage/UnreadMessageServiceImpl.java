@@ -45,7 +45,7 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
     @Override
     public void editUnreadMessage(UnreadMessage unreadMessage) {
         getSingleMultimedia(unreadMessage.getId());
-        addUnreadMessage(unreadMessage);
+        unreadMessageRepoService.save(unreadMessage);
     }
 
     @Override

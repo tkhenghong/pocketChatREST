@@ -50,7 +50,6 @@ public class MultimediaServiceImpl implements MultimediaService {
     public void editMultimedia(Multimedia multimedia) {
         getSingleMultimedia(multimedia.getId());
         multimediaRepoService.save(multimedia); // Straight save
-        addMultimedia(multimedia);
     }
 
     @Override

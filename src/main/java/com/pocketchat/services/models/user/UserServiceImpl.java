@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void editUser(User user) {
         getUser(user.getId());
-        addUser(user);
+        userRepoService.save(user);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void editMessage(Message message) {
         getSingleMessage(message.getId());
-        addMessage(message);
+        messageRepoService.save(message);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public void editSettings(Settings settings) {
         getSingleSettings(settings.getId());
-        addSettings(settings);
+        settingsRepoService.save(settings);
     }
 
     @Override
