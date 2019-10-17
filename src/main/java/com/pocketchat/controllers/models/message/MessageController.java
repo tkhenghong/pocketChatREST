@@ -28,8 +28,6 @@ public class MessageController {
 
 
     @PostMapping("")
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
     public ResponseEntity<Object> addMessage(@Valid @RequestBody Message message) {
         Message savedMessage = messageService.addMessage(message);
 
