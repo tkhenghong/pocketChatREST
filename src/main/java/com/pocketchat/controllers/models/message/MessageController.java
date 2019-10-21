@@ -15,6 +15,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// TODO: Message Controller may get removed because of Websocket
 @RestController
 @RequestMapping("/message")
 public class MessageController {
