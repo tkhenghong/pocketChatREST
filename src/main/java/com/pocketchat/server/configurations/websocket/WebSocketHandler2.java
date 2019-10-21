@@ -5,7 +5,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-
+// Working
 public class WebSocketHandler2 extends TextWebSocketHandler {
 
     @Override
