@@ -34,6 +34,10 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
             System.out.println("message2: " + message2);
         });
 
+        // TODO: Send message to user based on conversation
+        // TODO: Check user is online or not to decide send device notification or message
+        // TODO: Research on Kafka to create a message system to ensure message is backed up in Kafka
+
         WebSocketMessage webSocketMessage = convertToWebSocketMessage(message.getPayload());
         // TODO: Make sure frontend and backend object are same, so it can be converted properly.
         if (webSocketMessage != null) {
