@@ -1,6 +1,12 @@
 package com.pocketchat.server.configurations.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pocketchat.db.models.conversation_group.ConversationGroup;
+import com.pocketchat.db.models.user.User;
+import com.pocketchat.db.models.user_contact.UserContact;
+import com.pocketchat.db.repoServices.conversationGroup.ConversationGroupRepoService;
+import com.pocketchat.db.repoServices.userContact.UserContactRepoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -9,6 +15,8 @@ import org.thymeleaf.util.ObjectUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 // Working
 public class WebSocketHandler2 extends TextWebSocketHandler {
@@ -16,6 +24,18 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
     static List<WebSocketUser> webSocketUserList = new ArrayList<>();
     static List<String> messageList = new ArrayList<>();
     ObjectMapper objectMapper = new ObjectMapper();
+
+    private ConversationGroupRepoService conversationGroupRepoService;
+
+    private UserContactRepoService userContactRepoService;
+
+
+    @Autowired
+    WebSocketHandler2(ConversationGroupRepoService conversationGroupRepoService, UserContactRepoService userContactRepoService) {
+        this.conversationGroupRepoService = conversationGroupRepoService;
+        this.userContactRepoService = userContactRepoService;
+    }
+
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException, InterruptedException {
@@ -42,6 +62,40 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
         // TODO: Make sure frontend and backend object are same, so it can be converted properly.
         if (webSocketMessage != null) {
             session.sendMessage(message); // Send message back to frontend
+
+            if(webSocketMessage.conversationGroup != null) {
+
+            }
+            if(webSocketMessage.message != null) {
+                Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(webSocketMessage.message.getConversationId());
+                if(conversationGroupOptional.isPresent()) {
+                    List<UserContact> userContactList = conversationGroupOptional.get().getMemberIds().stream().map((String memberId) -> {
+                        Optional<UserContact> userContactOptional = userContactRepoService.findById(memberId);
+                        if(userContactOptional.isPresent()) {
+                            userContactOptional.get().getUserIds();
+
+                            Optional<User> userOptional;
+
+                        }
+
+                        return userContactOptional.isPresent() ? userContactOptional.get() : null;
+                    }).collect(Collectors.toList());
+
+
+                }
+            }
+            if(webSocketMessage.multimedia != null) {
+
+            }
+            if(webSocketMessage.unreadMessage != null) {
+
+            }
+            if(webSocketMessage.user != null) {
+
+            }
+            if(webSocketMessage.userContact != null) {
+
+            }
 //            session.sendMessage(new TextMessage("Very good."));
         }
         session.sendMessage(message);
