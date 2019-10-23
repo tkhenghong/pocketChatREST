@@ -31,12 +31,6 @@ public class Multimedia {
 //    @NotBlank
     private String remoteFullFileUrl;
 
-    // Will be removed soon
-    private String imageDataId;
-
-    // Will be removed soon
-    private String imageFileId;
-
     // Can be optionally linked to a Message
     private String messageId;
     // Can be optionally linked to a UserContact

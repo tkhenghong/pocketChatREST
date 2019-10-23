@@ -25,17 +25,11 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
     static List<String> messageList = new ArrayList<>();
     ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
     private ConversationGroupRepoService conversationGroupRepoService;
 
-    private UserContactRepoService userContactRepoService;
-
-
     @Autowired
-    WebSocketHandler2(ConversationGroupRepoService conversationGroupRepoService, UserContactRepoService userContactRepoService) {
-        this.conversationGroupRepoService = conversationGroupRepoService;
-        this.userContactRepoService = userContactRepoService;
-    }
-
+    private UserContactRepoService userContactRepoService;
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException, InterruptedException {

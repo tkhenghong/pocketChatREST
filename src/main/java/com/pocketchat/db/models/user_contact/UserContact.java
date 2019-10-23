@@ -36,6 +36,9 @@ public class UserContact {
     private List<String> userIds;
 
     @NotBlank
+    private String userId;
+
+    @NotBlank
     private String mobileNo;
 
     private DateTime lastSeenDate;
