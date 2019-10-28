@@ -5,6 +5,7 @@ import com.pocketchat.db.models.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,6 +15,10 @@ public class UserRepoService {
 
     public Optional<User> findById(String userId) {
         return userRepository.findById(userId);
+    }
+
+    public List<User> findByIdsIn(List<String> userIds) {
+        return userRepository.findByIdIn(userIds);
     }
 
     public User save(User conversationGroup) {

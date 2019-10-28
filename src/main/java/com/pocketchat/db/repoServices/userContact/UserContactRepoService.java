@@ -21,6 +21,10 @@ public class UserContactRepoService {
         return userContactRepository.findById(userContactId);
     }
 
+    public List<UserContact> findByUserIdIn(List<String> userIds) {
+        return userContactRepository.findByUserIdIn(userIds);
+    }
+
     public Optional<UserContact> findByMobileNo(String mobileNo) {
         return userContactRepository.findByMobileNo(mobileNo);
     }
