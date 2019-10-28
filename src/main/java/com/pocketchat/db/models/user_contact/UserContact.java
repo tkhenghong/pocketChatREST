@@ -35,7 +35,6 @@ public class UserContact {
     @Size(min = 1)
     private List<String> userIds;
 
-    @NotBlank
     private String userId;
 
     @NotBlank
