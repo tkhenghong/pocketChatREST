@@ -55,24 +55,24 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
             // Send message back to frontend
             sendWebSocketMessage(webSocketSession, textMessage);
 
-            if (webSocketMessage.conversationGroup != null) {
+            if (webSocketMessage.getConversationGroup() != null) {
 
             }
-            if (webSocketMessage.message != null) {
+            if (webSocketMessage.getMessage() != null) {
                 // 1. Find WebSocketSession is in webSocketUserList or not. If don't have add create a new WebSocketUser and add it in.
                 addWebSocketUser(webSocketSession, webSocketMessage);
                 handleWebSocketMessageMessage(webSocketSession, textMessage, webSocketMessage);
             }
-            if (webSocketMessage.multimedia != null) {
+            if (webSocketMessage.getMultimedia() != null) {
 
             }
-            if (webSocketMessage.unreadMessage != null) {
+            if (webSocketMessage.getUnreadMessage() != null) {
 
             }
-            if (webSocketMessage.user != null) {
+            if (webSocketMessage.getUser() != null) {
 
             }
-            if (webSocketMessage.userContact != null) {
+            if (webSocketMessage.getUserContact() != null) {
 
             }
         }
@@ -83,9 +83,9 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
         if (!webSocketUserExist) {
             WebSocketUser newWebSocketUser = new WebSocketUser();
             newWebSocketUser.setWebSocketSession(webSocketSession);
-            User user = getUserFromUserId(webSocketMessage.message.getSenderId());
+            User user = getUserFromUserId(webSocketMessage.getMessage().getSenderId());
             if (ObjectUtils.isEmpty(user)) {
-                throw new UserNotFoundException("User Not found in WebSocket: id: " + webSocketMessage.message.getSenderId());
+                throw new UserNotFoundException("User Not found in WebSocket: id: " + webSocketMessage.getMessage().getSenderId());
             }
             newWebSocketUser.setUser(user);
             webSocketUserList.add(newWebSocketUser);
@@ -113,7 +113,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
     // TODO: Store unactive Users to Kafka
     private void handleWebSocketMessageMessage(WebSocketSession webSocketSession, TextMessage textMessage, WebSocketMessage webSocketMessage) {
         // Get conversationGroup members' ID -> Get userContacts' userID -> Get Users' object
-        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(webSocketMessage.message.getConversationId());
+        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(webSocketMessage.getMessage().getConversationId());
         List<User> userList;
         if (conversationGroupOptional.isPresent()) {
             userList = getAllUsersFromUserContactIds(conversationGroupOptional.get());
@@ -157,10 +157,10 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
         return webSocketUserResultList;
     }
 
-    WebSocketMessage convertToWebSocketMessage(String websockeMessageString) {
+    WebSocketMessage convertToWebSocketMessage(String websocketMessageString) {
         WebSocketMessage webSocketMessage;
         try {
-            webSocketMessage = objectMapper.readValue(websockeMessageString, WebSocketMessage.class);
+            webSocketMessage = objectMapper.readValue(websocketMessageString, WebSocketMessage.class);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
