@@ -10,7 +10,8 @@ import com.pocketchat.db.models.user_contact.UserContact;
 
 public class WebSocketMessage {
     private ConversationGroup conversationGroup;
-    private Message message;
+//    private Message message;
+    private CustomizedMessage message;
     private Multimedia multimedia;
     private Settings settings;
     private UnreadMessage unreadMessage;
@@ -25,11 +26,11 @@ public class WebSocketMessage {
         this.conversationGroup = conversationGroup;
     }
 
-    public Message getMessage() {
+    public CustomizedMessage getMessage() {
         return message;
     }
 
-    public void setMessage(Message message) {
+    public void setMessage(CustomizedMessage message) {
         this.message = message;
     }
 
