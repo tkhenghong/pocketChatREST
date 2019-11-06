@@ -39,12 +39,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession webSocketSession, TextMessage textMessage) {
         System.out.println("Text Message received: " + textMessage.getPayload());
-        System.out.println("textMessage.getPayloadLength(): " + textMessage.getPayloadLength());
-        System.out.println("webSocketSession.getId(): " + webSocketSession.getId());
-        System.out.println("webSocketSession.getAcceptedProtocol(): " + webSocketSession.getAcceptedProtocol());
-        System.out.println("webSocketSession.getBinaryMessageSizeLimit(): " + webSocketSession.getBinaryMessageSizeLimit());
         System.out.println("webSocketSession.getLocalAddress().getHostName(): " + webSocketSession.getLocalAddress().getHostName());
-        System.out.println("webSocketSession.getLocalAddress().getHostString(): " + webSocketSession.getLocalAddress().getHostString());
         System.out.println("webSocketSession.getLocalAddress().getPort(): " + webSocketSession.getLocalAddress().getPort());
 
         // TODO: Research on Kafka to create a message system to ensure message is backed up in Kafka
