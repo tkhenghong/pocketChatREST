@@ -9,13 +9,14 @@ import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_contact.UserContact;
 
 public class WebSocketMessage {
-    ConversationGroup conversationGroup;
-    Message message;
-    Multimedia multimedia;
-    Settings settings;
-    UnreadMessage unreadMessage;
-    User user;
-    UserContact userContact;
+    private ConversationGroup conversationGroup;
+//    private Message message;
+    private CustomizedMessage message;
+    private Multimedia multimedia;
+    private Settings settings;
+    private UnreadMessage unreadMessage;
+    private User user;
+    private UserContact userContact;
 
     public ConversationGroup getConversationGroup() {
         return conversationGroup;
@@ -25,11 +26,11 @@ public class WebSocketMessage {
         this.conversationGroup = conversationGroup;
     }
 
-    public Message getMessage() {
+    public CustomizedMessage getMessage() {
         return message;
     }
 
-    public void setMessage(Message message) {
+    public void setMessage(CustomizedMessage message) {
         this.message = message;
     }
 
