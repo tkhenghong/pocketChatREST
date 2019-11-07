@@ -169,8 +169,10 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
     }
 
     CustomizedWebSocketMessage convertToCustomizedWebSocketMessage(String websocketMessageString) {
+        System.out.println("convertToCustomizedWebSocketMessage()");
         CustomizedWebSocketMessage customizedWebSocketMessage;
         try {
+            objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
             customizedWebSocketMessage = objectMapper.readValue(websocketMessageString, CustomizedWebSocketMessage.class);
             System.out.println("customizedWebSocketMessage: " + customizedWebSocketMessage.toString());
         } catch (IOException e) {
@@ -182,6 +184,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
     }
 
     private Message convertToMessage(String messageString) {
+        System.out.println("convertToMessage()");
         Message message;
         try {
             objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
