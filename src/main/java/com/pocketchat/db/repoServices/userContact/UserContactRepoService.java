@@ -30,13 +30,16 @@ public class UserContactRepoService {
     public List<UserContact> findByUserIdIn(List<String> userIds) {
         System.out.println("UserContactRepoService.java findByUserIdIn()");
         System.out.println("UserContactRepoService.java userIds.size(): " + userIds.size());
-        Query query = new Query();
-        query.addCriteria(Criteria.where("userId").in(userIds));
 
+        Criteria criteria = new Criteria();
+        criteria = criteria.andOperator(
+                Criteria.where("id").in(userIds)
+        );
+        Query query = Query.query(criteria);
         List<UserContact> userContactList = mongoTemplate.find(query, UserContact.class);
         System.out.println("userContactList.size(): " + userContactList.size());
 
-        return userContactRepository.findByUserIdIn(userIds);
+        return userContactList;
     }
 
     public Optional<UserContact> findByMobileNo(String mobileNo) {

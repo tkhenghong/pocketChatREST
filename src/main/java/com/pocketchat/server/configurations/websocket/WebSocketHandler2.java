@@ -130,9 +130,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
                 System.out.println("webSocketUserResultList.size(): " + webSocketUserResultList.size());
                 if (!webSocketUserResultList.isEmpty()) {
                     System.out.println("if (!webSocketUserResultList.isEmpty())");
-                    webSocketUserResultList.forEach((WebSocketUser webSocketUser) -> {
-                        sendWebSocketMessage(webSocketSession, textMessage);
-                    });
+                    webSocketUserResultList.forEach((WebSocketUser webSocketUser) -> sendWebSocketMessage(webSocketSession, textMessage));
                 }
             });
         }
@@ -147,6 +145,10 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
     private List<User> getAllUsersFromUserContactIds(ConversationGroup conversationGroup) {
         System.out.println("getAllUsersFromUserContactIds()");
         List<UserContact> userContactList = userContactRepoService.findByUserIdIn(conversationGroup.getMemberIds());
+        userContactList.stream().forEach((UserContact userContact) -> {
+            System.out.println("userContact.getId(): " + userContact.getId());
+            System.out.println("userContact.getDisplayName(): " + userContact.getDisplayName());
+        });
         List<String> userIds = userContactList.stream().map(UserContact::getUserId).collect(Collectors.toList());
         List<User> userList1 = userRepoService.findByIdsIn(userIds);
 
