@@ -20,16 +20,20 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     public UserContact addUserContact(UserContact userContact) {
+        System.out.println("UserContactServiceImpl.java addUserContact()");
+        System.out.println("UserContactServiceImpl.java userContact.getMobileNo(): " + userContact.getMobileNo());
         // Check existing UserContact before add new unique UserContact
         Optional<UserContact> existingUserContact = userContactRepoService.findByMobileNo(userContact.getMobileNo());
-        if(!existingUserContact.isPresent()) {
+        if (!existingUserContact.isPresent()) {
+            System.out.println("UserContactServiceImpl.java if(!existingUserContact.isPresent())");
             return userContactRepoService.save(userContact);
         } else {
+            System.out.println("UserContactServiceImpl.java if(existingUserContact.isPresent())");
             // Merge UserContact by putting that user ID into the existing UserContact
             UserContact userContact1 = existingUserContact.get();
             List<String> currentUserIds = userContact1.getUserIds();
             boolean userContactHasSameUserId = currentUserIds.contains(userContact.getUserIds().get(0));
-            if(!userContactHasSameUserId) {
+            if (!userContactHasSameUserId) {
                 currentUserIds.add(userContact.getUserIds().get(0));
                 userContact1.setUserIds(currentUserIds);
             }
