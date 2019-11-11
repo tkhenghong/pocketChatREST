@@ -2,6 +2,7 @@ package com.pocketchat.services.models.user;
 
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.repoServices.user.UserRepoService;
+import com.pocketchat.server.exceptions.user.UserGoogleAccountIsAlreadyRegisteredException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUser(User user) {
+        System.out.println("UserServiceImpl.java addUser()");
+        System.out.println("UserServiceImpl.java user.getGoogleAccountId(): " + user.getGoogleAccountId());
+
         Optional<User> userOptional = userRepoService.findByGoogleAccountId(user.getGoogleAccountId());
-        return userOptional.orElseGet(() -> userRepoService.save(user)); // userOptional.isPresent() ? userOptional.get() : userRepoService.save(user)
+        if(userOptional.isPresent()) {
+            System.out.println("UserServiceImpl.java if(userOptional.isPresent())");
+            throw new UserGoogleAccountIsAlreadyRegisteredException("Google Account has already registered. Google Account ID: " + user.getGoogleAccountId());
+        }
+        return userRepoService.save(user); // userOptional.isPresent() ? userOptional.get() : userRepoService.save(user)
     }
 
     @Override

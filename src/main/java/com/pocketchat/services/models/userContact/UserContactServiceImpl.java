@@ -23,9 +23,9 @@ public class UserContactServiceImpl implements UserContactService {
         this.userRepoService = userRepoService;
     }
 
-    // TODO: Fix this as normal sign up got problem
     @Override
     public UserContact addUserContact(UserContact userContact) {
+        System.out.println("UserContactServiceImpl.java addUserContact()");
         // Check existing UserContact before add new unique UserContact
         UserContact existingUserContact = userContactRepoService.findByMobileNo(userContact.getMobileNo());
         if (ObjectUtils.isEmpty(existingUserContact)) {
@@ -36,16 +36,7 @@ public class UserContactServiceImpl implements UserContactService {
             // Merge UserContact by putting that user ID into the existing UserContact
             List<String> currentUserIds = existingUserContact.getUserIds();
 
-            // This indicates that this user doesn't belonged to any user yet, and frontend has created a new user
-            if (StringUtils.isEmpty(existingUserContact.getUserId()) && !StringUtils.isEmpty(userContact.getUserId())) {
-                boolean userExist = userRepoService.existById(userContact.getUserId());
-                if (userExist) {
-                    existingUserContact.setUserId(userContact.getUserId());
-                    if (!StringUtils.isEmpty(userContact.getMobileNo())) {
-                        existingUserContact.setMobileNo(userContact.getMobileNo());
-                    }
-                }
-            }
+            existingUserContact = checkUserContactMobileNumber(existingUserContact, userContact);
 
             // This is for situation when another user added this mobile No during conversation creation
             // When that unknown number (for that user) is created and sent to here. There's only 1 User ID in userIds
@@ -57,6 +48,29 @@ public class UserContactServiceImpl implements UserContactService {
 
             return userContactRepoService.save(existingUserContact);
         }
+    }
+
+    private UserContact checkUserContactMobileNumber(UserContact existingUserContact, UserContact userContact) {
+        boolean userContactUserIdIsEmpty = StringUtils.isEmpty(existingUserContact.getUserId());
+        boolean existingUserContactUserIdIsEmpty = StringUtils.isEmpty(userContact.getUserId());
+        boolean userContactMobileNoIsEmpty = StringUtils.isEmpty(userContact.getMobileNo());
+
+        // This indicates that this user doesn't belonged to any user yet, and frontend has created a new user
+        if (userContactUserIdIsEmpty && !existingUserContactUserIdIsEmpty) {
+            boolean userExist = userRepoService.existById(userContact.getUserId());
+            if (userExist) {
+                existingUserContact.setUserId(userContact.getUserId());
+                if (!userContactMobileNoIsEmpty) {
+                    existingUserContact.setMobileNo(userContact.getMobileNo());
+                }
+            }
+        }
+
+        /* TODO: Check if 2 userContacts have mobile number, check which one has country code.
+             If one have country code but another one don't have, remove - and spaces,
+              and set them as a new mobile number */
+
+        return userContact;
     }
 
     @Override

@@ -52,12 +52,11 @@ public class UserContactRepoService {
 
     public UserContact findByMobileNo(String mobileNo) {
         boolean malaysianNumberWithPlus = isMalaysianNumber(mobileNo) && mobileNo.contains("+");
-
         if (malaysianNumberWithPlus) {
             // For Malaysian number only
             mobileNo = mobileNo.substring(2);
         }
-        String filteredMobileNo = mobileNo.replaceAll("[-+.^:,]","");
+        String filteredMobileNo = mobileNo.replaceAll("[-+.^:,]", "");
 
         Criteria criteria = new Criteria();
         criteria = criteria.andOperator(
@@ -66,9 +65,7 @@ public class UserContactRepoService {
 
         Query query = Query.query(criteria).limit(1);
         UserContact userContact = mongoTemplate.findOne(query, UserContact.class);
-        if (ObjectUtils.isEmpty(userContact)) {
-            throw new UserContactNotFoundException("UserContact is not found. Mobile number : " + mobileNo);
-        }
+
         return userContact;
     }
 
