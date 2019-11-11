@@ -23,13 +23,16 @@ public class UserContactServiceImpl implements UserContactService {
         this.userRepoService = userRepoService;
     }
 
+    // TODO: Fix this as normal sign up got problem
     @Override
     public UserContact addUserContact(UserContact userContact) {
         // Check existing UserContact before add new unique UserContact
         UserContact existingUserContact = userContactRepoService.findByMobileNo(userContact.getMobileNo());
         if (ObjectUtils.isEmpty(existingUserContact)) {
+            System.out.println("if (ObjectUtils.isEmpty(existingUserContact))");
             return userContactRepoService.save(userContact);
         } else {
+            System.out.println("if (!ObjectUtils.isEmpty(existingUserContact))");
             // Merge UserContact by putting that user ID into the existing UserContact
             List<String> currentUserIds = existingUserContact.getUserIds();
 
