@@ -8,6 +8,7 @@ import com.pocketchat.server.exceptions.conversationGroup.ConversationGroupNotFo
 import com.pocketchat.server.exceptions.userContact.UserContactNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -70,14 +71,14 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     @Override
     public List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo) {
         // Retrieve conversations for the user
-        Optional<UserContact> userContactOptional = userContactRepoService.findByMobileNo(mobileNo);
+        UserContact userContact = userContactRepoService.findByMobileNo(mobileNo);
 
-        if (!userContactOptional.isPresent()) {
+        if (ObjectUtils.isEmpty(userContact)) {
             throw new UserContactNotFoundException("UserContact not found: " + mobileNo);
         }
 
-        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContactOptional.get().getId());
-        conversationGroupList.forEach(this::printConversationGroupDetails);
+        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContact.getId());
+//        conversationGroupList.forEach(this::printConversationGroupDetails);
 
         return conversationGroupList;
     }

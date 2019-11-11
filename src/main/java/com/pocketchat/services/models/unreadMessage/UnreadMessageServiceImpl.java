@@ -12,6 +12,7 @@ import com.pocketchat.server.exceptions.userContact.UserContactNotFoundException
 import com.pocketchat.services.models.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -68,14 +69,14 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
         User user = userService.getUser(userId);
 
         // Get UserContact of the User, validate it exists or not
-        Optional<UserContact> userContactOptional = userContactRepoService.findByMobileNo(user.getMobileNo());
+        UserContact userContact = userContactRepoService.findByMobileNo(user.getMobileNo());
 
-        if (!userContactOptional.isPresent()) {
+        if (ObjectUtils.isEmpty(userContact)) {
             throw new UserContactNotFoundException("Unread Message not found. userId:-" + userId);
         }
 
         // Using UserContact id, find all the conversationGroups that has this userContactId in memberIds field (ConversationGroup)
-        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContactOptional.get().getId());
+        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContact.getId());
 
         // Get ConversationGroups' id, get UnreadMessage using ConversationGroup id, and retrieve those objects.
         List<UnreadMessage> unreadMessageList =

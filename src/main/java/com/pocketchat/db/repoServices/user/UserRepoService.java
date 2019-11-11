@@ -26,6 +26,9 @@ public class UserRepoService {
     public Optional<User> findById(String userId) {
         return userRepository.findById(userId);
     }
+    public boolean existById(String userId) {
+        return userRepository.existsById(userId);
+    }
 
     public List<User> findByIdsIn(List<String> userIds) {
         Criteria criteria = new Criteria();
@@ -35,7 +38,6 @@ public class UserRepoService {
 
         Query query = Query.query(criteria);
         List<User> userContactList = mongoTemplate.find(query, User.class);
-        System.out.println("userContactList.size(): " + userContactList.size());
         return userContactList;
     }
 

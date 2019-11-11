@@ -1,10 +1,13 @@
 package com.pocketchat.services.models.userContact;
 
 import com.pocketchat.db.models.user_contact.UserContact;
+import com.pocketchat.db.repoServices.user.UserRepoService;
 import com.pocketchat.db.repoServices.userContact.UserContactRepoService;
 import com.pocketchat.server.exceptions.userContact.UserContactNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,33 +15,44 @@ import java.util.Optional;
 @Service
 public class UserContactServiceImpl implements UserContactService {
     private final UserContactRepoService userContactRepoService;
+    private final UserRepoService userRepoService;
 
     @Autowired
-    public UserContactServiceImpl(UserContactRepoService userContactRepoService) {
+    public UserContactServiceImpl(UserContactRepoService userContactRepoService, UserRepoService userRepoService) {
         this.userContactRepoService = userContactRepoService;
+        this.userRepoService = userRepoService;
     }
 
     @Override
     public UserContact addUserContact(UserContact userContact) {
-        System.out.println("UserContactServiceImpl.java addUserContact()");
-        System.out.println("UserContactServiceImpl.java userContact.getMobileNo(): " + userContact.getMobileNo());
         // Check existing UserContact before add new unique UserContact
-        Optional<UserContact> existingUserContact = userContactRepoService.findByMobileNo(userContact.getMobileNo());
-        if (!existingUserContact.isPresent()) {
-            System.out.println("UserContactServiceImpl.java if(!existingUserContact.isPresent())");
+        UserContact existingUserContact = userContactRepoService.findByMobileNo(userContact.getMobileNo());
+        if (ObjectUtils.isEmpty(existingUserContact)) {
             return userContactRepoService.save(userContact);
         } else {
-            System.out.println("UserContactServiceImpl.java if(existingUserContact.isPresent())");
             // Merge UserContact by putting that user ID into the existing UserContact
-            UserContact userContact1 = existingUserContact.get();
-            List<String> currentUserIds = userContact1.getUserIds();
+            List<String> currentUserIds = existingUserContact.getUserIds();
+
+            // This indicates that this user doesn't belonged to any user yet, and frontend has created a new user
+            if (StringUtils.isEmpty(existingUserContact.getUserId()) && !StringUtils.isEmpty(userContact.getUserId())) {
+                boolean userExist = userRepoService.existById(userContact.getUserId());
+                if (userExist) {
+                    existingUserContact.setUserId(userContact.getUserId());
+                    if (!StringUtils.isEmpty(userContact.getMobileNo())) {
+                        existingUserContact.setMobileNo(userContact.getMobileNo());
+                    }
+                }
+            }
+
+            // This is for situation when another user added this mobile No during conversation creation
+            // When that unknown number (for that user) is created and sent to here. There's only 1 User ID in userIds
             boolean userContactHasSameUserId = currentUserIds.contains(userContact.getUserIds().get(0));
             if (!userContactHasSameUserId) {
                 currentUserIds.add(userContact.getUserIds().get(0));
-                userContact1.setUserIds(currentUserIds);
+                existingUserContact.setUserIds(currentUserIds);
             }
 
-            return userContactRepoService.save(userContact1);
+            return userContactRepoService.save(existingUserContact);
         }
     }
 
@@ -61,8 +75,11 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     public UserContact getUserContactByMobileNo(String mobileNo) {
-        Optional<UserContact> userContactOptional = userContactRepoService.findByMobileNo(mobileNo);
-        return validateUserContactNotFound(userContactOptional, mobileNo);
+        UserContact userContact = userContactRepoService.findByMobileNo(mobileNo);
+        if (ObjectUtils.isEmpty(userContact)) {
+            throw new UserContactNotFoundException("userContactId-" + userContact.getId());
+        }
+        return userContact;
     }
 
     @Override
