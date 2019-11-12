@@ -3,6 +3,9 @@ package com.pocketchat.db.repoServices.conversationGroup;
 import com.pocketchat.db.repositories.conversationGroup.ConversationGroupRepository;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,8 +15,16 @@ import java.util.Optional;
 @Service
 public class ConversationGroupRepoService {
 
-    @Autowired
     private ConversationGroupRepository conversationGroupRepository;
+
+    private final MongoTemplate mongoTemplate;
+
+    @Autowired
+    public ConversationGroupRepoService(ConversationGroupRepository conversationGroupRepository, MongoTemplate mongoTemplate) {
+        this.conversationGroupRepository = conversationGroupRepository;
+        this.mongoTemplate = mongoTemplate;
+    }
+
 
     public List<ConversationGroup> findAllConversationGroupsByIds(List<String> ids) {
         Iterable<String> iterable = ids;
@@ -34,6 +45,19 @@ public class ConversationGroupRepoService {
     // Find all conversationGroup objects by their memberIds array has the mentioned userContactId or not
     // Because 1 User has 1 UserContact, and the memberIds/adminIds of the ConversationGroup are userContactId
     public List<ConversationGroup> findAllByMemberIds(String userContactId) {
+        System.out.println("ConversationGroupRepoService.java findAllByMemberIds(): ");
+        System.out.println("ConversationGroupRepoService.java userContactId: " + userContactId);
+
+        Criteria criteria = new Criteria();
+        criteria = criteria.andOperator(
+                Criteria.where("memberIds").in(userContactId)
+        );
+
+        Query query = Query.query(criteria);
+        List<ConversationGroup> conversationGroupList = mongoTemplate.find(query, ConversationGroup.class);
+
+        System.out.println("ConversationGroupRepoService.java conversationGroupList.size(): " + conversationGroupList.size());
+
         return conversationGroupRepository.findAllByMemberIds(userContactId);
     }
 

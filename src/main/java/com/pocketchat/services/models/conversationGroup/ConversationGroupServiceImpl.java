@@ -70,6 +70,8 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     @Override
     public List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo) {
+        System.out.println("ConversationGroupServiceImpl.java getConversationsForUserByMobileNo()");
+        System.out.println("ConversationGroupServiceImpl.java mobileNo: " + mobileNo);
         // Retrieve conversations for the user
         UserContact userContact = userContactRepoService.findByMobileNo(mobileNo);
 
@@ -79,6 +81,8 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
         List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContact.getId());
 //        conversationGroupList.forEach(this::printConversationGroupDetails);
+
+        System.out.println("ConversationGroupServiceImpl.java conversationGroupList.size(): " + conversationGroupList.size());
 
         return conversationGroupList;
     }
