@@ -25,67 +25,57 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     public UserContact addUserContact(UserContact userContact) {
-        System.out.println("UserContactServiceImpl.java addUserContact()");
-        System.out.println("UserContactServiceImpl.java userContact.getMobileNo() before: " + userContact.getMobileNo());
 
+        // Filter out all spaces, special characters with plus sign
         String filteredMobileNo = userContact.getMobileNo().replaceAll("[-.^:,\\s+]", "");
-        System.out.println("UserContactServiceImpl.java userContact.getMobileNo() after: " + userContact.getMobileNo());
 
         // Check existing UserContact before add new unique UserContact
         UserContact existingUserContact = userContactRepoService.findByMobileNo(filteredMobileNo);
 
-        System.out.println("UserContactServiceImpl.java userContact.getMobileNo() (Before filtered): " + userContact.getMobileNo());
-
         if (ObjectUtils.isEmpty(existingUserContact)) {
-            System.out.println("UserContactServiceImpl.java if (ObjectUtils.isEmpty(existingUserContact))");
             return userContactRepoService.save(userContact);
         } else {
-            System.out.println("UserContactServiceImpl.java if (!ObjectUtils.isEmpty(existingUserContact))");
             // Merge UserContact by putting that user ID into the existing UserContact
             List<String> currentUserIds = existingUserContact.getUserIds();
 
-            existingUserContact = checkUserContactMobileNumber(existingUserContact, userContact);
+            existingUserContact = checkAndMergeUserContact(existingUserContact, userContact);
 
             // This is for situation when another user added this mobile No during conversation creation
-            // When that unknown number (for that user) is created and sent to here. There's only 1 User ID in userIds
             boolean userContactHasSameUserId = currentUserIds.contains(userContact.getUserIds().get(0));
-            System.out.println("UserContactServiceImpl.java userContactHasSameUserId: " + userContactHasSameUserId);
             if (!userContactHasSameUserId) {
-                System.out.println("UserContactServiceImpl.java if (!userContactHasSameUserId)");
+                // When that unknown number (for that user) is created and sent to here. There's only 1 User ID in userIds
                 currentUserIds.add(userContact.getUserIds().get(0));
                 existingUserContact.setUserIds(currentUserIds);
 
                 return userContactRepoService.save(existingUserContact);
-            } else {
-                System.out.println("UserContactServiceImpl.java if (userContactHasSameUserId)");
-
-                return existingUserContact;
             }
 
+            return existingUserContact;
         }
     }
 
-    private UserContact checkUserContactMobileNumber(UserContact existingUserContact, UserContact userContact) {
-        boolean userContactUserIdIsEmpty = StringUtils.isEmpty(existingUserContact.getUserId());
-        boolean existingUserContactUserIdIsEmpty = StringUtils.isEmpty(userContact.getUserId());
+    private UserContact checkAndMergeUserContact(UserContact existingUserContact, UserContact userContact) {
+        boolean userContactUserIdIsEmpty = StringUtils.isEmpty(userContact.getUserId());
+        boolean existingUserContactUserIdIsEmpty = StringUtils.isEmpty(existingUserContact.getUserId());
         boolean userContactMobileNoIsEmpty = StringUtils.isEmpty(userContact.getMobileNo());
+        boolean existingUserContactMobileNumberHasPlusSign = userContact.getMobileNo().contains("+");
 
-        // This indicates that this user doesn't belonged to any user yet, and frontend has created a new user
-        if (userContactUserIdIsEmpty && !existingUserContactUserIdIsEmpty) {
+        // Check the newcomer UserContact has UserId or not. If have check existence. If yes, add it into existingUserContact object.
+        if (!userContactUserIdIsEmpty && existingUserContactUserIdIsEmpty) {
             boolean userExist = userRepoService.existById(userContact.getUserId());
             if (userExist) {
                 existingUserContact.setUserId(userContact.getUserId());
-                if (!userContactMobileNoIsEmpty) {
-                    existingUserContact.setMobileNo(userContact.getMobileNo());
-                }
             }
         }
 
-        /* TODO: Check if 2 userContacts have mobile number, check which one has country code.
-             If one have country code but another one don't have, remove - and spaces,
-              and set them as a new mobile number */
+        // Check existingUserContact Mobile Number has plus sign or not
+        if (!userContactMobileNoIsEmpty && !existingUserContactMobileNumberHasPlusSign) {
+            // Filter out spaces, special characters but remains plus sign
+            String filteredMobileNo = userContact.getMobileNo().replaceAll("[-.^:,]", "");
+            existingUserContact.setMobileNo(filteredMobileNo);
+        }
 
-        return userContact;
+        return existingUserContact;
     }
 
     @Override

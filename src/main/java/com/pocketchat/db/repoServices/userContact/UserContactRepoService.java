@@ -64,6 +64,7 @@ public class UserContactRepoService {
         );
 
         Query query = Query.query(criteria).limit(1);
+
         UserContact userContact = mongoTemplate.findOne(query, UserContact.class);
 
         return userContact;
