@@ -79,6 +79,8 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             throw new UserContactNotFoundException("UserContact not found: " + mobileNo);
         }
 
+        System.out.println("ConversationGroupServiceImpl.java userContact.getId(): " + userContact.getId());
+
         List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContact.getId());
 //        conversationGroupList.forEach(this::printConversationGroupDetails);
 

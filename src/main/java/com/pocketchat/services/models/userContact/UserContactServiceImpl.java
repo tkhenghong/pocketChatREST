@@ -28,6 +28,12 @@ public class UserContactServiceImpl implements UserContactService {
         System.out.println("UserContactServiceImpl.java addUserContact()");
         // Check existing UserContact before add new unique UserContact
         UserContact existingUserContact = userContactRepoService.findByMobileNo(userContact.getMobileNo());
+
+        System.out.println("userContact.getMobileNo() (Before filtered): " + userContact.getMobileNo());
+
+        String filteredMobileNo = userContact.getMobileNo().replaceAll("[-.^:,\\s+]", "");
+        System.out.println("filteredMobileNo: " + filteredMobileNo);
+
         if (ObjectUtils.isEmpty(existingUserContact)) {
             System.out.println("if (ObjectUtils.isEmpty(existingUserContact))");
             return userContactRepoService.save(userContact);
