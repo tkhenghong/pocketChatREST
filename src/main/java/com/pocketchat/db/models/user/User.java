@@ -30,4 +30,10 @@ public class User {
 
     @NotBlank
     private String googleAccountId;
+
+    @NotBlank
+    private String countryCode;
+
+    @NotBlank
+    private String effectivePhoneNumber;
 }
