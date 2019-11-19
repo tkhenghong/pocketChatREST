@@ -130,7 +130,11 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
                 System.out.println("webSocketUserResultList.size(): " + webSocketUserResultList.size());
                 if (!webSocketUserResultList.isEmpty()) {
                     System.out.println("if (!webSocketUserResultList.isEmpty())");
-                    webSocketUserResultList.forEach((WebSocketUser webSocketUser) -> sendWebSocketMessage(webSocketSession, textMessage));
+                    webSocketUserResultList.forEach((WebSocketUser webSocketUser) -> {
+                        System.out.println("webSocketUser.getUser().getId(): "  + webSocketUser.getUser().getId());
+                        System.out.println("webSocketUser.getUser().getDisplayName(): "  + webSocketUser.getUser().getDisplayName());
+                        sendWebSocketMessage(webSocketSession, textMessage);
+                    });
                 }
             });
         }
@@ -194,10 +198,6 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
             System.out.println("message.getId(): " + message.getId());
             System.out.println("message.getConversationId(): " + message.getConversationId());
             System.out.println("message.getMessageContent(): " + message.getMessageContent());
-            System.out.println("message.getSenderId(): " + message.getSenderId());
-            System.out.println("message.getSenderName(): " + message.getSenderName());
-            System.out.println("message.getType(): " + message.getType());
-            System.out.println("message.getMessageContent(): " + message.getMessageContent());
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -207,6 +207,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
 
     private void sendWebSocketMessage(WebSocketSession webSocketSession, TextMessage textMessage) {
         System.out.println("sendWebSocketMessage()");
+        System.out.println("webSocketSession.getId(): " + webSocketSession.getId());
         try {
             webSocketSession.sendMessage(textMessage);
         } catch (IOException e) {
