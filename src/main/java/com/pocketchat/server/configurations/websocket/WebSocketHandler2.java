@@ -49,9 +49,9 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
 
         CustomizedWebSocketMessage customizedWebSocketMessage = convertToCustomizedWebSocketMessage(textMessage.getPayload());
         // TODO: Make sure frontend and backend object are same, so it can be converted properly.
-        if (customizedWebSocketMessage.toString() != null) {
+        if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.toString())) {
             // Send message back to frontend
-            sendWebSocketMessage(webSocketSession, textMessage);
+//            sendWebSocketMessage(webSocketSession, textMessage);
 
             if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.getConversationGroup())) {
                 System.out.println("If conversationGroup string is not empty");
@@ -82,6 +82,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
 
     private void addWebSocketUser(WebSocketSession webSocketSession, String webSocketUserId) {
         System.out.println("webSocketUserId: " + webSocketUserId);
+        System.out.println("webSocketSession.getId(): " + webSocketSession.getId());
         boolean webSocketUserExist = isWebSocketUserExist(webSocketSession);
         System.out.println("webSocketUserExist: " + webSocketUserExist);
         if (!webSocketUserExist) {
@@ -98,14 +99,18 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
     }
 
     private boolean isWebSocketUserExist(WebSocketSession webSocketSession) {
+        System.out.println("isWebSocketUserExist()");
         AtomicBoolean webSocketUserFound = new AtomicBoolean(false);
         if (!ObjectUtils.isEmpty(webSocketSession)) {
-            webSocketUserList.forEach((WebSocketUser existingWebSocketUser) -> {
-                if (existingWebSocketUser.getWebSocketSession().getId().equals(webSocketSession.getId())) {
-                    webSocketUserFound.set(true);
-                }
-            });
+            Optional<WebSocketUser> webSocketUserOptional = webSocketUserList.stream().filter((WebSocketUser existingWebSocketUser) -> {
+                System.out.println("Websocket ID that I want to find: " + webSocketSession.getId());
+                System.out.println("existingWebSocketUser.getWebSocketSession().getId(): " + existingWebSocketUser.getWebSocketSession().getId());
+                return existingWebSocketUser.getWebSocketSession().getId().equals(webSocketSession.getId());
+            }).findAny();
+
+            return webSocketUserOptional.isPresent();
         }
+
         return webSocketUserFound.get();
     }
 
@@ -131,8 +136,8 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
                 if (!webSocketUserResultList.isEmpty()) {
                     System.out.println("if (!webSocketUserResultList.isEmpty())");
                     webSocketUserResultList.forEach((WebSocketUser webSocketUser) -> {
-                        System.out.println("webSocketUser.getUser().getId(): "  + webSocketUser.getUser().getId());
-                        System.out.println("webSocketUser.getUser().getDisplayName(): "  + webSocketUser.getUser().getDisplayName());
+                        System.out.println("webSocketUser.getUser().getId(): " + webSocketUser.getUser().getId());
+                        System.out.println("webSocketUser.getUser().getDisplayName(): " + webSocketUser.getUser().getDisplayName());
                         sendWebSocketMessage(webSocketSession, textMessage);
                     });
                 }
@@ -210,6 +215,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
         System.out.println("webSocketSession.getId(): " + webSocketSession.getId());
         try {
             webSocketSession.sendMessage(textMessage);
+            System.out.println("Sent!");
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error when trying to send message.");
