@@ -108,6 +108,8 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
                 return existingWebSocketUser.getWebSocketSession().getId().equals(webSocketSession.getId());
             }).findAny();
 
+            System.out.println("webSocketUserOptional.isPresent(): " + webSocketUserOptional.isPresent());
+
             return webSocketUserOptional.isPresent();
         }
 
@@ -138,7 +140,8 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
                     webSocketUserResultList.forEach((WebSocketUser webSocketUser) -> {
                         System.out.println("webSocketUser.getUser().getId(): " + webSocketUser.getUser().getId());
                         System.out.println("webSocketUser.getUser().getDisplayName(): " + webSocketUser.getUser().getDisplayName());
-                        sendWebSocketMessage(webSocketSession, textMessage);
+
+                        sendWebSocketMessage(webSocketUser.webSocketSession, textMessage);
                     });
                 }
             });
