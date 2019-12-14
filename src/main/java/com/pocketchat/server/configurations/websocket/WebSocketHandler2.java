@@ -130,6 +130,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
         List<User> userList;
         if (conversationGroupOptional.isPresent()) {
             System.out.println("if (conversationGroupOptional.isPresent())");
+
             userList = getAllUsersFromUserContactIds(conversationGroupOptional.get());
             System.out.println("userList.size(): " + userList.size());
             userList.forEach(user -> {

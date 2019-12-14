@@ -40,14 +40,14 @@ public class ConversationGroup {
 
     String description;
 
-    @Valid
-    @NotEmpty
-    @Size(min = 1) // If 1 of 2 persons group left, that person still can have this group
+//    @Valid
+//    @NotEmpty
+//    @Size(min = 1) // If 1 of 2 persons group left, that person still can have this group
     private List<String> memberIds;
 
-    @Valid
-    @NotEmpty
-    @Size(min = 1)
+//    @Valid
+//    @NotEmpty
+//    @Size(min = 1)
     private List<String> adminMemberIds;
 
     private boolean block;
