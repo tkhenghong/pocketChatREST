@@ -33,10 +33,12 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         if (conversationGroup.getType().equals("Personal")) {
             // 1. Find a list of conversationGroup that has same memberIds
             List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(conversationGroup.getMemberIds());
+            System.out.println("ConversationGroupServiceImpl.java conversationGroupList: " + conversationGroupList.toString());
             // 2. Filter to get the Personal ConversationGroup
             List<ConversationGroup> personalConversationGroupList = conversationGroupList
                     .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getType().equals("Personal")
                             && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())).collect(Collectors.toList());
+            System.out.println("ConversationGroupServiceImpl.java personalConversationGroupList: " + personalConversationGroupList.toString());
             // 3. Should found the exact group
             if (personalConversationGroupList.size() == 1) {
                 return personalConversationGroupList.iterator().next();

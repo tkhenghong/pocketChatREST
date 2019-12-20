@@ -26,23 +26,31 @@ public class UserContactServiceImpl implements UserContactService {
     @Override
     public UserContact addUserContact(UserContact userContact) {
 
+        System.out.println("UserContactServiceImpl.java addUserContact()");
+        System.out.println("UserContactServiceImpl.java userContact: " + userContact.toString());
+        System.out.println("UserContactServiceImpl.java userContact: " + userContact.toString());
         // Filter out all spaces, special characters with plus sign
         String filteredMobileNo = userContact.getMobileNo().replaceAll("[-.^:,\\s+]", "");
-
+        System.out.println("UserContactServiceImpl.java filteredMobileNo: " + filteredMobileNo);
         // Check existing UserContact before add new unique UserContact
         UserContact existingUserContact = userContactRepoService.findByMobileNo(filteredMobileNo);
-
+        System.out.println("UserContactServiceImpl.java existingUserContact: " + existingUserContact.toString());
         if (ObjectUtils.isEmpty(existingUserContact)) {
+            System.out.println("UserContactServiceImpl.java if (ObjectUtils.isEmpty(existingUserContact))");
             return userContactRepoService.save(userContact);
         } else {
+            System.out.println("UserContactServiceImpl.java if (!ObjectUtils.isEmpty(existingUserContact))");
             // Merge UserContact by putting that user ID into the existing UserContact
             List<String> currentUserIds = existingUserContact.getUserIds();
 
             existingUserContact = checkAndMergeUserContact(existingUserContact, userContact);
-
+            System.out.println("UserContactServiceImpl.java currentUserIds: " + currentUserIds.toString());
+            System.out.println("UserContactServiceImpl.java existingUserContact: " + existingUserContact.toString());
             // This is for situation when another user added this mobile No during conversation creation
             boolean userContactHasSameUserId = currentUserIds.contains(userContact.getUserIds().get(0));
+            System.out.println("UserContactServiceImpl.java userContactHasSameUserId: " + userContactHasSameUserId);
             if (!userContactHasSameUserId) {
+                System.out.println("UserContactServiceImpl.java if (!userContactHasSameUserId)");
                 // When that unknown number (for that user) is created and sent to here. There's only 1 User ID in userIds
                 currentUserIds.add(userContact.getUserIds().get(0));
                 existingUserContact.setUserIds(currentUserIds);
