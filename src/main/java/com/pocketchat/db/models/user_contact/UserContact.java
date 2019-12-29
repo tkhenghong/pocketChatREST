@@ -30,6 +30,8 @@ public class UserContact {
     @NotBlank
     private String realName;
 
+    private String about;
+
     @Valid
     @NotEmpty
     @Size(min = 1)

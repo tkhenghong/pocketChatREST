@@ -71,10 +71,12 @@ public class UserContactController {
                 .id(userContact.getId())
                 .displayName(userContact.getDisplayName())
                 .realName(userContact.getRealName())
+                .about(userContact.getAbout())
                 .block(userContact.isBlock())
                 .mobileNo(userContact.getMobileNo())
                 .multimediaId(userContact.getMultimediaId())
                 .userIds(userContact.getUserIds())
+                .userId(userContact.getUserId())
                 .lastSeenDate(userContact.getLastSeenDate().getMillis())
                 .build();
     }

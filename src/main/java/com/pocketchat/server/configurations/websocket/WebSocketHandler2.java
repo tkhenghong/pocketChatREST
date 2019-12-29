@@ -12,6 +12,8 @@ import com.pocketchat.db.repoServices.userContact.UserContactRepoService;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -25,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 // Working
-public class WebSocketHandler2 extends TextWebSocketHandler {
+public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocketHandler {
 
     static List<WebSocketUser> webSocketUserList = new ArrayList<>();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -40,11 +42,19 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
     private UserRepoService userRepoService;
 
     @Override
+    public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus status) throws Exception {
+        System.out.println("WebSockethandler2.java afterConnectionClosed()");
+        System.out.println("WebSockethandler2.java afterConnectionClosed()");
+        System.out.println("WebSockethandler2.java webSocketSession.getId() OUT: " + webSocketSession.getId());
+        super.afterConnectionClosed(webSocketSession, status);
+    }
+
+    @Override
     public void handleTextMessage(WebSocketSession webSocketSession, TextMessage textMessage) {
         System.out.println("Text Message received: " + textMessage.getPayload());
         System.out.println("webSocketSession.getLocalAddress().getHostName(): " + webSocketSession.getLocalAddress().getHostName());
         System.out.println("webSocketSession.getLocalAddress().getPort(): " + webSocketSession.getLocalAddress().getPort());
-
+        System.out.println("WebSockethandler2.java webSocketSession.getId() IN: " + webSocketSession.getId());
         // TODO: Research on Kafka to create a message system to ensure message is backed up in Kafka
 
         CustomizedWebSocketMessage customizedWebSocketMessage = convertToCustomizedWebSocketMessage(textMessage.getPayload());
@@ -82,7 +92,6 @@ public class WebSocketHandler2 extends TextWebSocketHandler {
 
     private void addWebSocketUser(WebSocketSession webSocketSession, String webSocketUserId) {
         System.out.println("webSocketUserId: " + webSocketUserId);
-        System.out.println("webSocketSession.getId(): " + webSocketSession.getId());
         boolean webSocketUserExist = isWebSocketUserExist(webSocketSession);
         System.out.println("webSocketUserExist: " + webSocketUserExist);
         if (!webSocketUserExist) {

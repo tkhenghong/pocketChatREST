@@ -51,16 +51,16 @@ public class UserContactRepoService {
     }
 
     public UserContact findByMobileNo(String mobileNo) {
-        boolean malaysianNumberWithPlus = isMalaysianNumber(mobileNo) && mobileNo.contains("+");
-        if (malaysianNumberWithPlus) {
+        boolean isMalaysianNumber = isMalaysianNumber(mobileNo);
+        System.out.println("UserContactRepoService.java isMalaysianNumber: " + isMalaysianNumber);
+        if (isMalaysianNumber) {
             // For Malaysian number only
             mobileNo = mobileNo.substring(2);
         }
-        String filteredMobileNo = mobileNo.replaceAll("[-+.^:,]", "");
-
+        System.out.println("UserContactRepoService.java mobileNo: " + mobileNo);
         Criteria criteria = new Criteria();
         criteria = criteria.andOperator(
-                Criteria.where("mobileNo").regex(filteredMobileNo, "im")
+                Criteria.where("mobileNo").regex(mobileNo, "im")
         );
 
         Query query = Query.query(criteria).limit(1);

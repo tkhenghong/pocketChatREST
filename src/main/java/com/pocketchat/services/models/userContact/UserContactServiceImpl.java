@@ -29,12 +29,15 @@ public class UserContactServiceImpl implements UserContactService {
         System.out.println("UserContactServiceImpl.java addUserContact()");
         System.out.println("UserContactServiceImpl.java userContact: " + userContact.toString());
         System.out.println("UserContactServiceImpl.java userContact: " + userContact.toString());
-        // Filter out all spaces, special characters with plus sign
+
+        // Reason to put it here:
+        // 1. Filter out all spaces, special characters with plus sign.
+        // 2. To save the phone no without any custom format, like: 018-226 2663 (I don't want space) or +60182262663 (I don't want plus sign)
         String filteredMobileNo = userContact.getMobileNo().replaceAll("[-.^:,\\s+]", "");
-        System.out.println("UserContactServiceImpl.java filteredMobileNo: " + filteredMobileNo);
+        userContact.setMobileNo(filteredMobileNo);
+
         // Check existing UserContact before add new unique UserContact
         UserContact existingUserContact = userContactRepoService.findByMobileNo(filteredMobileNo);
-        System.out.println("UserContactServiceImpl.java existingUserContact: " + existingUserContact.toString());
         if (ObjectUtils.isEmpty(existingUserContact)) {
             System.out.println("UserContactServiceImpl.java if (ObjectUtils.isEmpty(existingUserContact))");
             return userContactRepoService.save(userContact);
@@ -105,7 +108,8 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     public UserContact getUserContactByMobileNo(String mobileNo) {
-        UserContact userContact = userContactRepoService.findByMobileNo(mobileNo);
+        String filteredMobileNo = mobileNo.replaceAll("[-.^:,\\s+]", "");
+        UserContact userContact = userContactRepoService.findByMobileNo(filteredMobileNo);
         if (ObjectUtils.isEmpty(userContact)) {
             throw new UserContactNotFoundException("userContactId-" + userContact.getId());
         }

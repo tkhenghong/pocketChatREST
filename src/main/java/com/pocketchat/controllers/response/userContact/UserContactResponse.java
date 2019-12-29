@@ -16,7 +16,11 @@ public class UserContactResponse {
 
     private String realName;
 
+    private String about;
+
     private List<String> userIds;
+
+    private String userId;
 
     private String mobileNo;
 
