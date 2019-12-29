@@ -42,10 +42,28 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
     private UserRepoService userRepoService;
 
     @Override
+    public void afterConnectionEstablished(WebSocketSession webSocketSession) throws Exception {
+        System.out.println("WebSockethandler2.java afterConnectionEstablished()");
+        System.out.println("WebSockethandler2.java webSocketSession.getId() IN: " + webSocketSession.getId());
+
+        List<String> websocketHeaders = webSocketSession.getHandshakeHeaders().get("userId");
+        if (websocketHeaders != null && !websocketHeaders.isEmpty()) {
+            System.out.println("WebSockethandler2.java websocketHeaders.get(0): " + websocketHeaders.get(0));
+            addWebSocketUser(webSocketSession, websocketHeaders.get(0));
+        }
+
+        super.afterConnectionEstablished(webSocketSession);
+    }
+
+    @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus status) throws Exception {
         System.out.println("WebSockethandler2.java afterConnectionClosed()");
-        System.out.println("WebSockethandler2.java afterConnectionClosed()");
         System.out.println("WebSockethandler2.java webSocketSession.getId() OUT: " + webSocketSession.getId());
+        List<String> websocketHeaders = webSocketSession.getHandshakeHeaders().get("userId");
+        if (websocketHeaders != null && !websocketHeaders.isEmpty()) {
+            System.out.println("WebSockethandler2.java websocketHeaders.get(0): " + websocketHeaders.get(0));
+            removeWebsocketUser(webSocketSession, websocketHeaders.get(0));
+        }
         super.afterConnectionClosed(webSocketSession, status);
     }
 
@@ -54,15 +72,12 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
         System.out.println("Text Message received: " + textMessage.getPayload());
         System.out.println("webSocketSession.getLocalAddress().getHostName(): " + webSocketSession.getLocalAddress().getHostName());
         System.out.println("webSocketSession.getLocalAddress().getPort(): " + webSocketSession.getLocalAddress().getPort());
-        System.out.println("WebSockethandler2.java webSocketSession.getId() IN: " + webSocketSession.getId());
+//        System.out.println("WebSockethandler2.java webSocketSession.getId() IN: " + webSocketSession.getId());
         // TODO: Research on Kafka to create a message system to ensure message is backed up in Kafka
 
         CustomizedWebSocketMessage customizedWebSocketMessage = convertToCustomizedWebSocketMessage(textMessage.getPayload());
         // TODO: Make sure frontend and backend object are same, so it can be converted properly.
         if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.toString())) {
-            // Send message back to frontend
-//            sendWebSocketMessage(webSocketSession, textMessage);
-
             if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.getConversationGroup())) {
                 System.out.println("If conversationGroup string is not empty");
             }
@@ -71,7 +86,6 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
                 Message message = convertToMessage(customizedWebSocketMessage.getMessage());
                 // 1. Find WebSocketSession is in webSocketUserList or not. If don't have add create a new WebSocketUser and add it in.
                 if (!ObjectUtils.isEmpty(message)) {
-                    addWebSocketUser(webSocketSession, message.getSenderId());
                     handleWebSocketMessageMessage(webSocketSession, textMessage, message);
                 }
             }
@@ -104,6 +118,21 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
             }
             newWebSocketUser.setUser(user);
             webSocketUserList.add(newWebSocketUser);
+        }
+    }
+
+    // Find and remove the object from the list, close that websocket session
+    private void removeWebsocketUser(WebSocketSession webSocketSession, String webSocketUserId) throws IOException {
+        System.out.println("removeWebsocketUser()");
+        System.out.println("webSocketUserId: " + webSocketUserId);
+        WebSocketUser webSocketUser = webSocketUserList.stream().filter((WebSocketUser existingWebsocketUser) -> existingWebsocketUser.getWebSocketSession().getId().equals(webSocketSession.getId())).findAny().orElse(null);
+        if (!ObjectUtils.isEmpty(webSocketUser)) {
+            System.out.println("if (!ObjectUtils.isEmpty(webSocketUser))");
+            webSocketUser.webSocketSession.close();
+            boolean removed = webSocketUserList.remove(webSocketUser);
+            if (removed) {
+                System.out.println("websocket user removed");
+            }
         }
     }
 
