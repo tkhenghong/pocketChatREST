@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.message.Message;
+import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repoServices.conversationGroup.ConversationGroupRepoService;
@@ -72,10 +73,10 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
         System.out.println("Text Message received: " + textMessage.getPayload());
         System.out.println("webSocketSession.getLocalAddress().getHostName(): " + webSocketSession.getLocalAddress().getHostName());
         System.out.println("webSocketSession.getLocalAddress().getPort(): " + webSocketSession.getLocalAddress().getPort());
-//        System.out.println("WebSockethandler2.java webSocketSession.getId() IN: " + webSocketSession.getId());
         // TODO: Research on Kafka to create a message system to ensure message is backed up in Kafka
 
         CustomizedWebSocketMessage customizedWebSocketMessage = convertToCustomizedWebSocketMessage(textMessage.getPayload());
+        WebSocketMessage webSocketMessage = new WebSocketMessage();
         // TODO: Make sure frontend and backend object are same, so it can be converted properly.
         if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.toString())) {
             if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.getConversationGroup())) {
@@ -83,15 +84,20 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
             }
             if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.getMessage())) {
                 System.out.println("If message string is not empty");
-                Message message = convertToMessage(customizedWebSocketMessage.getMessage());
-                // 1. Find WebSocketSession is in webSocketUserList or not. If don't have add create a new WebSocketUser and add it in.
-                if (!ObjectUtils.isEmpty(message)) {
-                    handleWebSocketMessageMessage(webSocketSession, textMessage, message);
+                CustomizedMessage customizedMessage = convertToCustomizedMessage(customizedWebSocketMessage.getMessage());
+                if (!ObjectUtils.isEmpty(customizedMessage)) {
+                    webSocketMessage.setMessage(customizedMessage);
                 }
             }
             if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.getMultimedia())) {
                 System.out.println("If multimedia string is not empty");
+                Multimedia multimedia = convertToMultimedia(customizedWebSocketMessage.getMultimedia());
+
+                if (!ObjectUtils.isEmpty(multimedia)) {
+                    webSocketMessage.setMultimedia(multimedia);
+                }
             }
+
             if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.getUnreadMessage())) {
                 System.out.println("If unreadMessage string is not empty");
             }
@@ -100,6 +106,10 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
             }
             if (!StringUtils.isEmptyOrWhitespace(customizedWebSocketMessage.getUserContact())) {
                 System.out.println("If userContact string is not empty");
+            }
+
+            if (!ObjectUtils.isEmpty(webSocketMessage)) {
+                handleWebSocketMessageMessage(textMessage, webSocketMessage);
             }
         }
     }
@@ -161,10 +171,18 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
     // Possibilities to solve:
     // 1. 1 user own many devices is connected to WebSocket
     // TODO: Store unactive Users to Kafka
-    private void handleWebSocketMessageMessage(WebSocketSession webSocketSession, TextMessage textMessage, Message message) {
+    private void handleWebSocketMessageMessage(TextMessage textMessage, WebSocketMessage webSocketMessage) {
         System.out.println("handleWebSocketMessageMessage()");
+        Optional<ConversationGroup> conversationGroupOptional = Optional.empty();
+        if (!ObjectUtils.isEmpty(webSocketMessage.getMessage())) {
+            conversationGroupOptional = conversationGroupRepoService.findById(webSocketMessage.getMessage().getConversationId());
+        }
+
+        if (!ObjectUtils.isEmpty(webSocketMessage.getConversationGroup())) {
+            conversationGroupOptional = conversationGroupRepoService.findById(webSocketMessage.getConversationGroup().getId());
+        }
+
         // Get conversationGroup members' ID -> Get userContacts' userID -> Get Users' object
-        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(message.getConversationId());
         List<User> userList;
         if (conversationGroupOptional.isPresent()) {
             System.out.println("if (conversationGroupOptional.isPresent())");
@@ -176,9 +194,9 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
                 System.out.println("webSocketUserResultList.size(): " + webSocketUserResultList.size());
                 if (!webSocketUserResultList.isEmpty()) {
                     System.out.println("if (!webSocketUserResultList.isEmpty())");
-                    webSocketUserResultList.forEach((WebSocketUser webSocketUser) -> {
-                        System.out.println("webSocketUser.getUser().getId(): " + webSocketUser.getUser().getId());
-                        System.out.println("webSocketUser.getUser().getDisplayName(): " + webSocketUser.getUser().getDisplayName());
+                    webSocketUserResultList.stream().forEach((WebSocketUser webSocketUser) -> {
+//                        System.out.println("webSocketUser.getUser().getId(): " + webSocketUser.getUser().getId());
+//                        System.out.println("webSocketUser.getUser().getDisplayName(): " + webSocketUser.getUser().getDisplayName());
 
                         sendWebSocketMessage(webSocketUser.webSocketSession, textMessage);
                     });
@@ -206,10 +224,10 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
         return userList1;
     }
 
+    // Note: 1 User may have multiple WebSocket Users
     // If found user is online , return the object
     // If not found, return null to signify not online (should send notifications and store the unsent message in Kafka, when get userIsOnline event, send the unsent message)
     private List<WebSocketUser> getWebSocketUsers(User user) {
-        System.out.println("getWebSocketUsers()");
         List<WebSocketUser> webSocketUserResultList = new ArrayList<>();
 
         webSocketUserList.forEach((WebSocketUser existingWebSocketUser) -> {
@@ -236,20 +254,53 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
         return customizedWebSocketMessage;
     }
 
-    private Message convertToMessage(String messageString) {
+    private CustomizedMessage convertToCustomizedMessage(String messageString) {
         System.out.println("convertToMessage()");
-        Message message;
+        CustomizedMessage customizedMessage;
         try {
             objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
-            message = objectMapper.readValue(messageString, Message.class);
-            System.out.println("message.getId(): " + message.getId());
-            System.out.println("message.getConversationId(): " + message.getConversationId());
-            System.out.println("message.getMessageContent(): " + message.getMessageContent());
+            customizedMessage = objectMapper.readValue(messageString, CustomizedMessage.class);
+            System.out.println("customizedMessage.getId(): " + customizedMessage.getId());
+            System.out.println("customizedMessage.getConversationId(): " + customizedMessage.getConversationId());
+            System.out.println("customizedMessage.getMessageContent(): " + customizedMessage.getMessageContent());
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        return message;
+        return customizedMessage;
+    }
+
+//    private CustomizedMessage mapToCustomizedMessage(Message message) {
+//        CustomizedMessage customizedMessage = new CustomizedMessage();
+//        customizedMessage.setId(message.getId());
+//        customizedMessage.setConversationId(message.getConversationId());
+//        customizedMessage.setMessageContent(message.getMessageContent());
+//        customizedMessage.setMultimediaId(message.getMultimediaId());
+//        customizedMessage.setReceiverId(message.getReceiverId());
+//        customizedMessage.setReceiverMobileNo(message.getReceiverMobileNo());
+//        customizedMessage.setReceiverName(message.getReceiverName());
+//        customizedMessage.setSenderId(message.getSenderId());
+//        customizedMessage.setSenderMobileNo(message.getSenderMobileNo());
+//        customizedMessage.setSenderName(message.getSenderName());
+//        customizedMessage.setStatus(message.getStatus());
+//        customizedMessage.setType(message.getType());
+//        customizedMessage.setTimestamp(message.getTimestamp());
+//    }
+
+    private Multimedia convertToMultimedia(String multimediaString) {
+        System.out.println("convertToMessage()");
+        Multimedia multimedia;
+        try {
+            objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+            multimedia = objectMapper.readValue(multimediaString, Multimedia.class);
+            System.out.println("message.getId(): " + multimedia.getId());
+            System.out.println("message.getConversationId(): " + multimedia.getConversationId());
+            System.out.println("message.getMessageContent(): " + multimedia.getMessageId());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return multimedia;
     }
 
     private void sendWebSocketMessage(WebSocketSession webSocketSession, TextMessage textMessage) {

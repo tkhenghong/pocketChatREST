@@ -31,5 +31,6 @@ public class CustomizedMessage {
 
     private String multimediaId;
 
+    // Due to unable to change from JSON string to DateTime object directly
     private int timestamp;
 }
