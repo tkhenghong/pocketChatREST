@@ -39,4 +39,6 @@ public class Multimedia {
     private String conversationId;
 
     private String userId;
+
+    private Integer size;
 }
