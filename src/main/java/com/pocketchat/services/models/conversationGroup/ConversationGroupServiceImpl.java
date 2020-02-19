@@ -110,6 +110,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         return conversationGroupList;
     }
 
+    // TODO: use OrElseThrow() within Optional
     private ConversationGroup validateConversationGroupNotFound(Optional<ConversationGroup> conversationGroupOptional, String conversationGroupId) {
         if (!conversationGroupOptional.isPresent()) {
             throw new ConversationGroupNotFoundException("conversationGroupId-" + conversationGroupId);
