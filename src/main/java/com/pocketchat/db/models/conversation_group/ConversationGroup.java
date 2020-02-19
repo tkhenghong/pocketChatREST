@@ -38,7 +38,7 @@ public class ConversationGroup {
     @NotBlank
     private String type;
 
-    String description;
+    private String description;
 
 //    @Valid
 //    @NotEmpty
