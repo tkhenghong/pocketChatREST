@@ -1,7 +1,7 @@
 package com.pocketchat.db.repoServices.message;
 
 import com.pocketchat.db.repositories.message.MessageRepository;
-import com.pocketchat.db.models.message.Message;
+import com.pocketchat.db.models.chat_message.ChatMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,20 +14,20 @@ public class MessageRepoService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public Optional<Message> findById(String messageId) {
+    public Optional<ChatMessage> findById(String messageId) {
         return messageRepository.findById(messageId);
     }
 
-    public List<Message> findAllMessagesByConversationId (String conversationId) {
+    public List<ChatMessage> findAllMessagesByConversationId (String conversationId) {
         return messageRepository.findAllByConversationId(conversationId);
     }
 
-    public Message save(Message conversationGroup) {
+    public ChatMessage save(ChatMessage conversationGroup) {
         return messageRepository.save(conversationGroup);
     }
 
-    public void delete(Message message) {
-        messageRepository.delete(message);
+    public void delete(ChatMessage chatMessage) {
+        messageRepository.delete(chatMessage);
     }
 
 }

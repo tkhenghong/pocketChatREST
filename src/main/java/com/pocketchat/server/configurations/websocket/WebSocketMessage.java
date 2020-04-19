@@ -1,7 +1,6 @@
 package com.pocketchat.server.configurations.websocket;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
-import com.pocketchat.db.models.message.Message;
 import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.settings.Settings;
 import com.pocketchat.db.models.unread_message.UnreadMessage;

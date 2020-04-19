@@ -1,17 +1,17 @@
 package com.pocketchat.services.models.message;
 
-import com.pocketchat.db.models.message.Message;
+import com.pocketchat.db.models.chat_message.ChatMessage;
 
 import java.util.List;
 
 public interface MessageService {
-    Message addMessage(Message message);
+    ChatMessage addMessage(ChatMessage chatMessage);
 
-    void editMessage(Message message);
+    void editMessage(ChatMessage chatMessage);
 
     void deleteMessage(String messageId);
 
-    Message getSingleMessage(String messageId);
+    ChatMessage getSingleMessage(String messageId);
 
-    List<Message> getMessagesOfAConversation(String conversationGroupId);
+    List<ChatMessage> getMessagesOfAConversation(String conversationGroupId);
 }

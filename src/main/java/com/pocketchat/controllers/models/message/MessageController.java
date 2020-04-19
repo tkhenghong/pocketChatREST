@@ -1,12 +1,10 @@
 package com.pocketchat.controllers.models.message;
 
 import com.pocketchat.controllers.response.message.MessageResponse;
-import com.pocketchat.db.models.message.Message;
+import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.services.models.message.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -29,18 +27,18 @@ public class MessageController {
 
 
     @PostMapping("")
-    public ResponseEntity<Object> addMessage(@Valid @RequestBody Message message) {
-        Message savedMessage = messageService.addMessage(message);
+    public ResponseEntity<Object> addMessage(@Valid @RequestBody ChatMessage chatMessage) {
+        ChatMessage savedChatMessage = messageService.addMessage(chatMessage);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedMessage.getId())
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedChatMessage.getId())
                 .toUri();
 
         return ResponseEntity.created(location).build();
     }
 
     @PutMapping("")
-    public void editMessage(@Valid @RequestBody Message message) {
-        messageService.editMessage(message);
+    public void editMessage(@Valid @RequestBody ChatMessage chatMessage) {
+        messageService.editMessage(chatMessage);
     }
 
     @DeleteMapping("/{messageId}")
@@ -55,8 +53,8 @@ public class MessageController {
 
     @GetMapping("/conversation/{conversationGroupId}")
     public List<MessageResponse> getMessagesOfAConversation(String conversationGroupId) {
-        List<Message> messageList = messageService.getMessagesOfAConversation(conversationGroupId);
-        return messageList.stream().map(this::messageResponseMapper).collect(Collectors.toList());
+        List<ChatMessage> chatMessageList = messageService.getMessagesOfAConversation(conversationGroupId);
+        return chatMessageList.stream().map(this::messageResponseMapper).collect(Collectors.toList());
     }
 
     // Research it's definition for more usages
@@ -64,20 +62,20 @@ public class MessageController {
 //
 //    }
 
-    private MessageResponse messageResponseMapper(Message message) {
+    private MessageResponse messageResponseMapper(ChatMessage chatMessage) {
         return MessageResponse.builder()
-                .id(message.getId())
-                .conversationId(message.getConversationId())
-                .messageContent(message.getMessageContent())
-                .multimediaId(message.getMultimediaId())
-                .receiverId(message.getReceiverId())
-                .receiverMobileNo(message.getReceiverMobileNo())
-                .receiverName(message.getReceiverName())
-                .senderId(message.getSenderId())
-                .senderMobileNo(message.getSenderMobileNo())
-                .senderName(message.getSenderName())
-                .status(message.getStatus())
-                .timestamp(message.getTimestamp().getMillis())
+                .id(chatMessage.getId())
+                .conversationId(chatMessage.getConversationId())
+                .messageContent(chatMessage.getMessageContent())
+                .multimediaId(chatMessage.getMultimediaId())
+                .receiverId(chatMessage.getReceiverId())
+                .receiverMobileNo(chatMessage.getReceiverMobileNo())
+                .receiverName(chatMessage.getReceiverName())
+                .senderId(chatMessage.getSenderId())
+                .senderMobileNo(chatMessage.getSenderMobileNo())
+                .senderName(chatMessage.getSenderName())
+                .status(chatMessage.getStatus())
+                .timestamp(chatMessage.getCreatedTime().getMillis())
                 .build();
     }
 }

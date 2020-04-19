@@ -3,7 +3,6 @@ package com.pocketchat.server.configurations.websocket;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
-import com.pocketchat.db.models.message.Message;
 import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_contact.UserContact;
