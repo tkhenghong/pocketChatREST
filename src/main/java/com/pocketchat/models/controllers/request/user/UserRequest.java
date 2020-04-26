@@ -1,14 +1,9 @@
-package com.pocketchat.db.models.user;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+package com.pocketchat.models.controllers.request.user;
 
 import javax.validation.constraints.NotBlank;
 
-@Document(collection = "user")
-public class User {
+public class UserRequest {
 
-    @Id
     private String id;
 
     @NotBlank
@@ -31,7 +26,7 @@ public class User {
     @NotBlank
     private String effectivePhoneNumber;
 
-    User(String id, @NotBlank String displayName, @NotBlank String realName, @NotBlank String mobileNo, @NotBlank String googleAccountId, String emailAddress, @NotBlank String countryCode, @NotBlank String effectivePhoneNumber) {
+    UserRequest(String id, @NotBlank String displayName, @NotBlank String realName, @NotBlank String mobileNo, @NotBlank String googleAccountId, String emailAddress, @NotBlank String countryCode, @NotBlank String effectivePhoneNumber) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -42,8 +37,8 @@ public class User {
         this.effectivePhoneNumber = effectivePhoneNumber;
     }
 
-    public static UserBuilder builder() {
-        return new UserBuilder();
+    public static UserRequestBuilder builder() {
+        return new UserRequestBuilder();
     }
 
     public String getId() {
@@ -112,8 +107,8 @@ public class User {
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof User)) return false;
-        final User other = (User) o;
+        if (!(o instanceof UserRequest)) return false;
+        final UserRequest other = (UserRequest) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$id = this.getId();
         final Object other$id = other.getId();
@@ -148,7 +143,7 @@ public class User {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof User;
+        return other instanceof UserRequest;
     }
 
     public int hashCode() {
@@ -174,10 +169,10 @@ public class User {
     }
 
     public String toString() {
-        return "User(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", mobileNo=" + this.getMobileNo() + ", googleAccountId=" + this.getGoogleAccountId() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", effectivePhoneNumber=" + this.getEffectivePhoneNumber() + ")";
+        return "UserRequest(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", mobileNo=" + this.getMobileNo() + ", googleAccountId=" + this.getGoogleAccountId() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", effectivePhoneNumber=" + this.getEffectivePhoneNumber() + ")";
     }
 
-    public static class UserBuilder {
+    public static class UserRequestBuilder {
         private String id;
         private @NotBlank String displayName;
         private @NotBlank String realName;
@@ -187,55 +182,55 @@ public class User {
         private @NotBlank String countryCode;
         private @NotBlank String effectivePhoneNumber;
 
-        UserBuilder() {
+        UserRequestBuilder() {
         }
 
-        public User.UserBuilder id(String id) {
+        public UserRequest.UserRequestBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public User.UserBuilder displayName(@NotBlank String displayName) {
+        public UserRequest.UserRequestBuilder displayName(@NotBlank String displayName) {
             this.displayName = displayName;
             return this;
         }
 
-        public User.UserBuilder realName(@NotBlank String realName) {
+        public UserRequest.UserRequestBuilder realName(@NotBlank String realName) {
             this.realName = realName;
             return this;
         }
 
-        public User.UserBuilder mobileNo(@NotBlank String mobileNo) {
+        public UserRequest.UserRequestBuilder mobileNo(@NotBlank String mobileNo) {
             this.mobileNo = mobileNo;
             return this;
         }
 
-        public User.UserBuilder googleAccountId(@NotBlank String googleAccountId) {
+        public UserRequest.UserRequestBuilder googleAccountId(@NotBlank String googleAccountId) {
             this.googleAccountId = googleAccountId;
             return this;
         }
 
-        public User.UserBuilder emailAddress(String emailAddress) {
+        public UserRequest.UserRequestBuilder emailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
             return this;
         }
 
-        public User.UserBuilder countryCode(@NotBlank String countryCode) {
+        public UserRequest.UserRequestBuilder countryCode(@NotBlank String countryCode) {
             this.countryCode = countryCode;
             return this;
         }
 
-        public User.UserBuilder effectivePhoneNumber(@NotBlank String effectivePhoneNumber) {
+        public UserRequest.UserRequestBuilder effectivePhoneNumber(@NotBlank String effectivePhoneNumber) {
             this.effectivePhoneNumber = effectivePhoneNumber;
             return this;
         }
 
-        public User build() {
-            return new User(id, displayName, realName, mobileNo, googleAccountId, emailAddress, countryCode, effectivePhoneNumber);
+        public UserRequest build() {
+            return new UserRequest(id, displayName, realName, mobileNo, googleAccountId, emailAddress, countryCode, effectivePhoneNumber);
         }
 
         public String toString() {
-            return "User.UserBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", mobileNo=" + this.mobileNo + ", googleAccountId=" + this.googleAccountId + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", effectivePhoneNumber=" + this.effectivePhoneNumber + ")";
+            return "UserRequest.UserRequestBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", mobileNo=" + this.mobileNo + ", googleAccountId=" + this.googleAccountId + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", effectivePhoneNumber=" + this.effectivePhoneNumber + ")";
         }
     }
 }

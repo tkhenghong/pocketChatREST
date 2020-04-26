@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 public class UserRepoService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     private final MongoTemplate mongoTemplate;
 
@@ -37,8 +37,7 @@ public class UserRepoService {
         );
 
         Query query = Query.query(criteria);
-        List<User> userContactList = mongoTemplate.find(query, User.class);
-        return userContactList;
+        return mongoTemplate.find(query, User.class);
     }
 
     public User save(User conversationGroup) {
@@ -53,7 +52,7 @@ public class UserRepoService {
         return userRepository.findFirstByGoogleAccountId(googleAccountId);
     }
 
-    public Optional<User> findByMobileNo(String googleAccountId) {
-        return userRepository.findFirstByMobileNo(googleAccountId);
+    public Optional<User> findByMobileNo(String mobileNo) {
+        return userRepository.findFirstByMobileNo(mobileNo);
     }
 }

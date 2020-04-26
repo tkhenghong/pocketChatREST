@@ -1,37 +1,24 @@
-package com.pocketchat.db.models.user;
+package com.pocketchat.models.controllers.response.user;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+public class UserResponse {
 
-import javax.validation.constraints.NotBlank;
-
-@Document(collection = "user")
-public class User {
-
-    @Id
     private String id;
 
-    @NotBlank
     private String displayName;
 
-    @NotBlank
     private String realName;
 
-    @NotBlank
     private String mobileNo;
 
-    @NotBlank
     private String googleAccountId;
 
     private String emailAddress;
 
-    @NotBlank
     private String countryCode;
 
-    @NotBlank
     private String effectivePhoneNumber;
 
-    User(String id, @NotBlank String displayName, @NotBlank String realName, @NotBlank String mobileNo, @NotBlank String googleAccountId, String emailAddress, @NotBlank String countryCode, @NotBlank String effectivePhoneNumber) {
+    UserResponse(String id, String displayName, String realName, String mobileNo, String googleAccountId, String emailAddress, String countryCode, String effectivePhoneNumber) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -42,27 +29,27 @@ public class User {
         this.effectivePhoneNumber = effectivePhoneNumber;
     }
 
-    public static UserBuilder builder() {
-        return new UserBuilder();
+    public static UserResponseBuilder builder() {
+        return new UserResponseBuilder();
     }
 
     public String getId() {
         return this.id;
     }
 
-    public @NotBlank String getDisplayName() {
+    public String getDisplayName() {
         return this.displayName;
     }
 
-    public @NotBlank String getRealName() {
+    public String getRealName() {
         return this.realName;
     }
 
-    public @NotBlank String getMobileNo() {
+    public String getMobileNo() {
         return this.mobileNo;
     }
 
-    public @NotBlank String getGoogleAccountId() {
+    public String getGoogleAccountId() {
         return this.googleAccountId;
     }
 
@@ -70,11 +57,11 @@ public class User {
         return this.emailAddress;
     }
 
-    public @NotBlank String getCountryCode() {
+    public String getCountryCode() {
         return this.countryCode;
     }
 
-    public @NotBlank String getEffectivePhoneNumber() {
+    public String getEffectivePhoneNumber() {
         return this.effectivePhoneNumber;
     }
 
@@ -82,19 +69,19 @@ public class User {
         this.id = id;
     }
 
-    public void setDisplayName(@NotBlank String displayName) {
+    public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
 
-    public void setRealName(@NotBlank String realName) {
+    public void setRealName(String realName) {
         this.realName = realName;
     }
 
-    public void setMobileNo(@NotBlank String mobileNo) {
+    public void setMobileNo(String mobileNo) {
         this.mobileNo = mobileNo;
     }
 
-    public void setGoogleAccountId(@NotBlank String googleAccountId) {
+    public void setGoogleAccountId(String googleAccountId) {
         this.googleAccountId = googleAccountId;
     }
 
@@ -102,18 +89,18 @@ public class User {
         this.emailAddress = emailAddress;
     }
 
-    public void setCountryCode(@NotBlank String countryCode) {
+    public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
 
-    public void setEffectivePhoneNumber(@NotBlank String effectivePhoneNumber) {
+    public void setEffectivePhoneNumber(String effectivePhoneNumber) {
         this.effectivePhoneNumber = effectivePhoneNumber;
     }
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof User)) return false;
-        final User other = (User) o;
+        if (!(o instanceof UserResponse)) return false;
+        final UserResponse other = (UserResponse) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$id = this.getId();
         final Object other$id = other.getId();
@@ -148,7 +135,7 @@ public class User {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof User;
+        return other instanceof UserResponse;
     }
 
     public int hashCode() {
@@ -174,68 +161,68 @@ public class User {
     }
 
     public String toString() {
-        return "User(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", mobileNo=" + this.getMobileNo() + ", googleAccountId=" + this.getGoogleAccountId() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", effectivePhoneNumber=" + this.getEffectivePhoneNumber() + ")";
+        return "UserResponse(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", mobileNo=" + this.getMobileNo() + ", googleAccountId=" + this.getGoogleAccountId() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", effectivePhoneNumber=" + this.getEffectivePhoneNumber() + ")";
     }
 
-    public static class UserBuilder {
+    public static class UserResponseBuilder {
         private String id;
-        private @NotBlank String displayName;
-        private @NotBlank String realName;
-        private @NotBlank String mobileNo;
-        private @NotBlank String googleAccountId;
+        private String displayName;
+        private String realName;
+        private String mobileNo;
+        private String googleAccountId;
         private String emailAddress;
-        private @NotBlank String countryCode;
-        private @NotBlank String effectivePhoneNumber;
+        private String countryCode;
+        private String effectivePhoneNumber;
 
-        UserBuilder() {
+        UserResponseBuilder() {
         }
 
-        public User.UserBuilder id(String id) {
+        public UserResponse.UserResponseBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public User.UserBuilder displayName(@NotBlank String displayName) {
+        public UserResponse.UserResponseBuilder displayName(String displayName) {
             this.displayName = displayName;
             return this;
         }
 
-        public User.UserBuilder realName(@NotBlank String realName) {
+        public UserResponse.UserResponseBuilder realName(String realName) {
             this.realName = realName;
             return this;
         }
 
-        public User.UserBuilder mobileNo(@NotBlank String mobileNo) {
+        public UserResponse.UserResponseBuilder mobileNo(String mobileNo) {
             this.mobileNo = mobileNo;
             return this;
         }
 
-        public User.UserBuilder googleAccountId(@NotBlank String googleAccountId) {
+        public UserResponse.UserResponseBuilder googleAccountId(String googleAccountId) {
             this.googleAccountId = googleAccountId;
             return this;
         }
 
-        public User.UserBuilder emailAddress(String emailAddress) {
+        public UserResponse.UserResponseBuilder emailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
             return this;
         }
 
-        public User.UserBuilder countryCode(@NotBlank String countryCode) {
+        public UserResponse.UserResponseBuilder countryCode(String countryCode) {
             this.countryCode = countryCode;
             return this;
         }
 
-        public User.UserBuilder effectivePhoneNumber(@NotBlank String effectivePhoneNumber) {
+        public UserResponse.UserResponseBuilder effectivePhoneNumber(String effectivePhoneNumber) {
             this.effectivePhoneNumber = effectivePhoneNumber;
             return this;
         }
 
-        public User build() {
-            return new User(id, displayName, realName, mobileNo, googleAccountId, emailAddress, countryCode, effectivePhoneNumber);
+        public UserResponse build() {
+            return new UserResponse(id, displayName, realName, mobileNo, googleAccountId, emailAddress, countryCode, effectivePhoneNumber);
         }
 
         public String toString() {
-            return "User.UserBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", mobileNo=" + this.mobileNo + ", googleAccountId=" + this.googleAccountId + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", effectivePhoneNumber=" + this.effectivePhoneNumber + ")";
+            return "UserResponse.UserResponseBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", mobileNo=" + this.mobileNo + ", googleAccountId=" + this.googleAccountId + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", effectivePhoneNumber=" + this.effectivePhoneNumber + ")";
         }
     }
 }
