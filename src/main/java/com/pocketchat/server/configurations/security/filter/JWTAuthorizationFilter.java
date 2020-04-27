@@ -3,14 +3,15 @@ package com.pocketchat.server.configurations.security.filter;
 import com.pocketchat.server.configurations.security.service.MyUserDetailsService;
 import com.pocketchat.utils.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
+//import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+//import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,15 +22,14 @@ import java.io.IOException;
 // https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot/
 // Not using JWTAuthenticationFilter*, create custom login API
 @Component
-public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
-    private MyUserDetailsService myUserDetailsService;
+    private final MyUserDetailsService myUserDetailsService;
 
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public JWTAuthorizationFilter(AuthenticationManager authManager, MyUserDetailsService myUserDetailsService, JwtUtil jwtUtil) {
-        super(authManager);
+    public JWTAuthorizationFilter(MyUserDetailsService myUserDetailsService, JwtUtil jwtUtil) {
         this.myUserDetailsService = myUserDetailsService;
         this.jwtUtil = jwtUtil;
     }

@@ -64,14 +64,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(usernamePasswordAuthenticationRequest.getPassword());
-        Authentication authentication = authenticationRepoService.save(Authentication.builder()
+
+        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(usernamePasswordAuthenticationRequest.getUsername());
+
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        authenticationRepoService.save(Authentication.builder()
                 .username(usernamePasswordAuthenticationRequest.getUsername())
                 .password(encodedPassword)
                 .build());
-
-        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(authentication.getUsername());
-
-        final String jwt = jwtUtil.generateToken(userDetails);
 
         return AuthenticationResponse.builder().jwt(jwt).build();
     }

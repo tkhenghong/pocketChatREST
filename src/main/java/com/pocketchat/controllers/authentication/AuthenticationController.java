@@ -24,7 +24,6 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    // addUsernamePasswordAuthenticationRequest
     @PostMapping("")
     public AuthenticationResponse addUsernamePasswordAuthenticationRequest(@RequestBody UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
         return authenticationService.addUsernamePasswordAuthenticationRequest(usernamePasswordAuthenticationRequest);

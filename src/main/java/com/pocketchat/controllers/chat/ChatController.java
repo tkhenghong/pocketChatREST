@@ -19,30 +19,27 @@ import java.util.Date;
 @Controller
 public class ChatController {
 
-//    private SimpMessagingTemplate simpMessagingTemplate;
-//
-//    @Autowired
-//    public ChatController(SimpMessagingTemplate simpMessagingTemplate) {
-//        this.simpMessagingTemplate = simpMessagingTemplate;
-//    }
+    // private SimpMessagingTemplate simpMessagingTemplate;
+
+    // @Autowired
+    // public ChatController(SimpMessagingTemplate simpMessagingTemplate) {
+    //     this.simpMessagingTemplate = simpMessagingTemplate;
+    // }
 
 
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
-//    @PostMapping("/testingWEbsocket")
+    // @PostMapping("/testingWEbsocket")
     public String handle(@RequestBody String greeting) {
-        System.out.println("ChatController.java Hello");
         Date date = new Date();
         String message = "[" + new Timestamp(date.getTime()) + "]: " + greeting;
-        System.out.println("ChatController.java message: " + message);
-//        simpMessagingTemplate.convertAndSend("/topic/socket", message);
-//        System.out.println("Already done send websocket message");
+        // simpMessagingTemplate.convertAndSend("/topic/socket", message);
+        // System.out.println("Already done send websocket message");
         return message;
     }
 
     @MessageMapping("/group/{userId}")
     public void sendJoinGroup(@DestinationVariable String userId, String groupId, Message<?> message) {
-        System.out.println("sendJoinGroup()");
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
     }
 

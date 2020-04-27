@@ -45,19 +45,6 @@ public class ConversationGroupRepoService {
     // Find all conversationGroup objects by their memberIds array has the mentioned userContactId or not
     // Because 1 User has 1 UserContact, and the memberIds/adminIds of the ConversationGroup are userContactId
     public List<ConversationGroup> findAllByMemberIds(String userContactId) {
-        System.out.println("ConversationGroupRepoService.java findAllByMemberIds(): ");
-        System.out.println("ConversationGroupRepoService.java userContactId: " + userContactId);
-
-        Criteria criteria = new Criteria();
-        criteria = criteria.andOperator(
-                Criteria.where("memberIds").in(userContactId)
-        );
-
-        Query query = Query.query(criteria);
-        List<ConversationGroup> conversationGroupList = mongoTemplate.find(query, ConversationGroup.class);
-
-        System.out.println("ConversationGroupRepoService.java conversationGroupList.size(): " + conversationGroupList.size());
-
         return conversationGroupRepository.findAllByMemberIds(userContactId);
     }
 

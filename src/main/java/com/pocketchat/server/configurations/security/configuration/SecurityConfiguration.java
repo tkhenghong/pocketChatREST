@@ -41,12 +41,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     // Main thing. WL he just used XML format to write all these things
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().and().formLogin().disable()
-                .authorizeRequests().antMatchers("/authentication/**").permitAll()
+        http.csrf().disable()
+                .authorizeRequests().antMatchers("/authentication").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Enable HTTPS
+        http.requiresChannel().anyRequest().requiresSecure();
     }
 
     // Problem: https://stackoverflow.com/questions/52243774/consider-defining-a-bean-of-type-org-springframework-security-authentication-au

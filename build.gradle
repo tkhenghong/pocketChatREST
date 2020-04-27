@@ -36,12 +36,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    // implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework:spring-websocket'
 
-    compile('javax.xml.bind:jaxb-api')
+    compile('javax.xml.bind:jaxb-api') // Create compatibility with Java 8 libraries if this project is compiled with Java 11 or 13*
 
     compileOnly 'org.projectlombok:lombok'
     implementation 'org.apache.kafka:kafka-streams'
