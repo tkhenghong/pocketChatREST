@@ -2,12 +2,12 @@ package com.pocketchat.services.message;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.chat_message.ChatMessage;
-import com.pocketchat.db.repoServices.conversationGroup.ConversationGroupRepoService;
-import com.pocketchat.db.repoServices.message.MessageRepoService;
+import com.pocketchat.db.repo_services.conversationGroup.ConversationGroupRepoService;
+import com.pocketchat.db.repo_services.message.MessageRepoService;
 import com.pocketchat.models.controllers.request.message.CreateMessageRequest;
 import com.pocketchat.models.controllers.request.message.UpdateMessageRequest;
 import com.pocketchat.models.controllers.response.message.MessageResponse;
-import com.pocketchat.server.exceptions.conversationGroup.ConversationGroupNotFoundException;
+import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.message.MessageNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

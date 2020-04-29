@@ -1,7 +1,7 @@
 package com.pocketchat.services.user;
 
 import com.pocketchat.db.models.user.User;
-import com.pocketchat.db.repoServices.user.UserRepoService;
+import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.models.controllers.request.user.CreateUserRequest;
 import com.pocketchat.models.controllers.request.user.UpdateUserRequest;
 import com.pocketchat.models.controllers.response.user.UserResponse;

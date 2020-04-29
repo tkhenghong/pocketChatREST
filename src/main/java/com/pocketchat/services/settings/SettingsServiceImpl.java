@@ -2,8 +2,8 @@ package com.pocketchat.services.settings;
 
 import com.pocketchat.db.models.settings.Settings;
 import com.pocketchat.db.models.user.User;
-import com.pocketchat.db.repoServices.settings.SettingsRepoService;
-import com.pocketchat.db.repoServices.user.UserRepoService;
+import com.pocketchat.db.repo_services.settings.SettingsRepoService;
+import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.models.controllers.request.settings.CreateSettingsRequest;
 import com.pocketchat.models.controllers.request.settings.UpdateSettingsRequest;
 import com.pocketchat.models.controllers.response.settings.SettingsResponse;

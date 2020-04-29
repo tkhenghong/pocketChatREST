@@ -2,8 +2,8 @@ package com.pocketchat.services.authentication;
 
 import com.pocketchat.db.models.authentication.Authentication;
 import com.pocketchat.db.models.user.User;
-import com.pocketchat.db.repoServices.authentication.AuthenticationRepoService;
-import com.pocketchat.db.repoServices.user.UserRepoService;
+import com.pocketchat.db.repo_services.authentication.AuthenticationRepoService;
+import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.models.controllers.request.authentication.MobileNumberOTPVerificationRequest;
 import com.pocketchat.models.controllers.request.authentication.MobileNumberVerificationRequest;
 import com.pocketchat.models.controllers.request.authentication.UsernamePasswordAuthenticationRequest;
@@ -11,7 +11,7 @@ import com.pocketchat.models.controllers.response.authentication.AuthenticationR
 import com.pocketchat.models.controllers.response.authentication.MobileNumberVerificationResponse;
 import com.pocketchat.models.sms.SendSMSRequest;
 import com.pocketchat.server.configurations.security.service.MyUserDetailsService;
-import com.pocketchat.server.exceptions.mobileNumber.MobileNumberNotFoundException;
+import com.pocketchat.server.exceptions.mobile_number.MobileNumberNotFoundException;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.services.sms.SMSService;
 import com.pocketchat.utils.jwt.JwtUtil;
