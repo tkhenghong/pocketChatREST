@@ -11,6 +11,7 @@ import com.pocketchat.models.controllers.response.authentication.AuthenticationR
 import com.pocketchat.models.controllers.response.authentication.MobileNumberVerificationResponse;
 import com.pocketchat.models.sms.SendSMSRequest;
 import com.pocketchat.server.configurations.security.service.MyUserDetailsService;
+import com.pocketchat.server.exceptions.authentication.UsernameExistException;
 import com.pocketchat.server.exceptions.mobile_number.MobileNumberNotFoundException;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.services.sms.SMSService;
@@ -62,8 +63,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public AuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
+        // TODO: Decrypt the password from frontend
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(usernamePasswordAuthenticationRequest.getPassword());
+
+        Optional<Authentication> authenticationOptional = authenticationRepoService.findFirstByUsername(usernamePasswordAuthenticationRequest.getUsername());
+
+        if (authenticationOptional.isPresent()) {
+            throw new UsernameExistException("Username has already exist for username: " + usernamePasswordAuthenticationRequest.getUsername());
+        }
 
         final UserDetails userDetails = myUserDetailsService.loadUserByUsername(usernamePasswordAuthenticationRequest.getUsername());
 

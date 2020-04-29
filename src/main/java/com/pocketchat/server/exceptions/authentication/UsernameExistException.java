@@ -3,9 +3,9 @@ package com.pocketchat.server.exceptions.authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class UsernameNotFoundException extends RuntimeException {
-    public UsernameNotFoundException(String message) {
+@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+public class UsernameExistException extends RuntimeException {
+    public UsernameExistException(String message) {
         super(message);
     }
 }

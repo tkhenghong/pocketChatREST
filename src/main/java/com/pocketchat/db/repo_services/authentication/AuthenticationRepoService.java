@@ -21,8 +21,12 @@ public class AuthenticationRepoService {
         this.mongoTemplate = mongoTemplate;
     }
 
-    Optional<Authentication> findById(String id) {
+    public Optional<Authentication> findById(String id) {
         return authenticationRepository.findById(id);
+    }
+
+    public Optional<Authentication> findFirstByUsername(String username) {
+        return authenticationRepository.findFirstByUsername(username);
     }
 
     public Authentication save(Authentication authentication) {
