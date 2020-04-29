@@ -1,13 +1,13 @@
-package com.pocketchat.server.tomcat;
+package com.pocketchat.server.configurations.tomcat;
 
-import org.apache.catalina.Context;
-import org.apache.catalina.connector.Connector;
-import org.apache.tomcat.util.descriptor.web.SecurityCollection;
-import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+// import org.apache.catalina.Context;
+// import org.apache.catalina.connector.Connector;
+// import org.apache.tomcat.util.descriptor.web.SecurityCollection;
+// import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+// import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+// import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
 
 // This is the general Tomcat configuration of the Spring Boot Server
 // Note: You don't need to configure in the latest version of Spring Boot.

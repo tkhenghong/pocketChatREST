@@ -1,7 +1,7 @@
 package com.pocketchat.db.repo_services.conversationGroup;
 
-import com.pocketchat.db.repositories.conversationGroup.ConversationGroupRepository;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
+import com.pocketchat.db.repositories.conversationGroup.ConversationGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;

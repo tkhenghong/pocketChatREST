@@ -1,7 +1,7 @@
 package com.pocketchat.db.repo_services.userContact;
 
-import com.pocketchat.db.repositories.userContact.UserContactRepository;
 import com.pocketchat.db.models.user_contact.UserContact;
+import com.pocketchat.db.repositories.userContact.UserContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

@@ -1,7 +1,7 @@
 package com.pocketchat.db.repo_services.multimedia;
 
-import com.pocketchat.db.repositories.multimedia.MultimediaRepository;
 import com.pocketchat.db.models.multimedia.Multimedia;
+import com.pocketchat.db.repositories.multimedia.MultimediaRepository;
 import com.pocketchat.server.exceptions.multimedia.MultimediaNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

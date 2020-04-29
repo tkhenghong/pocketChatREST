@@ -1,7 +1,7 @@
 package com.pocketchat.db.repo_services.message;
 
-import com.pocketchat.db.repositories.message.MessageRepository;
 import com.pocketchat.db.models.chat_message.ChatMessage;
+import com.pocketchat.db.repositories.message.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

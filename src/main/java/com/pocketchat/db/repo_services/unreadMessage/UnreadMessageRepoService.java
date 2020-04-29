@@ -1,7 +1,7 @@
 package com.pocketchat.db.repo_services.unreadMessage;
 
-import com.pocketchat.db.repositories.unreadMessage.UnreadMessageRepository;
 import com.pocketchat.db.models.unread_message.UnreadMessage;
+import com.pocketchat.db.repositories.unreadMessage.UnreadMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

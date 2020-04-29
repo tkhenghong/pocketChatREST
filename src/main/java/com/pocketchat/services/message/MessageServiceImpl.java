@@ -1,7 +1,7 @@
 package com.pocketchat.services.message;
 
-import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.chat_message.ChatMessage;
+import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.repo_services.conversationGroup.ConversationGroupRepoService;
 import com.pocketchat.db.repo_services.message.MessageRepoService;
 import com.pocketchat.models.controllers.request.message.CreateMessageRequest;

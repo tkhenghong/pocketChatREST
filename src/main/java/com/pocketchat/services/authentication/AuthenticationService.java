@@ -1,8 +1,7 @@
 package com.pocketchat.services.authentication;
 
-import com.pocketchat.db.models.authentication.Authentication;
-import com.pocketchat.models.controllers.request.authentication.MobileNumberVerificationRequest;
 import com.pocketchat.models.controllers.request.authentication.MobileNumberOTPVerificationRequest;
+import com.pocketchat.models.controllers.request.authentication.MobileNumberVerificationRequest;
 import com.pocketchat.models.controllers.request.authentication.UsernamePasswordAuthenticationRequest;
 import com.pocketchat.models.controllers.response.authentication.AuthenticationResponse;
 import com.pocketchat.models.controllers.response.authentication.MobileNumberVerificationResponse;

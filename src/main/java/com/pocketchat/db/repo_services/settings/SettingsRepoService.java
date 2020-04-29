@@ -1,7 +1,7 @@
 package com.pocketchat.db.repo_services.settings;
 
-import com.pocketchat.db.repositories.settings.SettingsRepository;
 import com.pocketchat.db.models.settings.Settings;
+import com.pocketchat.db.repositories.settings.SettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

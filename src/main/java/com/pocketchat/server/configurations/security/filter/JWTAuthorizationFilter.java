@@ -3,12 +3,10 @@ package com.pocketchat.server.configurations.security.filter;
 import com.pocketchat.server.configurations.security.service.MyUserDetailsService;
 import com.pocketchat.utils.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-//import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,6 +16,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+//import org.springframework.security.authentication.AuthenticationManager;
+//import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 // https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot/
 // Not using JWTAuthenticationFilter*, create custom login API
