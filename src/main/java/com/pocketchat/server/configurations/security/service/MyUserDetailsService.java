@@ -2,6 +2,7 @@ package com.pocketchat.server.configurations.security.service;
 
 import com.pocketchat.db.models.authentication.Authentication;
 import com.pocketchat.db.repositories.authentication.AuthenticationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +17,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
     private final AuthenticationRepository authenticationRepository;
 
+    @Autowired
     MyUserDetailsService(AuthenticationRepository authenticationRepository) {
         this.authenticationRepository = authenticationRepository;
     }
@@ -23,13 +25,10 @@ public class MyUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         Optional<Authentication> authenticationOptional = authenticationRepository.findFirstByUsername(username);
-
         if (!authenticationOptional.isPresent()) {
             throw new UsernameNotFoundException("Username not found with this username: " + username);
         }
-
         Authentication authentication = authenticationOptional.get();
-
         return new User(authentication.getUsername(), authentication.getPassword(), Collections.emptyList());
     }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/userContact")
 public class UserContactController {
+
     private final UserContactService userContactService;
 
     @Autowired

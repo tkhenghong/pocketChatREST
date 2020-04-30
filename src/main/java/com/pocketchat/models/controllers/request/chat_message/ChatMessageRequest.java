@@ -1,11 +1,11 @@
-package com.pocketchat.models.controllers.request.message;
+package com.pocketchat.models.controllers.request.chat_message;
 
 import org.joda.time.DateTime;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-public class MessageRequest {
+public class ChatMessageRequest {
 
     private String id;
 
@@ -43,7 +43,7 @@ public class MessageRequest {
 
     private DateTime sentTime;
 
-    MessageRequest(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, @NotBlank String messageContent, String multimediaId, @NotNull DateTime createdTime, DateTime sentTime) {
+    ChatMessageRequest(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, @NotBlank String messageContent, String multimediaId, @NotNull DateTime createdTime, DateTime sentTime) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
@@ -178,8 +178,8 @@ public class MessageRequest {
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof MessageRequest)) return false;
-        final MessageRequest other = (MessageRequest) o;
+        if (!(o instanceof ChatMessageRequest)) return false;
+        final ChatMessageRequest other = (ChatMessageRequest) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$id = this.getId();
         final Object other$id = other.getId();
@@ -236,7 +236,7 @@ public class MessageRequest {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof MessageRequest;
+        return other instanceof ChatMessageRequest;
     }
 
     public int hashCode() {
@@ -296,78 +296,78 @@ public class MessageRequest {
         MessageRequestBuilder() {
         }
 
-        public MessageRequest.MessageRequestBuilder id(String id) {
+        public ChatMessageRequest.MessageRequestBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder conversationId(@NotBlank String conversationId) {
+        public ChatMessageRequest.MessageRequestBuilder conversationId(@NotBlank String conversationId) {
             this.conversationId = conversationId;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder senderId(@NotBlank String senderId) {
+        public ChatMessageRequest.MessageRequestBuilder senderId(@NotBlank String senderId) {
             this.senderId = senderId;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder senderName(@NotBlank String senderName) {
+        public ChatMessageRequest.MessageRequestBuilder senderName(@NotBlank String senderName) {
             this.senderName = senderName;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder senderMobileNo(@NotBlank String senderMobileNo) {
+        public ChatMessageRequest.MessageRequestBuilder senderMobileNo(@NotBlank String senderMobileNo) {
             this.senderMobileNo = senderMobileNo;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder receiverId(String receiverId) {
+        public ChatMessageRequest.MessageRequestBuilder receiverId(String receiverId) {
             this.receiverId = receiverId;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder receiverName(String receiverName) {
+        public ChatMessageRequest.MessageRequestBuilder receiverName(String receiverName) {
             this.receiverName = receiverName;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder receiverMobileNo(String receiverMobileNo) {
+        public ChatMessageRequest.MessageRequestBuilder receiverMobileNo(String receiverMobileNo) {
             this.receiverMobileNo = receiverMobileNo;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder type(String type) {
+        public ChatMessageRequest.MessageRequestBuilder type(String type) {
             this.type = type;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder status(String status) {
+        public ChatMessageRequest.MessageRequestBuilder status(String status) {
             this.status = status;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder messageContent(@NotBlank String messageContent) {
+        public ChatMessageRequest.MessageRequestBuilder messageContent(@NotBlank String messageContent) {
             this.messageContent = messageContent;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder multimediaId(String multimediaId) {
+        public ChatMessageRequest.MessageRequestBuilder multimediaId(String multimediaId) {
             this.multimediaId = multimediaId;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder createdTime(@NotNull DateTime createdTime) {
+        public ChatMessageRequest.MessageRequestBuilder createdTime(@NotNull DateTime createdTime) {
             this.createdTime = createdTime;
             return this;
         }
 
-        public MessageRequest.MessageRequestBuilder sentTime(DateTime sentTime) {
+        public ChatMessageRequest.MessageRequestBuilder sentTime(DateTime sentTime) {
             this.sentTime = sentTime;
             return this;
         }
 
-        public MessageRequest build() {
-            return new MessageRequest(id, conversationId, senderId, senderName, senderMobileNo, receiverId, receiverName, receiverMobileNo, type, status, messageContent, multimediaId, createdTime, sentTime);
+        public ChatMessageRequest build() {
+            return new ChatMessageRequest(id, conversationId, senderId, senderName, senderMobileNo, receiverId, receiverName, receiverMobileNo, type, status, messageContent, multimediaId, createdTime, sentTime);
         }
 
         public String toString() {

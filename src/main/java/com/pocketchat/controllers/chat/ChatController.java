@@ -22,7 +22,6 @@ public class ChatController {
     //     this.simpMessagingTemplate = simpMessagingTemplate;
     // }
 
-
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     // @PostMapping("/testingWEbsocket")

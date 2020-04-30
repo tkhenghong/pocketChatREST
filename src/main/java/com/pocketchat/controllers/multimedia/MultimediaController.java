@@ -58,7 +58,7 @@ public class MultimediaController {
         return multimediaService.getMultimediaOfAUserContact(userContactId);
     }
 
-    // Get multimedia of the Group Photo (One at the time)
+    // Get the multimedia of the Group Photo (One at the time)
     @GetMapping("/conversationGroup/photo/{conversationGroupId}")
     public MultimediaResponse getConversationGroupPhotoMultimedia(@PathVariable String conversationGroupId) {
         return multimediaService.getConversationGroupMultimedia(conversationGroupId);
@@ -70,7 +70,7 @@ public class MultimediaController {
         return multimediaService.getMessageMultimedia(conversationGroupId, messageId);
     }
 
-    // Retrieve multiple Multimedia object of a conversationGroup (Not including the group profile photo)
+    // Retrieve multiple Multimedia objects of a conversationGroup (Not including the group profile photo)
     @GetMapping("/conversationGroup/{conversationGroupId}")
     public List<MultimediaResponse> getMultimediaOfAConversation(@PathVariable String conversationGroupId) {
         return multimediaService.getMultimediaOfAConversation(conversationGroupId);

@@ -1,9 +1,8 @@
-package com.pocketchat.db.repo_services.conversationGroup;
+package com.pocketchat.db.repo_services.conversation_group;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
-import com.pocketchat.db.repositories.conversationGroup.ConversationGroupRepository;
+import com.pocketchat.db.repositories.conversation_group.ConversationGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,20 +12,16 @@ import java.util.Optional;
 @Service
 public class ConversationGroupRepoService {
 
-    private ConversationGroupRepository conversationGroupRepository;
-
-    private final MongoTemplate mongoTemplate;
+    private final ConversationGroupRepository conversationGroupRepository;
 
     @Autowired
-    public ConversationGroupRepoService(ConversationGroupRepository conversationGroupRepository, MongoTemplate mongoTemplate) {
+    public ConversationGroupRepoService(ConversationGroupRepository conversationGroupRepository) {
         this.conversationGroupRepository = conversationGroupRepository;
-        this.mongoTemplate = mongoTemplate;
     }
 
 
     public List<ConversationGroup> findAllConversationGroupsByIds(List<String> ids) {
-        Iterable<String> iterable = ids;
-        Iterable<ConversationGroup> conversationGroupIterable = conversationGroupRepository.findAllById(iterable);
+        Iterable<ConversationGroup> conversationGroupIterable = conversationGroupRepository.findAllById(ids);
 
         // TODO: Need expert review for possibly better options
         // From Iterable to Collection List

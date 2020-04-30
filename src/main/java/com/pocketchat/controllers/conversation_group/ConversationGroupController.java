@@ -25,10 +25,6 @@ public class ConversationGroupController {
         this.conversationGroupService = conversationGroupService;
     }
 
-
-    // TODO: Should create DTO objects to prevent malicious attack
-    // Explanation: https://rules.sonarsource.com/java/tag/spring/RSPEC-4684
-    // How to implement: https://auth0.com/blog/automatically-mapping-dto-to-entity-on-spring-boot-apis/
     @PostMapping("")
     public ResponseEntity<Object> addConversation(@Valid @RequestBody CreateConversationGroupRequest conversationGroup) {
         ConversationGroupResponse savedConversationGroup = conversationGroupService.addConversation(conversationGroup);
@@ -37,7 +33,7 @@ public class ConversationGroupController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping(value = "")
+    @PutMapping("")
     public ConversationGroupResponse editConversation(@Valid @RequestBody UpdateConversationGroupRequest updateConversationGroupRequest) {
         return conversationGroupService.editConversation(updateConversationGroupRequest);
     }

@@ -2,7 +2,7 @@ package com.pocketchat.services.user_contact;
 
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.user.UserRepoService;
-import com.pocketchat.db.repo_services.userContact.UserContactRepoService;
+import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
 import com.pocketchat.models.controllers.request.user_contact.CreateUserContactRequest;
 import com.pocketchat.models.controllers.request.user_contact.UpdateUserContactRequest;
 import com.pocketchat.models.controllers.request.user_contact.UserContactRequest;

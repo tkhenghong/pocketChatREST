@@ -1,4 +1,4 @@
-package com.pocketchat.db.repositories.unreadMessage;
+package com.pocketchat.db.repositories.unread_message;
 
 import com.pocketchat.db.models.unread_message.UnreadMessage;
 import org.springframework.data.mongodb.repository.MongoRepository;

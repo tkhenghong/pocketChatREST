@@ -6,9 +6,9 @@ import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_contact.UserContact;
-import com.pocketchat.db.repo_services.conversationGroup.ConversationGroupRepoService;
+import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.db.repo_services.user.UserRepoService;
-import com.pocketchat.db.repo_services.userContact.UserContactRepoService;
+import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
@@ -137,7 +137,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
         WebSocketUser webSocketUser = webSocketUserList.stream().filter((WebSocketUser existingWebsocketUser) -> existingWebsocketUser.getWebSocketSession().getId().equals(webSocketSession.getId())).findAny().orElse(null);
         if (!ObjectUtils.isEmpty(webSocketUser)) {
             System.out.println("if (!ObjectUtils.isEmpty(webSocketUser))");
-            webSocketUser.webSocketSession.close();
+            webSocketUser.getWebSocketSession().close();
             boolean removed = webSocketUserList.remove(webSocketUser);
             if (removed) {
                 System.out.println("websocket user removed");
@@ -197,7 +197,7 @@ public class WebSocketHandler2 extends TextWebSocketHandler implements WebSocket
 //                        System.out.println("webSocketUser.getUser().getId(): " + webSocketUser.getUser().getId());
 //                        System.out.println("webSocketUser.getUser().getDisplayName(): " + webSocketUser.getUser().getDisplayName());
 
-                        sendWebSocketMessage(webSocketUser.webSocketSession, textMessage);
+                        sendWebSocketMessage(webSocketUser.getWebSocketSession(), textMessage);
                     });
                 }
             });

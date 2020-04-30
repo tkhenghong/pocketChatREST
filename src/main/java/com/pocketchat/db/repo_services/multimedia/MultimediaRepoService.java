@@ -12,16 +12,20 @@ import java.util.Optional;
 @Service
 public class MultimediaRepoService {
 
+    private final MultimediaRepository multimediaRepository;
+
     @Autowired
-    MultimediaRepository multimediaRepository;
+    MultimediaRepoService(MultimediaRepository multimediaRepository) {
+        this.multimediaRepository = multimediaRepository;
+    }
 
     public Optional<Multimedia> findById(String multimediaId) {
         return multimediaRepository.findById(multimediaId);
     }
 
-    public List<Multimedia> findAllByConversationId (List<String> conversationGroupIds) {
+    public List<Multimedia> findAllByConversationId(List<String> conversationGroupIds) {
         List<Multimedia> multimediaList = multimediaRepository.findAllByConversationId(conversationGroupIds);
-        if(multimediaList.isEmpty()) {
+        if (multimediaList.isEmpty()) {
             throw new MultimediaNotFoundException("No multimedia found for this list of ids!");
         }
         return multimediaList;
@@ -29,7 +33,7 @@ public class MultimediaRepoService {
 
     public List<Multimedia> findAllByConversationGroupId(String conversationGroupId) {
         List<Multimedia> multimediaList = multimediaRepository.findAllByConversationId(conversationGroupId);
-        if(multimediaList.isEmpty()) {
+        if (multimediaList.isEmpty()) {
             throw new MultimediaNotFoundException("No multimedia found for this id:-" + conversationGroupId);
         }
         return multimediaList;

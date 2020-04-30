@@ -1,8 +1,8 @@
-package com.pocketchat.models.controllers.response.message;
+package com.pocketchat.models.controllers.response.chat_message;
 
 import org.joda.time.DateTime;
 
-public class MessageResponse {
+public class ChatMessageResponse {
 
     private String id;
 
@@ -32,7 +32,7 @@ public class MessageResponse {
 
     private DateTime sentTime;
 
-    MessageResponse(String id, String conversationId, String senderId, String senderName, String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, String messageContent, String multimediaId, DateTime createdTime, DateTime sentTime) {
+    ChatMessageResponse(String id, String conversationId, String senderId, String senderName, String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, String messageContent, String multimediaId, DateTime createdTime, DateTime sentTime) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
@@ -167,8 +167,8 @@ public class MessageResponse {
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof MessageResponse)) return false;
-        final MessageResponse other = (MessageResponse) o;
+        if (!(o instanceof ChatMessageResponse)) return false;
+        final ChatMessageResponse other = (ChatMessageResponse) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$id = this.getId();
         final Object other$id = other.getId();
@@ -225,7 +225,7 @@ public class MessageResponse {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof MessageResponse;
+        return other instanceof ChatMessageResponse;
     }
 
     public int hashCode() {
@@ -285,78 +285,78 @@ public class MessageResponse {
         MessageResponseBuilder() {
         }
 
-        public MessageResponse.MessageResponseBuilder id(String id) {
+        public ChatMessageResponse.MessageResponseBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder conversationId(String conversationId) {
+        public ChatMessageResponse.MessageResponseBuilder conversationId(String conversationId) {
             this.conversationId = conversationId;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder senderId(String senderId) {
+        public ChatMessageResponse.MessageResponseBuilder senderId(String senderId) {
             this.senderId = senderId;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder senderName(String senderName) {
+        public ChatMessageResponse.MessageResponseBuilder senderName(String senderName) {
             this.senderName = senderName;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder senderMobileNo(String senderMobileNo) {
+        public ChatMessageResponse.MessageResponseBuilder senderMobileNo(String senderMobileNo) {
             this.senderMobileNo = senderMobileNo;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder receiverId(String receiverId) {
+        public ChatMessageResponse.MessageResponseBuilder receiverId(String receiverId) {
             this.receiverId = receiverId;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder receiverName(String receiverName) {
+        public ChatMessageResponse.MessageResponseBuilder receiverName(String receiverName) {
             this.receiverName = receiverName;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder receiverMobileNo(String receiverMobileNo) {
+        public ChatMessageResponse.MessageResponseBuilder receiverMobileNo(String receiverMobileNo) {
             this.receiverMobileNo = receiverMobileNo;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder type(String type) {
+        public ChatMessageResponse.MessageResponseBuilder type(String type) {
             this.type = type;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder status(String status) {
+        public ChatMessageResponse.MessageResponseBuilder status(String status) {
             this.status = status;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder messageContent(String messageContent) {
+        public ChatMessageResponse.MessageResponseBuilder messageContent(String messageContent) {
             this.messageContent = messageContent;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder multimediaId(String multimediaId) {
+        public ChatMessageResponse.MessageResponseBuilder multimediaId(String multimediaId) {
             this.multimediaId = multimediaId;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder createdTime(DateTime createdTime) {
+        public ChatMessageResponse.MessageResponseBuilder createdTime(DateTime createdTime) {
             this.createdTime = createdTime;
             return this;
         }
 
-        public MessageResponse.MessageResponseBuilder sentTime(DateTime sentTime) {
+        public ChatMessageResponse.MessageResponseBuilder sentTime(DateTime sentTime) {
             this.sentTime = sentTime;
             return this;
         }
 
-        public MessageResponse build() {
-            return new MessageResponse(id, conversationId, senderId, senderName, senderMobileNo, receiverId, receiverName, receiverMobileNo, type, status, messageContent, multimediaId, createdTime, sentTime);
+        public ChatMessageResponse build() {
+            return new ChatMessageResponse(id, conversationId, senderId, senderName, senderMobileNo, receiverId, receiverName, receiverMobileNo, type, status, messageContent, multimediaId, createdTime, sentTime);
         }
 
         public String toString() {

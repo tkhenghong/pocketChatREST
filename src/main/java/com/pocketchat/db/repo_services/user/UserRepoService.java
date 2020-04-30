@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @Service
 public class UserRepoService {
+
     private final UserRepository userRepository;
 
     private final MongoTemplate mongoTemplate;
@@ -26,6 +27,7 @@ public class UserRepoService {
     public Optional<User> findById(String userId) {
         return userRepository.findById(userId);
     }
+
     public boolean existById(String userId) {
         return userRepository.existsById(userId);
     }

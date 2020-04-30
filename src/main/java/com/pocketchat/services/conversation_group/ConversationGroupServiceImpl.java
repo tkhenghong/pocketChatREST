@@ -2,8 +2,8 @@ package com.pocketchat.services.conversation_group;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.user_contact.UserContact;
-import com.pocketchat.db.repo_services.conversationGroup.ConversationGroupRepoService;
-import com.pocketchat.db.repo_services.userContact.UserContactRepoService;
+import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
+import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;

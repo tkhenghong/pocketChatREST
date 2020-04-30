@@ -1,4 +1,4 @@
-package com.pocketchat.db.repositories.userContact;
+package com.pocketchat.db.repositories.user_contact;
 
 import com.pocketchat.db.models.user_contact.UserContact;
 import org.springframework.data.mongodb.repository.MongoRepository;

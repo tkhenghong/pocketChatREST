@@ -13,12 +13,9 @@ public class AuthenticationRepoService {
 
     private final AuthenticationRepository authenticationRepository;
 
-    private final MongoTemplate mongoTemplate;
-
     @Autowired
-    AuthenticationRepoService(AuthenticationRepository authenticationRepository, MongoTemplate mongoTemplate) {
+    AuthenticationRepoService(AuthenticationRepository authenticationRepository) {
         this.authenticationRepository = authenticationRepository;
-        this.mongoTemplate = mongoTemplate;
     }
 
     public Optional<Authentication> findById(String id) {
@@ -36,5 +33,4 @@ public class AuthenticationRepoService {
     public void delete(Authentication authentication) {
         authenticationRepository.delete(authentication);
     }
-
 }

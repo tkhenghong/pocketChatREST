@@ -1,4 +1,4 @@
-package com.pocketchat.db.repositories.conversationGroup;
+package com.pocketchat.db.repositories.conversation_group;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import org.springframework.data.mongodb.repository.MongoRepository;
