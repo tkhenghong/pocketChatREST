@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,10 @@ public class InitRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        String content = "PocketChat REST API Spring Boot application started successfully.";
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        String content = "PocketChat REST API Spring Boot application started successfully at ." + timestamp.toString() + ".";
         this.smsService.sendSMS(SendSMSRequest.builder().mobileNumber("+60182262663").message(content).build());
 
         List<String> receiverEmailAddresses = new ArrayList<>();
