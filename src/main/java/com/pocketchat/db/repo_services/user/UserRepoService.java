@@ -57,4 +57,8 @@ public class UserRepoService {
     public Optional<User> findByMobileNo(String mobileNo) {
         return userRepository.findFirstByMobileNo(mobileNo);
     }
+
+    public Optional<User> findByEmailAddress(String emailAddress) {
+        return userRepository.findFirstByEmailAddress(emailAddress);
+    }
 }

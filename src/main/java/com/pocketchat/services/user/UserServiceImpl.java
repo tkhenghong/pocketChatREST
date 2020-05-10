@@ -7,7 +7,6 @@ import com.pocketchat.models.controllers.request.user.UpdateUserRequest;
 import com.pocketchat.models.controllers.response.user.UserResponse;
 import com.pocketchat.server.exceptions.user.UserGoogleAccountIsAlreadyRegisteredException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
-import com.pocketchat.services.authentication.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +17,9 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepoService userRepoService;
 
-    private final AuthenticationService authenticationService;
-
     @Autowired
-    public UserServiceImpl(UserRepoService userRepoService, AuthenticationService authenticationService) {
+    public UserServiceImpl(UserRepoService userRepoService) {
         this.userRepoService = userRepoService;
-        this.authenticationService = authenticationService;
     }
 
     @Override

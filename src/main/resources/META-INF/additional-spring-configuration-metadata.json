@@ -59,6 +59,21 @@
       "name": "email.debug",
       "type": "java.lang.String",
       "description": "Enable debug for the Email service."
+    },
+    {
+      "name": "server.otp.length",
+      "type": "java.lang.String",
+      "description": "Length of the OTP password of PocketChat in verification."
+    },
+    {
+      "name": "server.otp.alive.minutes",
+      "type": "java.lang.String",
+      "description": "OTP alive minutes(The current generated ones)."
+    },
+    {
+      "name": "server.otp.maximum.alive.minutes",
+      "type": "java.lang.String",
+      "description": "Maximum alive minutes that all OTPs in the server. (OTPs are stored temporarily using Google LoadingCache). It will never be stored in the DB of the application (Best practice)."
     }
   ]
 }

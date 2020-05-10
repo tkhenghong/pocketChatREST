@@ -20,9 +20,9 @@ public class UnreadMessageRequest {
     @NotNull
     private DateTime date;
 
-    private int count;
+    private Integer count;
 
-    UnreadMessageRequest(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull DateTime date, int count) {
+    UnreadMessageRequest(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull DateTime date, Integer count) {
         this.id = id;
         this.conversationId = conversationId;
         this.userId = userId;
@@ -55,7 +55,7 @@ public class UnreadMessageRequest {
         return this.date;
     }
 
-    public int getCount() {
+    public Integer getCount() {
         return this.count;
     }
 
@@ -79,7 +79,7 @@ public class UnreadMessageRequest {
         this.date = date;
     }
 
-    public void setCount(int count) {
+    public void setCount(Integer count) {
         this.count = count;
     }
 
@@ -105,7 +105,9 @@ public class UnreadMessageRequest {
         final Object this$date = this.getDate();
         final Object other$date = other.getDate();
         if (this$date == null ? other$date != null : !this$date.equals(other$date)) return false;
-        if (this.getCount() != other.getCount()) return false;
+        final Object this$count = this.getCount();
+        final Object other$count = other.getCount();
+        if (this$count == null ? other$count != null : !this$count.equals(other$count)) return false;
         return true;
     }
 
@@ -126,7 +128,8 @@ public class UnreadMessageRequest {
         result = result * PRIME + ($lastMessage == null ? 43 : $lastMessage.hashCode());
         final Object $date = this.getDate();
         result = result * PRIME + ($date == null ? 43 : $date.hashCode());
-        result = result * PRIME + this.getCount();
+        final Object $count = this.getCount();
+        result = result * PRIME + ($count == null ? 43 : $count.hashCode());
         return result;
     }
 
@@ -140,7 +143,7 @@ public class UnreadMessageRequest {
         private @NotBlank String userId;
         private String lastMessage;
         private @NotNull DateTime date;
-        private int count;
+        private Integer count;
 
         UnreadMessageRequestBuilder() {
         }
@@ -170,7 +173,7 @@ public class UnreadMessageRequest {
             return this;
         }
 
-        public UnreadMessageRequest.UnreadMessageRequestBuilder count(int count) {
+        public UnreadMessageRequest.UnreadMessageRequestBuilder count(Integer count) {
             this.count = count;
             return this;
         }

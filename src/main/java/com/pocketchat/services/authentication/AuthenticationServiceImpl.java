@@ -4,27 +4,31 @@ import com.pocketchat.db.models.authentication.Authentication;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.repo_services.authentication.AuthenticationRepoService;
 import com.pocketchat.db.repo_services.user.UserRepoService;
-import com.pocketchat.models.controllers.request.authentication.MobileNumberOTPVerificationRequest;
-import com.pocketchat.models.controllers.request.authentication.MobileNumberVerificationRequest;
-import com.pocketchat.models.controllers.request.authentication.UsernamePasswordAuthenticationRequest;
+import com.pocketchat.models.controllers.request.authentication.*;
 import com.pocketchat.models.controllers.response.authentication.AuthenticationResponse;
-import com.pocketchat.models.controllers.response.authentication.MobileNumberVerificationResponse;
+import com.pocketchat.models.email.SendEmailRequest;
+import com.pocketchat.models.otp.GenerateOTPRequest;
+import com.pocketchat.models.otp.OTP;
 import com.pocketchat.models.sms.SendSMSRequest;
 import com.pocketchat.server.configurations.security.service.MyUserDetailsService;
 import com.pocketchat.server.exceptions.authentication.UsernameExistException;
-import com.pocketchat.server.exceptions.mobile_number.MobileNumberNotFoundException;
+import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.services.sms.SMSService;
 import com.pocketchat.utils.jwt.JwtUtil;
-import org.joda.time.DateTime;
+import com.pocketchat.utils.otp.OTPNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,7 +46,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final MyUserDetailsService myUserDetailsService;
 
+    private final OTPNumberGenerator otpNumberGenerator;
+
     private final JwtUtil jwtUtil;
+
+    @Value("${server.otp.length}")
+    private int otpLength;
+
+    @Value("${server.otp.alive.minutes}")
+    private int otpAliveMinutes;
 
     @Autowired
     AuthenticationServiceImpl(
@@ -52,6 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             EmailService emailService,
             AuthenticationManager authenticationManager,
             MyUserDetailsService myUserDetailsService,
+            OTPNumberGenerator otpNumberGenerator,
             JwtUtil jwtUtil) {
         this.authenticationRepoService = authenticationRepoService;
         this.userRepoService = userRepoService;
@@ -59,9 +72,101 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.emailService = emailService;
         this.authenticationManager = authenticationManager;
         this.myUserDetailsService = myUserDetailsService;
+        this.otpNumberGenerator = otpNumberGenerator;
         this.jwtUtil = jwtUtil;
     }
 
+    // 1. Find User in DB.
+    // 2. Generate OTP number.
+    // 3. Prepare message title and content.
+    // 4. Send SMS.
+    // 5. Send Email.
+    @Override
+    public OTP requestToAuthenticateWithMobileNo(MobileNoAuthenticationRequest mobileNoAuthenticationRequest) {
+        Optional<User> user = userRepoService.findByMobileNo(mobileNoAuthenticationRequest.getMobileNo());
+
+        if (!user.isPresent()) {
+            throw new UserNotFoundException("User is not found by using mobile number: " + mobileNoAuthenticationRequest.getMobileNo());
+        }
+
+        OTP otp = otpNumberGenerator.generateOtpNumber(
+                GenerateOTPRequest.builder()
+                        .userId(user.get().getId())
+                        .otpLength(otpLength)
+                        .otpAliveMinutes(otpAliveMinutes)
+                        .build()
+        );
+
+        String messageTitle = "PocketChat Verification Code: " + otp.getOtp();
+
+        String messageContent = "Your verification number is: " + otp.getOtp() + " that is valid for "
+                + otpAliveMinutes + " minutes. It will expire in " + otp.getOtpExpirationDateTime()
+                + ". Do not share this OTP to anybody.";
+
+        if (StringUtils.hasText(user.get().getMobileNo())) {
+            smsService.sendSMS(SendSMSRequest.builder().mobileNumber(user.get().getMobileNo()).message(messageContent).build());
+        }
+
+        List<String> receiverEmailAddresses = new ArrayList<>();
+        receiverEmailAddresses.add(user.get().getEmailAddress());
+
+        if (StringUtils.hasText(user.get().getEmailAddress())) {
+            emailService.sendEmail(SendEmailRequest.builder()
+                    .receiverList(receiverEmailAddresses)
+                    .emailSubject(messageTitle)
+                    .emailContent(messageContent)
+                    .build());
+        }
+
+        return otp;
+    }
+
+    // 1. Find User in DB.
+    // 2. Generate OTP number.
+    // 3. Prepare message title and content.
+    // 4. Send Email.
+    // 5. Send SMS.
+    @Override
+    public OTP requestToAuthenticateWithEmailAddress(EmailAddressAuthenticationRequest mobileNoAuthenticationRequest) {
+        Optional<User> user = userRepoService.findByEmailAddress(mobileNoAuthenticationRequest.getEmailAddress());
+
+        if (!user.isPresent()) {
+            throw new UserNotFoundException("User is not found by using Email address: " + mobileNoAuthenticationRequest.getEmailAddress());
+        }
+
+        OTP otp = otpNumberGenerator.generateOtpNumber(
+                GenerateOTPRequest.builder()
+                        .userId(user.get().getId())
+                        .otpLength(otpLength)
+                        .otpAliveMinutes(otpAliveMinutes)
+                        .build()
+        );
+
+        String messageTitle = "PocketChat Verification Code: " + otp.getOtp();
+
+        String messageContent = "Your verification number is: " + otp.getOtp() + " that is valid for "
+                + otpAliveMinutes + " minutes. It will expire in " + otp.getOtpExpirationDateTime()
+                + ". Do not share this OTP to anybody.";
+
+        List<String> receiverEmailAddresses = new ArrayList<>();
+        receiverEmailAddresses.add(user.get().getEmailAddress());
+
+        if (StringUtils.hasText(user.get().getEmailAddress())) {
+            emailService.sendEmail(SendEmailRequest.builder()
+                    .receiverList(receiverEmailAddresses)
+                    .emailSubject(messageTitle)
+                    .emailContent(messageContent)
+                    .build());
+        }
+
+        if (StringUtils.hasText(user.get().getMobileNo())) {
+            smsService.sendSMS(SendSMSRequest.builder().mobileNumber(user.get().getMobileNo()).message(messageContent).build());
+        }
+
+        return otp;
+    }
+
+    @Override
     public AuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
         // TODO: Decrypt the password from frontend
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -100,26 +205,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return AuthenticationResponse.builder().jwt(jwt).build();
     }
 
-    // 1. Get mobile number from DB
-    // 2. send SMS
-    // 3. Return token expiration time
     @Override
-    public MobileNumberVerificationResponse verifyUsingMobileNumber(MobileNumberVerificationRequest mobileNumberVerificationRequest) {
-        Optional<User> userOptional = userRepoService.findByMobileNo(mobileNumberVerificationRequest.getMobileNumber());
-
-        if (!userOptional.isPresent()) {
-            throw new MobileNumberNotFoundException("Mobile number not found by using mobileNo: " + mobileNumberVerificationRequest.getMobileNumber());
-        }
-
-        smsService.sendSMS(SendSMSRequest.builder()
-                .mobileNumber(mobileNumberVerificationRequest.getMobileNumber())
-                .message("Test SMS message for verification number.")
-                .build());
-
-        return MobileNumberVerificationResponse.builder()
-                .mobileNo(mobileNumberVerificationRequest.getMobileNumber())
-                .otpExpirationTime(new DateTime())
-                .build();
+    public AuthenticationResponse verifyEmailAddressOTP(EmailOTPVerificationRequest emailOTPVerificationRequest) {
+        return null;
     }
 
     @Override
