@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-// This class is used for running necessary things every time when this Spring Boot application starts.
+// This class is used to run necessary things every time when this Spring Boot application starts.
 // Tasks that the developer want to run every time when this project runs successfully.
 // 1. Send SMS
 // 2. Send Email
@@ -34,7 +34,7 @@ public class InitRunner implements CommandLineRunner {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        String content = "PocketChat REST API Spring Boot application started successfully at ." + timestamp.toString() + ".";
+        String content = "PocketChat REST API Spring Boot application started successfully at " + timestamp.toString() + ".";
         this.smsService.sendSMS(SendSMSRequest.builder().mobileNumber("+60182262663").message(content).build());
 
         List<String> receiverEmailAddresses = new ArrayList<>();

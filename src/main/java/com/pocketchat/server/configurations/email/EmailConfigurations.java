@@ -50,7 +50,6 @@ public class EmailConfigurations {
         properties.put("mail.smtp.starttls.enable", enablSmtpStartttls);
         properties.put("mail.debug", emailDebug);
 
-        System.out.println("Running up Email Configuration.");
         return mailSender;
     }
 }
