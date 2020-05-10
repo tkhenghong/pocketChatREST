@@ -14,11 +14,11 @@ public class PocketchatApplication {
 
 }
 
-@RestController
-class Hello {
-
-    @GetMapping("/")
-    String index() {
-        return "Hello world";
-    }
-}
+//@RestController
+//class Hello {
+//
+//    @GetMapping("/")
+//    String index() {
+//        return "Hello world";
+//    }
+//}

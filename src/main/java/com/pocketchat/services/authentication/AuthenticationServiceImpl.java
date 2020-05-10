@@ -113,7 +113,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         smsService.sendSMS(SendSMSRequest.builder()
                 .mobileNumber(mobileNumberVerificationRequest.getMobileNumber())
-                .message("Test message sent!")
+                .message("Test SMS message for verification number.")
                 .build());
 
         return MobileNumberVerificationResponse.builder()

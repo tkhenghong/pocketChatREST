@@ -28,6 +28,9 @@ ext {
     set('springCloudVersion', "Hoxton.SR3")
 }
 
+// Put it ahead of the dependencies below, so it can be recognized by the Spring Boot and remove invalid properties error.
+compileJava.inputs.files(processResources)
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -39,9 +42,11 @@ dependencies {
     // implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'org.springframework:spring-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'com.twilio.sdk:twilio:7.50.0' // Send SMS, WhatsApp messages
 
-    compile('javax.xml.bind:jaxb-api') // Create compatibility with Java 8 libraries if this project is compiled with Java 11 or 13*
+    // Create compatibility with Java 8 libraries if this project is compiled with Java 11 or 13*
+    compile('javax.xml.bind:jaxb-api')
 
     compileOnly 'org.projectlombok:lombok'
     implementation 'org.apache.kafka:kafka-streams'
@@ -54,6 +59,10 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Annotation process for recognizing properties' values
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
