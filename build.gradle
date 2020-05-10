@@ -44,6 +44,7 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'com.twilio.sdk:twilio:7.50.0' // Send SMS, WhatsApp messages
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // Create compatibility with Java 8 libraries if this project is compiled with Java 11 or 13*
     compile('javax.xml.bind:jaxb-api')

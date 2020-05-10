@@ -1,35 +1,42 @@
 package com.pocketchat.models.email;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 public class SendEmailRequest {
-    private String emailAddress;
+
+    @NotBlank
     private String emailSubject;
+
+    @NotEmpty
+    @Size(min = 1, message = "Receiver Email address must NOT LESS THAN 1.")
     private List<String> receiverList;
+
     private List<String> ccList;
     private List<String> bccList;
 
-    SendEmailRequest(String emailAddress, String emailSubject, List<String> receiverList, List<String> ccList, List<String> bccList) {
-        this.emailAddress = emailAddress;
+    private String emailContent;
+
+    SendEmailRequest(@NotBlank String emailSubject, @NotEmpty @Min(1) List<String> receiverList, List<String> ccList, List<String> bccList, String emailContent) {
         this.emailSubject = emailSubject;
         this.receiverList = receiverList;
         this.ccList = ccList;
         this.bccList = bccList;
+        this.emailContent = emailContent;
     }
 
     public static SendEmailRequestBuilder builder() {
         return new SendEmailRequestBuilder();
     }
 
-    public String getEmailAddress() {
-        return this.emailAddress;
-    }
-
-    public String getEmailSubject() {
+    public @NotBlank String getEmailSubject() {
         return this.emailSubject;
     }
 
-    public List<String> getReceiverList() {
+    public @NotEmpty @Min(1) List<String> getReceiverList() {
         return this.receiverList;
     }
 
@@ -41,15 +48,15 @@ public class SendEmailRequest {
         return this.bccList;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public String getEmailContent() {
+        return this.emailContent;
     }
 
-    public void setEmailSubject(String emailSubject) {
+    public void setEmailSubject(@NotBlank String emailSubject) {
         this.emailSubject = emailSubject;
     }
 
-    public void setReceiverList(List<String> receiverList) {
+    public void setReceiverList(@NotEmpty @Min(1) List<String> receiverList) {
         this.receiverList = receiverList;
     }
 
@@ -61,15 +68,15 @@ public class SendEmailRequest {
         this.bccList = bccList;
     }
 
+    public void setEmailContent(String emailContent) {
+        this.emailContent = emailContent;
+    }
+
     public boolean equals(final Object o) {
         if (o == this) return true;
         if (!(o instanceof SendEmailRequest)) return false;
         final SendEmailRequest other = (SendEmailRequest) o;
         if (!other.canEqual((Object) this)) return false;
-        final Object this$emailAddress = this.getEmailAddress();
-        final Object other$emailAddress = other.getEmailAddress();
-        if (this$emailAddress == null ? other$emailAddress != null : !this$emailAddress.equals(other$emailAddress))
-            return false;
         final Object this$emailSubject = this.getEmailSubject();
         final Object other$emailSubject = other.getEmailSubject();
         if (this$emailSubject == null ? other$emailSubject != null : !this$emailSubject.equals(other$emailSubject))
@@ -84,6 +91,10 @@ public class SendEmailRequest {
         final Object this$bccList = this.getBccList();
         final Object other$bccList = other.getBccList();
         if (this$bccList == null ? other$bccList != null : !this$bccList.equals(other$bccList)) return false;
+        final Object this$emailContent = this.getEmailContent();
+        final Object other$emailContent = other.getEmailContent();
+        if (this$emailContent == null ? other$emailContent != null : !this$emailContent.equals(other$emailContent))
+            return false;
         return true;
     }
 
@@ -94,8 +105,6 @@ public class SendEmailRequest {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
-        final Object $emailAddress = this.getEmailAddress();
-        result = result * PRIME + ($emailAddress == null ? 43 : $emailAddress.hashCode());
         final Object $emailSubject = this.getEmailSubject();
         result = result * PRIME + ($emailSubject == null ? 43 : $emailSubject.hashCode());
         final Object $receiverList = this.getReceiverList();
@@ -104,34 +113,31 @@ public class SendEmailRequest {
         result = result * PRIME + ($ccList == null ? 43 : $ccList.hashCode());
         final Object $bccList = this.getBccList();
         result = result * PRIME + ($bccList == null ? 43 : $bccList.hashCode());
+        final Object $emailContent = this.getEmailContent();
+        result = result * PRIME + ($emailContent == null ? 43 : $emailContent.hashCode());
         return result;
     }
 
     public String toString() {
-        return "SendEmailRequest(emailAddress=" + this.getEmailAddress() + ", emailSubject=" + this.getEmailSubject() + ", receiverList=" + this.getReceiverList() + ", ccList=" + this.getCcList() + ", bccList=" + this.getBccList() + ")";
+        return "SendEmailRequest(emailSubject=" + this.getEmailSubject() + ", receiverList=" + this.getReceiverList() + ", ccList=" + this.getCcList() + ", bccList=" + this.getBccList() + ", emailContent=" + this.getEmailContent() + ")";
     }
 
     public static class SendEmailRequestBuilder {
-        private String emailAddress;
-        private String emailSubject;
-        private List<String> receiverList;
+        private @NotBlank String emailSubject;
+        private @NotEmpty @Min(1) List<String> receiverList;
         private List<String> ccList;
         private List<String> bccList;
+        private String emailContent;
 
         SendEmailRequestBuilder() {
         }
 
-        public SendEmailRequest.SendEmailRequestBuilder emailAddress(String emailAddress) {
-            this.emailAddress = emailAddress;
-            return this;
-        }
-
-        public SendEmailRequest.SendEmailRequestBuilder emailSubject(String emailSubject) {
+        public SendEmailRequest.SendEmailRequestBuilder emailSubject(@NotBlank String emailSubject) {
             this.emailSubject = emailSubject;
             return this;
         }
 
-        public SendEmailRequest.SendEmailRequestBuilder receiverList(List<String> receiverList) {
+        public SendEmailRequest.SendEmailRequestBuilder receiverList(@NotEmpty @Min(1) List<String> receiverList) {
             this.receiverList = receiverList;
             return this;
         }
@@ -146,12 +152,17 @@ public class SendEmailRequest {
             return this;
         }
 
+        public SendEmailRequest.SendEmailRequestBuilder emailContent(String emailContent) {
+            this.emailContent = emailContent;
+            return this;
+        }
+
         public SendEmailRequest build() {
-            return new SendEmailRequest(emailAddress, emailSubject, receiverList, ccList, bccList);
+            return new SendEmailRequest(emailSubject, receiverList, ccList, bccList, emailContent);
         }
 
         public String toString() {
-            return "SendEmailRequest.SendEmailRequestBuilder(emailAddress=" + this.emailAddress + ", emailSubject=" + this.emailSubject + ", receiverList=" + this.receiverList + ", ccList=" + this.ccList + ", bccList=" + this.bccList + ")";
+            return "SendEmailRequest.SendEmailRequestBuilder(emailSubject=" + this.emailSubject + ", receiverList=" + this.receiverList + ", ccList=" + this.ccList + ", bccList=" + this.bccList + ", emailContent=" + this.emailContent + ")";
         }
     }
 }
