@@ -6,6 +6,7 @@ import com.pocketchat.db.models.settings.Settings;
 import com.pocketchat.db.models.unread_message.UnreadMessage;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_contact.UserContact;
+import com.pocketchat.server.configurations.websocket.old.CustomizedMessage;
 
 public class WebSocketMessage {
     private ConversationGroup conversationGroup;

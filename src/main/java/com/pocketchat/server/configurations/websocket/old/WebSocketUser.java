@@ -1,4 +1,4 @@
-package com.pocketchat.server.configurations.websocket;
+package com.pocketchat.server.configurations.websocket.old;
 
 import com.pocketchat.db.models.user.User;
 import org.springframework.web.socket.WebSocketSession;

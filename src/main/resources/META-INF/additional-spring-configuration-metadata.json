@@ -21,6 +21,11 @@
       "description": "Secret key for JWT token."
     },
     {
+      "name": "jwt.alive.seconds",
+      "type": "java.lang.String",
+      "description": "JWT token valid seconds."
+    },
+    {
       "name": "email.sender.host",
       "type": "java.lang.String",
       "description": "Host provider for the Email."

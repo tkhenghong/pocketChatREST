@@ -6,12 +6,12 @@ import com.pocketchat.db.repo_services.authentication.AuthenticationRepoService;
 import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.models.controllers.request.authentication.*;
 import com.pocketchat.models.controllers.response.authentication.AuthenticationResponse;
+import com.pocketchat.models.controllers.response.authentication.OTPResponse;
 import com.pocketchat.models.email.SendEmailRequest;
 import com.pocketchat.models.otp.GenerateOTPRequest;
 import com.pocketchat.models.otp.OTP;
 import com.pocketchat.models.sms.SendSMSRequest;
 import com.pocketchat.server.configurations.security.service.MyUserDetailsService;
-import com.pocketchat.server.exceptions.authentication.UsernameExistException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.services.sms.SMSService;
@@ -82,7 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     // 4. Send SMS.
     // 5. Send Email.
     @Override
-    public OTP requestToAuthenticateWithMobileNo(MobileNoAuthenticationRequest mobileNoAuthenticationRequest) {
+    public OTPResponse requestToAuthenticateWithMobileNo(MobileNoAuthenticationRequest mobileNoAuthenticationRequest) {
         Optional<User> user = userRepoService.findByMobileNo(mobileNoAuthenticationRequest.getMobileNo());
 
         if (!user.isPresent()) {
@@ -118,7 +118,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .build());
         }
 
-        return otp;
+        return otpResponseMapper(otp);
     }
 
     // 1. Find User in DB.
@@ -127,7 +127,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     // 4. Send Email.
     // 5. Send SMS.
     @Override
-    public OTP requestToAuthenticateWithEmailAddress(EmailAddressAuthenticationRequest mobileNoAuthenticationRequest) {
+    public OTPResponse requestToAuthenticateWithEmailAddress(EmailAddressAuthenticationRequest mobileNoAuthenticationRequest) {
         Optional<User> user = userRepoService.findByEmailAddress(mobileNoAuthenticationRequest.getEmailAddress());
 
         if (!user.isPresent()) {
@@ -163,33 +163,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             smsService.sendSMS(SendSMSRequest.builder().mobileNumber(user.get().getMobileNo()).message(messageContent).build());
         }
 
-        return otp;
+        return otpResponseMapper(otp);
     }
 
+    // For Testing only
+    // Register
+    @Deprecated
     @Override
     public AuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
         // TODO: Decrypt the password from frontend
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(usernamePasswordAuthenticationRequest.getPassword());
 
-        Optional<Authentication> authenticationOptional = authenticationRepoService.findFirstByUsername(usernamePasswordAuthenticationRequest.getUsername());
-
-        if (authenticationOptional.isPresent()) {
-            throw new UsernameExistException("Username has already exist for username: " + usernamePasswordAuthenticationRequest.getUsername());
-        }
-
-        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(usernamePasswordAuthenticationRequest.getUsername());
-
-        final String jwt = jwtUtil.generateToken(userDetails);
-
-        authenticationRepoService.save(Authentication.builder()
+        Authentication authentication = authenticationRepoService.save(Authentication.builder()
                 .username(usernamePasswordAuthenticationRequest.getUsername())
                 .password(encodedPassword)
                 .build());
 
+        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(authentication.getUsername());
+
+        final String jwt = jwtUtil.generateToken(userDetails);
+
         return AuthenticationResponse.builder().jwt(jwt).build();
     }
 
+    // For testing only
+    // Login
+    @Deprecated
     @Override
     public AuthenticationResponse authenticateUsingUsernamePassword(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
         try {
@@ -213,5 +213,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponse verifyMobileNumberOTP(MobileNumberOTPVerificationRequest mobileNumberOTPVerificationRequest) {
         return null;
+    }
+
+    @Override
+    public OTPResponse otpResponseMapper(OTP otp) {
+        return OTPResponse.builder().otpExpirationDateTime(otp.getOtpExpirationDateTime()).build();
     }
 }

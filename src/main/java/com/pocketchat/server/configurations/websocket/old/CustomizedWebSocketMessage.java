@@ -1,4 +1,4 @@
-package com.pocketchat.server.configurations.websocket;
+package com.pocketchat.server.configurations.websocket.old;
 
 public class CustomizedWebSocketMessage {
     private String conversationGroup;

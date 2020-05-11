@@ -2,7 +2,7 @@ package com.pocketchat.controllers.authentication;
 
 import com.pocketchat.models.controllers.request.authentication.*;
 import com.pocketchat.models.controllers.response.authentication.AuthenticationResponse;
-import com.pocketchat.models.otp.OTP;
+import com.pocketchat.models.controllers.response.authentication.OTPResponse;
 import com.pocketchat.services.authentication.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,21 +21,25 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
+    // For testing only
+    // Registration
     @PostMapping("")
     public AuthenticationResponse addUsernamePasswordAuthenticationRequest(@RequestBody UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
         return authenticationService.addUsernamePasswordAuthenticationRequest(usernamePasswordAuthenticationRequest);
     }
 
     @PostMapping("/request/mobileNumber")
-    public OTP requestToAuthenticateWithMobileNo(@RequestBody MobileNoAuthenticationRequest mobileNoAuthenticationRequest) {
+    public OTPResponse requestToAuthenticateWithMobileNo(@RequestBody MobileNoAuthenticationRequest mobileNoAuthenticationRequest) {
         return authenticationService.requestToAuthenticateWithMobileNo(mobileNoAuthenticationRequest);
     }
 
     @PostMapping("/request/emailAddress")
-    public OTP requestToAuthenticateWithEmailAddress(@RequestBody EmailAddressAuthenticationRequest emailAddressAuthenticationRequest) {
+    public OTPResponse requestToAuthenticateWithEmailAddress(@RequestBody EmailAddressAuthenticationRequest emailAddressAuthenticationRequest) {
         return authenticationService.requestToAuthenticateWithEmailAddress(emailAddressAuthenticationRequest);
     }
 
+    // For testing only
+    // Login
     @PostMapping("/usernamePassword")
     public AuthenticationResponse usernamePasswordAuthentication(@RequestBody UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
         return authenticationService.authenticateUsingUsernamePassword(usernamePasswordAuthenticationRequest);
