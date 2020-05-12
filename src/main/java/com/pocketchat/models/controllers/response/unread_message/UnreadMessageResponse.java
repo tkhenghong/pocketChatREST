@@ -11,9 +11,9 @@ public class UnreadMessageResponse {
 
     private long date;
 
-    private int count;
+    private Integer count;
 
-    UnreadMessageResponse(String id, String conversationId, String userId, String lastMessage, long date, int count) {
+    UnreadMessageResponse(String id, String conversationId, String userId, String lastMessage, long date, Integer count) {
         this.id = id;
         this.conversationId = conversationId;
         this.userId = userId;
@@ -46,7 +46,7 @@ public class UnreadMessageResponse {
         return this.date;
     }
 
-    public int getCount() {
+    public Integer getCount() {
         return this.count;
     }
 
@@ -70,7 +70,7 @@ public class UnreadMessageResponse {
         this.date = date;
     }
 
-    public void setCount(int count) {
+    public void setCount(Integer count) {
         this.count = count;
     }
 
@@ -95,7 +95,9 @@ public class UnreadMessageResponse {
         if (this$lastMessage == null ? other$lastMessage != null : !this$lastMessage.equals(other$lastMessage))
             return false;
         if (this.getDate() != other.getDate()) return false;
-        if (this.getCount() != other.getCount()) return false;
+        final Object this$count = this.getCount();
+        final Object other$count = other.getCount();
+        if (this$count == null ? other$count != null : !this$count.equals(other$count)) return false;
         return true;
     }
 
@@ -116,7 +118,8 @@ public class UnreadMessageResponse {
         result = result * PRIME + ($lastMessage == null ? 43 : $lastMessage.hashCode());
         final long $date = this.getDate();
         result = result * PRIME + (int) ($date >>> 32 ^ $date);
-        result = result * PRIME + this.getCount();
+        final Object $count = this.getCount();
+        result = result * PRIME + ($count == null ? 43 : $count.hashCode());
         return result;
     }
 
@@ -130,7 +133,7 @@ public class UnreadMessageResponse {
         private String userId;
         private String lastMessage;
         private long date;
-        private int count;
+        private Integer count;
 
         UnreadMessageResponseBuilder() {
         }
@@ -160,7 +163,7 @@ public class UnreadMessageResponse {
             return this;
         }
 
-        public UnreadMessageResponse.UnreadMessageResponseBuilder count(int count) {
+        public UnreadMessageResponse.UnreadMessageResponseBuilder count(Integer count) {
             this.count = count;
             return this;
         }

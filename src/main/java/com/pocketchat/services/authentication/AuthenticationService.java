@@ -1,18 +1,30 @@
 package com.pocketchat.services.authentication;
 
-import com.pocketchat.models.controllers.request.authentication.MobileNumberOTPVerificationRequest;
-import com.pocketchat.models.controllers.request.authentication.MobileNumberVerificationRequest;
-import com.pocketchat.models.controllers.request.authentication.UsernamePasswordAuthenticationRequest;
+import com.pocketchat.models.controllers.request.authentication.*;
 import com.pocketchat.models.controllers.response.authentication.AuthenticationResponse;
-import com.pocketchat.models.controllers.response.authentication.MobileNumberVerificationResponse;
+import com.pocketchat.models.controllers.response.authentication.OTPResponse;
+import com.pocketchat.models.otp.OTP;
 
 
 public interface AuthenticationService {
+
+    OTPResponse requestToAuthenticateWithMobileNo(MobileNoAuthenticationRequest mobileNoAuthenticationRequest);
+
+    OTPResponse requestToAuthenticateWithEmailAddress(EmailAddressAuthenticationRequest mobileNoAuthenticationRequest);
+
+    // For testing only
+    // Registration
+    @Deprecated
     AuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest);
 
+    // For testing only
+    // Login
+    @Deprecated
     AuthenticationResponse authenticateUsingUsernamePassword(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest);
 
-    MobileNumberVerificationResponse verifyUsingMobileNumber(MobileNumberVerificationRequest mobileNumberVerificationRequest);
+    AuthenticationResponse verifyEmailAddressOTP(EmailOTPVerificationRequest emailOTPVerificationRequest);
 
     AuthenticationResponse verifyMobileNumberOTP(MobileNumberOTPVerificationRequest mobileNumberOTPVerificationRequest);
+
+    OTPResponse otpResponseMapper(OTP otp);
 }

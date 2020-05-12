@@ -42,7 +42,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .authorizeRequests().antMatchers("/authentication").permitAll()
+                .authorizeRequests().antMatchers("/authentication/**").permitAll()
+                 .antMatchers("/socket/**").permitAll() // Close this when the JWT is ready
+                // .antMatchers("/csrf").permitAll()
+                // .and() // Temporary allow all endpoints to be used without authentication (For development only)
+                // .authorizeRequests().antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

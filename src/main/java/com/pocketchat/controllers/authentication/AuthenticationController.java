@@ -1,10 +1,8 @@
 package com.pocketchat.controllers.authentication;
 
-import com.pocketchat.models.controllers.request.authentication.MobileNumberOTPVerificationRequest;
-import com.pocketchat.models.controllers.request.authentication.MobileNumberVerificationRequest;
-import com.pocketchat.models.controllers.request.authentication.UsernamePasswordAuthenticationRequest;
+import com.pocketchat.models.controllers.request.authentication.*;
 import com.pocketchat.models.controllers.response.authentication.AuthenticationResponse;
-import com.pocketchat.models.controllers.response.authentication.MobileNumberVerificationResponse;
+import com.pocketchat.models.controllers.response.authentication.OTPResponse;
 import com.pocketchat.services.authentication.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,19 +21,33 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
+    // For testing only
+    // Registration
     @PostMapping("")
     public AuthenticationResponse addUsernamePasswordAuthenticationRequest(@RequestBody UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
         return authenticationService.addUsernamePasswordAuthenticationRequest(usernamePasswordAuthenticationRequest);
     }
 
+    @PostMapping("/request/mobileNumber")
+    public OTPResponse requestToAuthenticateWithMobileNo(@RequestBody MobileNoAuthenticationRequest mobileNoAuthenticationRequest) {
+        return authenticationService.requestToAuthenticateWithMobileNo(mobileNoAuthenticationRequest);
+    }
+
+    @PostMapping("/request/emailAddress")
+    public OTPResponse requestToAuthenticateWithEmailAddress(@RequestBody EmailAddressAuthenticationRequest emailAddressAuthenticationRequest) {
+        return authenticationService.requestToAuthenticateWithEmailAddress(emailAddressAuthenticationRequest);
+    }
+
+    // For testing only
+    // Login
     @PostMapping("/usernamePassword")
     public AuthenticationResponse usernamePasswordAuthentication(@RequestBody UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
         return authenticationService.authenticateUsingUsernamePassword(usernamePasswordAuthenticationRequest);
     }
 
-    @PostMapping("/mobileNumber/verify")
-    public MobileNumberVerificationResponse mobileNumberVerification(@RequestBody MobileNumberVerificationRequest mobileNumberVerificationRequest) {
-        return authenticationService.verifyUsingMobileNumber(mobileNumberVerificationRequest);
+    @PostMapping("/emailAddress/authenticate")
+    public AuthenticationResponse emailAuthentication(@RequestBody EmailOTPVerificationRequest emailOTPVerificationRequest) {
+        return authenticationService.verifyEmailAddressOTP(emailOTPVerificationRequest);
     }
 
     @PostMapping("/mobileNumber/authenticate")

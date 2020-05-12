@@ -15,8 +15,11 @@ import java.util.function.Function;
 @Service
 public class JwtUtil {
 
-    @Value("jwt.secret.key")
+    @Value("${jwt.secret.key}")
     private String SECRET_KEY;
+
+    @Value("${jwt.alive.seconds}")
+    private int jwtAliveSeconds;
 
     // CREATION ********************************************************************************************************
     // Main method****, create JWT
@@ -32,7 +35,7 @@ public class JwtUtil {
                 .setClaims(claims) // set claims
                 .setSubject(subject) // The person who has authenticated successfuly.
                 .setIssuedAt(new Date(System.currentTimeMillis())) // Set creation date.
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // Set expiration date. Set it to 10 hours from now.
+                .setExpiration(new Date(System.currentTimeMillis() + jwtAliveSeconds)) // Set expiration date. Set it to 10 hours from now.
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // Set encryption method
                 .compact();
     }

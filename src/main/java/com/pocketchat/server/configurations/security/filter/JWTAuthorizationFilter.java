@@ -17,9 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
 // https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot/
 // Not using JWTAuthenticationFilter*, create custom login API
 @Component
@@ -37,6 +34,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // System.out.printf("JWTAuthorizationFilter.java doFilterInternal()");
         final String authorizationHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;

@@ -25,18 +25,15 @@ public class UnreadMessage {
     @NotNull
     private DateTime date;
 
-    private int count;
+    private Integer count;
 
-    public UnreadMessage(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull DateTime date, int count) {
+    UnreadMessage(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull DateTime date, Integer count) {
         this.id = id;
         this.conversationId = conversationId;
         this.userId = userId;
         this.lastMessage = lastMessage;
         this.date = date;
         this.count = count;
-    }
-
-    public UnreadMessage() {
     }
 
     public static UnreadMessageBuilder builder() {
@@ -63,7 +60,7 @@ public class UnreadMessage {
         return this.date;
     }
 
-    public int getCount() {
+    public Integer getCount() {
         return this.count;
     }
 
@@ -87,7 +84,7 @@ public class UnreadMessage {
         this.date = date;
     }
 
-    public void setCount(int count) {
+    public void setCount(Integer count) {
         this.count = count;
     }
 
@@ -113,7 +110,9 @@ public class UnreadMessage {
         final Object this$date = this.getDate();
         final Object other$date = other.getDate();
         if (this$date == null ? other$date != null : !this$date.equals(other$date)) return false;
-        if (this.getCount() != other.getCount()) return false;
+        final Object this$count = this.getCount();
+        final Object other$count = other.getCount();
+        if (this$count == null ? other$count != null : !this$count.equals(other$count)) return false;
         return true;
     }
 
@@ -134,7 +133,8 @@ public class UnreadMessage {
         result = result * PRIME + ($lastMessage == null ? 43 : $lastMessage.hashCode());
         final Object $date = this.getDate();
         result = result * PRIME + ($date == null ? 43 : $date.hashCode());
-        result = result * PRIME + this.getCount();
+        final Object $count = this.getCount();
+        result = result * PRIME + ($count == null ? 43 : $count.hashCode());
         return result;
     }
 
@@ -148,7 +148,7 @@ public class UnreadMessage {
         private @NotBlank String userId;
         private String lastMessage;
         private @NotNull DateTime date;
-        private int count;
+        private Integer count;
 
         UnreadMessageBuilder() {
         }
@@ -178,7 +178,7 @@ public class UnreadMessage {
             return this;
         }
 
-        public UnreadMessage.UnreadMessageBuilder count(int count) {
+        public UnreadMessage.UnreadMessageBuilder count(Integer count) {
             this.count = count;
             return this;
         }
