@@ -1,6 +1,6 @@
 package com.pocketchat.controllers.chat_message;
 
-import com.pocketchat.models.controllers.request.chat_message.CreateChatChatMessageRequest;
+import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.chat_message.UpdateChatMessageRequest;
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
 import com.pocketchat.services.chat_message.ChatMessageService;
@@ -26,7 +26,7 @@ public class ChatMessageController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> addMessage(@Valid @RequestBody CreateChatChatMessageRequest chatMessage) {
+    public ResponseEntity<Object> addMessage(@Valid @RequestBody CreateChatMessageRequest chatMessage) {
         ChatMessageResponse savedChatMessage = chatMessageService.addChatMessage(chatMessage);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedChatMessage.getId())
                 .toUri();
