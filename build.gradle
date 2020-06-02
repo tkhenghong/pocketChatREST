@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.6.RELEASE'
+    id 'org.springframework.boot' version '2.3.0.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
 }
@@ -11,10 +11,6 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
-    developmentOnly
-    runtimeClasspath {
-        extendsFrom developmentOnly
-    }
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -25,7 +21,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "Hoxton.SR3")
+    set('springCloudVersion', "Hoxton.SR4")
 }
 
 // Put it ahead of the dependencies below, so it can be recognized by the Spring Boot and remove invalid properties error.
@@ -36,30 +32,37 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     // implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
     implementation 'com.twilio.sdk:twilio:7.50.0' // Send SMS, WhatsApp messages
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-    // Create compatibility with Java 8 libraries if this project is compiled with Java 11 or 13*
+    // Used for RabbiMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+    compile 'joda-time:joda-time:2.10'
+
+    // Create compatibility with libraries, solves problem when creating JWT token in JWTUtil.java file.
     compile('javax.xml.bind:jaxb-api')
 
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
     compileOnly 'org.projectlombok:lombok'
-    implementation 'org.apache.kafka:kafka-streams'
+    annotationProcessor 'org.projectlombok:lombok'
+
     implementation "org.webjars:stomp-websocket:2.3.3"
     implementation "org.webjars:sockjs-client:1.0.2"
     implementation 'com.google.code.gson:gson'
-    implementation "joda-time:joda-time"
+
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'javax.validation:validation-api:2.0.1.Final' // Missing javax.validation in Spring Boot 2.3.0
 
-    annotationProcessor 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Annotation process for recognizing properties' values
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -67,8 +70,8 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
 
 dependencyManagement {
