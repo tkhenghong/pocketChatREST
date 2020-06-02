@@ -4,7 +4,7 @@ import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.db.repo_services.chat_message.ChatMessageRepoService;
-import com.pocketchat.models.controllers.request.chat_message.CreateChatChatMessageRequest;
+import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.chat_message.UpdateChatMessageRequest;
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
@@ -30,7 +30,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public ChatMessageResponse addChatMessage(CreateChatChatMessageRequest createChatMessageRequest) {
+    public ChatMessageResponse addChatMessage(CreateChatMessageRequest createChatMessageRequest) {
         ChatMessage chatMessage = createCreateChatMessageToChatMessage(createChatMessageRequest);
         return chatMessageResponseMapper(chatMessageRepoService.save(chatMessage));
     }
@@ -70,7 +70,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public ChatMessage createCreateChatMessageToChatMessage(CreateChatChatMessageRequest createChatMessageRequest) {
+    public ChatMessage createCreateChatMessageToChatMessage(CreateChatMessageRequest createChatMessageRequest) {
         return ChatMessage.builder()
                 .id(createChatMessageRequest.getId())
                 .conversationId(createChatMessageRequest.getConversationId())

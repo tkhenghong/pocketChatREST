@@ -1,20 +1,27 @@
 package com.pocketchat.server.configurations.mongoDB;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
+import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
-public class MongoDBConfiguration extends AbstractMongoConfiguration {
+public class MongoDBConfiguration extends AbstractMongoClientConfiguration {
+
     @Override
-    protected String getDatabaseName() {
+    public String getDatabaseName() {
         return "pocketChatDB";
     }
 
-    @Override
+    @Bean
     public MongoClient mongoClient() {
-        return new MongoClient("127.0.0.1", 27017);
+        return MongoClients.create("mongodb://localhost:27017");
     }
 
-    // Note: We didn’t need to define MongoTemplate bean in the previous configuration as it’s already defined in AbstractMongoConfiguration
+    @Bean
+    public MongoTemplate mongoTemplate() {
+        return new MongoTemplate(mongoClient(), "pocketChatDB");
+    }
 }

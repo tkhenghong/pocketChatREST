@@ -8,9 +8,9 @@ import com.pocketchat.models.controllers.response.conversation_group.Conversatio
 import java.util.List;
 
 public interface ConversationGroupService {
-    ConversationGroupResponse addConversation(CreateConversationGroupRequest conversationGroup);
+    ConversationGroupResponse addConversation(CreateConversationGroupRequest createConversationGroupRequest);
 
-    ConversationGroupResponse editConversation(UpdateConversationGroupRequest conversationGroup);
+    ConversationGroupResponse editConversation(UpdateConversationGroupRequest updateConversationGroupRequest);
 
     void deleteConversation(String conversationId);
 
