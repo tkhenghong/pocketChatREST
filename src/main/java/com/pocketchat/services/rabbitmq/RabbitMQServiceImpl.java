@@ -49,7 +49,7 @@ public class RabbitMQServiceImpl implements RabbitMQService {
      * @param queueName: The name of the queue, usually user's ID
      */
     @Override
-    public void listenMessagesFromQueue(String queueName) {
+    public void listenMessagesFromQueue(String queueName) throws IOException, TimeoutException {
         SimpleMessageListenerContainer simpleMessageListenerContainer = createListenerContainer(queueName);
         simpleMessageListenerContainer.initialize();
         simpleMessageListenerContainer.start();
@@ -122,7 +122,10 @@ public class RabbitMQServiceImpl implements RabbitMQService {
                 System.out.println("RabbitMQServiceImpl.java message.getBody(): " + new String(message.getBody()));
                 System.out.println("queueName: " + queueName);
 
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false); // This is for manual acknowledgement of this message.
+
+                // TODO: Find out how many unacknowldeged messages yet
+                // TODO: Perform send these messages to the WebSocket user. If the device received these messages successfully, confirm acknowledge these messages.
                 channel.close();
             }
         });
