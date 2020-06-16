@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 public interface RabbitMQService {
-    void addMessageToQueue(String queueName, String message) throws InterruptedException;
+    void addMessageToQueue(String queueName, String exchangeName, String routingKey, String message);
 
-    void listenMessagesFromQueue(String queueName) throws IOException, TimeoutException;
+    // userId = queueName
+    // conversationGroupId = exchangeName
+    // messageType = routingKey
+    // deviceType = consumerTag
+    void listenMessagesFromQueue(String queueName, String exchangeName, String routingKey, String consumerTag);
 }

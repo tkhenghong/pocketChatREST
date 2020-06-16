@@ -19,12 +19,12 @@ public class RabbitMQTestController {
     @PostMapping("")
     public void addMessageToQueue(@RequestBody AddMessageToQueueRequest addMessageToQueueRequest) throws InterruptedException {
         System.out.println("RabbitMQTestController.java addMessageToQueue()");
-        rabbitMQService.addMessageToQueue(addMessageToQueueRequest.getQueueName(), addMessageToQueueRequest.getMessage());
+        rabbitMQService.addMessageToQueue(addMessageToQueueRequest.getQueueName(), addMessageToQueueRequest.getExchangeName(), addMessageToQueueRequest.getRoutingKey(), addMessageToQueueRequest.getMessage());
     }
 
     @GetMapping("")
     public void listenMessagesFromQueue(@RequestBody ListenMessagesFromQueueRequest listenMessagesFromQueueRequest) {
         System.out.println("RabbitMQTestController.java listenMessagesFromQueue()");
-        rabbitMQService.listenMessagesFromQueue(listenMessagesFromQueueRequest.getQueueName());
+        rabbitMQService.listenMessagesFromQueue(listenMessagesFromQueueRequest.getQueueName(), listenMessagesFromQueueRequest.getExchangeName(), listenMessagesFromQueueRequest.getRoutingKey(), listenMessagesFromQueueRequest.getConsumerTag());
     }
 }
