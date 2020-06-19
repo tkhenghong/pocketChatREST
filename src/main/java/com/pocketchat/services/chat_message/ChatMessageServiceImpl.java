@@ -2,13 +2,15 @@ package com.pocketchat.services.chat_message;
 
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
-import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.db.repo_services.chat_message.ChatMessageRepoService;
+import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.chat_message.UpdateChatMessageRequest;
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
-import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
+import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
+import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
+import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,8 +86,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .senderMobileNo(createChatMessageRequest.getSenderMobileNo())
                 .senderName(createChatMessageRequest.getSenderName())
                 .sentTime(createChatMessageRequest.getSentTime())
-                .status(createChatMessageRequest.getStatus())
-                .type(createChatMessageRequest.getType())
+                .status(ChatMessageStatus.valueOf(createChatMessageRequest.getStatus()))
+                .type(ChatMessageType.valueOf(createChatMessageRequest.getType()))
                 .build();
     }
 
@@ -104,8 +106,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .senderMobileNo(updateMessageRequest.getSenderMobileNo())
                 .senderName(updateMessageRequest.getSenderName())
                 .sentTime(updateMessageRequest.getSentTime())
-                .status(updateMessageRequest.getStatus())
-                .type(updateMessageRequest.getType())
+                .status(ChatMessageStatus.valueOf(updateMessageRequest.getStatus()))
+                .type(ChatMessageType.valueOf(updateMessageRequest.getType()))
                 .build();
     }
 
@@ -124,8 +126,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .senderMobileNo(chatMessage.getSenderMobileNo())
                 .senderName(chatMessage.getSenderName())
                 .sentTime(chatMessage.getSentTime())
-                .status(chatMessage.getStatus())
-                .type(chatMessage.getType())
+                .status(chatMessage.getStatus().getChatMessageStatus())
+                .type(chatMessage.getType().getChatMessageType())
                 .build();
     }
 }

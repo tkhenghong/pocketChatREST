@@ -23,10 +23,6 @@ public class RabbitMQServiceImpl implements RabbitMQService {
     @Value("${rabbitmq.connection.factory.password}")
     String password;
 
-    String testingExchangeName = "test-exchange-in-spring-boot-rabbitmq-test";
-
-    String testingRoutingKey = "testing.routing.key";
-
     // Types of messages with format:
     // When sending,
     // Conversation Group Normal messages: Exchange ID=conversationGroupId, routing key=*.chatMessage
@@ -70,7 +66,7 @@ public class RabbitMQServiceImpl implements RabbitMQService {
      * Tried channel.basicPublish not yet succeed, use the more common one first.
      **/
     private void sendRabbitMQMessageOld(String queueName, String exchangeName, String message) {
-        AmqpTemplate amqpTemplate = amqpTemplate();
+        AmqpTemplate amqpTemplate = amqpTemplate(exchangeName);
         amqpTemplate.convertAndSend(exchangeName, queueName, message);
     }
 
@@ -81,7 +77,6 @@ public class RabbitMQServiceImpl implements RabbitMQService {
      * @param exchangeName: Name of the exchange. Normally is conversation group ID.
      * @param routingKey:   Routing key. Normally it means type of message wish to receive.
      * @param consumerTag:  Consumer tag. Normally it's the ID of the user. It will help to differentiate consumers that listen the messages from the exchange.
-     *                      <p>
      *                      Steps:
      *                      1. Connect to RabbitMQ (Create connectionFactory)
      *                      2. Create Channel and Connection
@@ -176,9 +171,9 @@ public class RabbitMQServiceImpl implements RabbitMQService {
         return connectionFactory;
     }
 
-    private RabbitTemplate amqpTemplate() {
+    public RabbitTemplate amqpTemplate(String exchangeName) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
-        rabbitTemplate.setExchange(testingExchangeName);
+        rabbitTemplate.setExchange(exchangeName);
         rabbitTemplate.setMessageConverter(new SimpleMessageConverter());
         rabbitTemplate.setUseDirectReplyToContainer(false);
         return rabbitTemplate;

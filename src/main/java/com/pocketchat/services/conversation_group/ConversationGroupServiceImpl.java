@@ -1,5 +1,6 @@
 package com.pocketchat.services.conversation_group;
 
+import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
@@ -7,8 +8,13 @@ import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
+import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
+import com.pocketchat.models.enums.chat_message.ChatMessageType;
+import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
+import com.pocketchat.services.rabbitmq.RabbitMQService;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -24,22 +30,37 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     private final UserContactRepoService userContactRepoService;
 
+    private final RabbitMQService rabbitMQService;
+
     // Avoid Field Injection
     @Autowired
-    public ConversationGroupServiceImpl(ConversationGroupRepoService conversationGroupRepoService, UserContactRepoService userContactRepoService) {
+    public ConversationGroupServiceImpl(ConversationGroupRepoService conversationGroupRepoService,
+                                        UserContactRepoService userContactRepoService,
+                                        RabbitMQService rabbitMQService) {
         this.conversationGroupRepoService = conversationGroupRepoService;
         this.userContactRepoService = userContactRepoService;
+        this.rabbitMQService = rabbitMQService;
     }
 
     @Override
     public ConversationGroupResponse addConversation(CreateConversationGroupRequest createConversationGroupRequest) {
+        Optional<UserContact> userContactOptional = this.userContactRepoService.findById(createConversationGroupRequest.getCreatorUserId());
+
+        if (userContactOptional.isEmpty()) {
+            throw new UserContactNotFoundException("Not able to find the userContact during creation of conversation group. userContactId: " + createConversationGroupRequest.getCreatorUserId());
+        }
+
+        UserContact creatorUserContact = userContactOptional.get();
+
+        createConversationGroupRequest.setCreatedDate(new DateTime());
+
         ConversationGroup conversationGroup = createConversationGroupRequestToConversationGroupMapper(createConversationGroupRequest);
-        if (conversationGroup.getType().equals("Personal")) {
+        if (conversationGroup.getType().getConversationGroupType().equals("Personal")) {
             // 1. Find a list of conversationGroup that has same memberIds
             List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(conversationGroup.getMemberIds());
             // 2. Filter to get the Personal ConversationGroup
             List<ConversationGroup> personalConversationGroupList = conversationGroupList
-                    .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getType().equals("Personal")
+                    .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getType().getConversationGroupType().equals("Personal")
                             && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())).collect(Collectors.toList());
             // 3. Should found the exact group
             if (personalConversationGroupList.size() == 1) {
@@ -53,7 +74,22 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             // Group/Broadcast
             ConversationGroup conversationGroup1 = conversationGroupRepoService.save(conversationGroup);
 
+            String message = "You have been added into this group by" + creatorUserContact.getDisplayName() + " on " + createConversationGroupRequest.getCreatedDate().toString("dd/mm/yyyy HH:mm:ss");
+
+            ChatMessage chatMessage =
+                    ChatMessage.builder()
+                            .type(ChatMessageType.Text)
+                            .conversationId(conversationGroup1.getId())
+                            .createdTime(new DateTime())
+                            .messageContent(message)
+                            .status(ChatMessageStatus.Sent)
+                            .sentTime(new DateTime())
+                            .build();
+
             // TODO: Create queues based on userContactIds, exchange based on conversationGroupId and Binding between 2 of them using conversationGroupID(for now)
+            conversationGroup1.getMemberIds().forEach(memberId -> {
+                this.rabbitMQService.addMessageToQueue(memberId, conversationGroup1.getId(), conversationGroup1.getId(), message);
+            });
 
             // TODO: Send first message: You have been added to this group, system message.
             return conversationGroupResponseMapper(conversationGroup1);
@@ -105,7 +141,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     @Override
     public ConversationGroup createConversationGroupRequestToConversationGroupMapper(CreateConversationGroupRequest createConversationGroupRequest) {
         return ConversationGroup.builder()
-                .type(createConversationGroupRequest.getType())
+                .type(ConversationGroupType.valueOf(createConversationGroupRequest.getType()))
                 .notificationExpireDate(createConversationGroupRequest.getNotificationExpireDate())
                 .name(createConversationGroupRequest.getName())
                 .creatorUserId(createConversationGroupRequest.getCreatorUserId())
@@ -121,7 +157,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     public ConversationGroup updateConversationGroupRequestToConversationGroupMapper(UpdateConversationGroupRequest updateConversationGroupRequest) {
         return ConversationGroup.builder()
                 .id(updateConversationGroupRequest.getId())
-                .type(updateConversationGroupRequest.getType())
+                .type(ConversationGroupType.valueOf(updateConversationGroupRequest.getType()))
                 .notificationExpireDate(updateConversationGroupRequest.getNotificationExpireDate())
                 .name(updateConversationGroupRequest.getName())
                 .creatorUserId(updateConversationGroupRequest.getCreatorUserId())
@@ -145,7 +181,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .memberIds(conversationGroup.getMemberIds())
                 .name(conversationGroup.getName())
                 .notificationExpireDate(conversationGroup.getNotificationExpireDate().getMillis())
-                .type(conversationGroup.getType())
+                .type(conversationGroup.getType().getConversationGroupType())
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.pocketchat.db.models.conversation_group;
 
+import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,7 +25,7 @@ public class ConversationGroup {
     private String name;
 
     @NotBlank
-    private String type;
+    private ConversationGroupType type;
 
     private String description;
 
@@ -42,7 +43,7 @@ public class ConversationGroup {
 
     private DateTime notificationExpireDate;
 
-    public ConversationGroup(String id, @NotBlank String creatorUserId, @NotNull DateTime createdDate, @NotBlank String name, @NotBlank String type, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, DateTime notificationExpireDate) {
+    ConversationGroup(String id, @NotBlank String creatorUserId, @NotNull DateTime createdDate, @NotBlank String name, @NotBlank ConversationGroupType type, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, DateTime notificationExpireDate) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.createdDate = createdDate;
@@ -53,9 +54,6 @@ public class ConversationGroup {
         this.adminMemberIds = adminMemberIds;
         this.block = block;
         this.notificationExpireDate = notificationExpireDate;
-    }
-
-    public ConversationGroup() {
     }
 
     public static ConversationGroupBuilder builder() {
@@ -78,7 +76,7 @@ public class ConversationGroup {
         return this.name;
     }
 
-    public @NotBlank String getType() {
+    public @NotBlank ConversationGroupType getType() {
         return this.type;
     }
 
@@ -118,7 +116,7 @@ public class ConversationGroup {
         this.name = name;
     }
 
-    public void setType(@NotBlank String type) {
+    public void setType(@NotBlank ConversationGroupType type) {
         this.type = type;
     }
 
@@ -221,7 +219,7 @@ public class ConversationGroup {
         private @NotBlank String creatorUserId;
         private @NotNull DateTime createdDate;
         private @NotBlank String name;
-        private @NotBlank String type;
+        private @NotBlank ConversationGroupType type;
         private String description;
         private List<String> memberIds;
         private List<String> adminMemberIds;
@@ -251,7 +249,7 @@ public class ConversationGroup {
             return this;
         }
 
-        public ConversationGroup.ConversationGroupBuilder type(@NotBlank String type) {
+        public ConversationGroup.ConversationGroupBuilder type(@NotBlank ConversationGroupType type) {
             this.type = type;
             return this;
         }
