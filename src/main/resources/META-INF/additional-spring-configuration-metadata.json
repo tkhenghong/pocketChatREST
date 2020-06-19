@@ -79,6 +79,16 @@
       "name": "server.otp.maximum.alive.minutes",
       "type": "java.lang.String",
       "description": "Maximum alive minutes that all OTPs in the server. (OTPs are stored temporarily using Google LoadingCache). It will never be stored in the DB of the application (Best practice)."
+    },
+    {
+      "name": "rabbitmq.connection.factory.username",
+      "type": "java.lang.String",
+      "description": "Username for accessing RabbitMQ client in your machine."
+    },
+    {
+      "name": "rabbitmq.connection.factory.password",
+      "type": "java.lang.String",
+      "description": "Password for accessing RabbitMQ client in your machine."
     }
   ]
 }

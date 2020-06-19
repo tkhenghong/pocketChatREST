@@ -14,7 +14,7 @@ import java.util.Date;
 public class GeneralResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) throws Exception {
+    public final ResponseEntity handleAllExceptions(Exception ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
                 request.getDescription(false));
 
@@ -23,8 +23,7 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public final ResponseEntity<Object> handleUserNotFoundExceptions(UserNotFoundException ex, WebRequest request)
-            throws Exception {
+    public final ResponseEntity handleUserNotFoundExceptions(UserNotFoundException ex, WebRequest request) {
         System.out.println("Test handleUserNotFoundExceptions log here.");
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
                 request.getDescription(false));
@@ -33,8 +32,8 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
     }
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                          HttpHeaders headers, HttpStatus status, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), "Validation failed",
                 ex.getBindingResult().toString());
         // ex.getBindingResult().toString() will give the details of what has went wrong

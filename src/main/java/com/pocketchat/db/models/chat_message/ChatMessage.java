@@ -1,5 +1,7 @@
 package com.pocketchat.db.models.chat_message;
 
+import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
+import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -33,9 +35,9 @@ public class ChatMessage {
 
     private String receiverMobileNo;
 
-    private String type;
+    private ChatMessageType type;
 
-    private String status; // Sent, received, unread, read
+    private ChatMessageStatus status; // Sent, received, unread, read
 
     @NotBlank
     private String messageContent;
@@ -47,7 +49,7 @@ public class ChatMessage {
 
     private DateTime sentTime;
 
-    public ChatMessage(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, @NotBlank String messageContent, String multimediaId, @NotNull DateTime createdTime, DateTime sentTime) {
+    ChatMessage(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, ChatMessageType type, ChatMessageStatus status, @NotBlank String messageContent, String multimediaId, @NotNull DateTime createdTime, DateTime sentTime) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
@@ -64,12 +66,10 @@ public class ChatMessage {
         this.sentTime = sentTime;
     }
 
-    public ChatMessage() {
+    public static ChatMessageBuilder builder() {
+        return new ChatMessageBuilder();
     }
 
-    public static MessageBuilder builder() {
-        return new MessageBuilder();
-    }
 
     public String getId() {
         return this.id;
@@ -103,11 +103,11 @@ public class ChatMessage {
         return this.receiverMobileNo;
     }
 
-    public String getType() {
+    public ChatMessageType getType() {
         return this.type;
     }
 
-    public String getStatus() {
+    public ChatMessageStatus getStatus() {
         return this.status;
     }
 
@@ -159,11 +159,11 @@ public class ChatMessage {
         this.receiverMobileNo = receiverMobileNo;
     }
 
-    public void setType(String type) {
+    public void setType(ChatMessageType type) {
         this.type = type;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ChatMessageStatus status) {
         this.status = status;
     }
 
@@ -281,10 +281,10 @@ public class ChatMessage {
     }
 
     public String toString() {
-        return "Message(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", receiverId=" + this.getReceiverId() + ", receiverName=" + this.getReceiverName() + ", receiverMobileNo=" + this.getReceiverMobileNo() + ", type=" + this.getType() + ", status=" + this.getStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
+        return "ChatMessage(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", receiverId=" + this.getReceiverId() + ", receiverName=" + this.getReceiverName() + ", receiverMobileNo=" + this.getReceiverMobileNo() + ", type=" + this.getType() + ", status=" + this.getStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
     }
 
-    public static class MessageBuilder {
+    public static class ChatMessageBuilder {
         private String id;
         private @NotBlank String conversationId;
         private @NotBlank String senderId;
@@ -293,82 +293,82 @@ public class ChatMessage {
         private String receiverId;
         private String receiverName;
         private String receiverMobileNo;
-        private String type;
-        private String status;
+        private ChatMessageType type;
+        private ChatMessageStatus status;
         private @NotBlank String messageContent;
         private String multimediaId;
         private @NotNull DateTime createdTime;
         private DateTime sentTime;
 
-        MessageBuilder() {
+        ChatMessageBuilder() {
         }
 
-        public ChatMessage.MessageBuilder id(String id) {
+        public ChatMessage.ChatMessageBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public ChatMessage.MessageBuilder conversationId(@NotBlank String conversationId) {
+        public ChatMessage.ChatMessageBuilder conversationId(@NotBlank String conversationId) {
             this.conversationId = conversationId;
             return this;
         }
 
-        public ChatMessage.MessageBuilder senderId(@NotBlank String senderId) {
+        public ChatMessage.ChatMessageBuilder senderId(@NotBlank String senderId) {
             this.senderId = senderId;
             return this;
         }
 
-        public ChatMessage.MessageBuilder senderName(@NotBlank String senderName) {
+        public ChatMessage.ChatMessageBuilder senderName(@NotBlank String senderName) {
             this.senderName = senderName;
             return this;
         }
 
-        public ChatMessage.MessageBuilder senderMobileNo(@NotBlank String senderMobileNo) {
+        public ChatMessage.ChatMessageBuilder senderMobileNo(@NotBlank String senderMobileNo) {
             this.senderMobileNo = senderMobileNo;
             return this;
         }
 
-        public ChatMessage.MessageBuilder receiverId(String receiverId) {
+        public ChatMessage.ChatMessageBuilder receiverId(String receiverId) {
             this.receiverId = receiverId;
             return this;
         }
 
-        public ChatMessage.MessageBuilder receiverName(String receiverName) {
+        public ChatMessage.ChatMessageBuilder receiverName(String receiverName) {
             this.receiverName = receiverName;
             return this;
         }
 
-        public ChatMessage.MessageBuilder receiverMobileNo(String receiverMobileNo) {
+        public ChatMessage.ChatMessageBuilder receiverMobileNo(String receiverMobileNo) {
             this.receiverMobileNo = receiverMobileNo;
             return this;
         }
 
-        public ChatMessage.MessageBuilder type(String type) {
+        public ChatMessage.ChatMessageBuilder type(ChatMessageType type) {
             this.type = type;
             return this;
         }
 
-        public ChatMessage.MessageBuilder status(String status) {
+        public ChatMessage.ChatMessageBuilder status(ChatMessageStatus status) {
             this.status = status;
             return this;
         }
 
-        public ChatMessage.MessageBuilder messageContent(@NotBlank String messageContent) {
+        public ChatMessage.ChatMessageBuilder messageContent(@NotBlank String messageContent) {
             this.messageContent = messageContent;
             return this;
         }
 
-        public ChatMessage.MessageBuilder multimediaId(String multimediaId) {
+        public ChatMessage.ChatMessageBuilder multimediaId(String multimediaId) {
             this.multimediaId = multimediaId;
             return this;
         }
 
-        public ChatMessage.MessageBuilder createdTime(@NotNull DateTime createdTime) {
+        public ChatMessage.ChatMessageBuilder createdTime(@NotNull DateTime createdTime) {
             this.createdTime = createdTime;
             return this;
         }
 
-        public ChatMessage.MessageBuilder sentTime(DateTime sentTime) {
+        public ChatMessage.ChatMessageBuilder sentTime(DateTime sentTime) {
             this.sentTime = sentTime;
             return this;
         }
@@ -378,7 +378,7 @@ public class ChatMessage {
         }
 
         public String toString() {
-            return "Message.MessageBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", receiverId=" + this.receiverId + ", receiverName=" + this.receiverName + ", receiverMobileNo=" + this.receiverMobileNo + ", type=" + this.type + ", status=" + this.status + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
+            return "ChatMessage.ChatMessageBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", receiverId=" + this.receiverId + ", receiverName=" + this.receiverName + ", receiverMobileNo=" + this.receiverMobileNo + ", type=" + this.type + ", status=" + this.status + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
         }
     }
 }
