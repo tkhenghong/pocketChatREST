@@ -1,6 +1,5 @@
 package com.pocketchat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -16,8 +15,9 @@ public class PocketchatApplicationTests {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Test
-	@Ignore
 	public void contextLoads() {
+		logger.debug("Test Successful.");
+		System.out.println("Test Successful.");
 	}
 
 }

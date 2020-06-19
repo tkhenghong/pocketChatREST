@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.3.0.RELEASE'
+    id 'org.springframework.boot' version '2.3.1.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
 }
@@ -8,7 +8,7 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'com.pocketchat'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = '14'
 
 configurations {
     compileOnly {
@@ -21,7 +21,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "Hoxton.SR4")
+    set('springCloudVersion', "Hoxton.SR5")
 }
 
 // Put it ahead of the dependencies below, so it can be recognized by the Spring Boot and remove invalid properties error.
@@ -31,36 +31,27 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-integration'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-    // implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-
-    implementation 'com.twilio.sdk:twilio:7.50.0' // Send SMS, WhatsApp messages
+    implementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
-
-    // Used for RabbiMQ
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
-
+    implementation 'org.springframework.boot:spring-boot-starter-amqp' // Used for RabbiMQ
     compile 'joda-time:joda-time:2.10'
-
     // Create compatibility with libraries, solves problem when creating JWT token in JWTUtil.java file.
     compile('javax.xml.bind:jaxb-api')
-
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
     implementation "org.webjars:stomp-websocket:2.3.3"
     implementation "org.webjars:sockjs-client:1.0.2"
     implementation 'com.google.code.gson:gson'
-
     implementation 'com.fasterxml.jackson.core:jackson-databind'
-
     implementation 'javax.validation:validation-api:2.0.1.Final' // Missing javax.validation in Spring Boot 2.3.0
+    implementation 'com.twilio.sdk:twilio:7.50.0' // Send SMS, WhatsApp messages
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -72,6 +63,7 @@ dependencies {
     }
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.integration:spring-integration-test'
 }
 
 dependencyManagement {

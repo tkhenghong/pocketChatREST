@@ -51,7 +51,12 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             }
         } else {
             // Group/Broadcast
-            return conversationGroupResponseMapper(conversationGroupRepoService.save(conversationGroup));
+            ConversationGroup conversationGroup1 = conversationGroupRepoService.save(conversationGroup);
+
+            // TODO: Create queues based on userContactIds, exchange based on conversationGroupId and Binding between 2 of them using conversationGroupID(for now)
+
+            // TODO: Send first message: You have been added to this group, system message.
+            return conversationGroupResponseMapper(conversationGroup1);
         }
     }
 

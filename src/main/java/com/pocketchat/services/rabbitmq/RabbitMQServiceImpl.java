@@ -39,6 +39,21 @@ public class RabbitMQServiceImpl implements RabbitMQService {
     // Receive Conversation Group System messages: Exchange ID: conversationGroupId, queueName=g98sf0e8g0rsfead, routing key=g98sf0e8g0rsfead.systemMessage
 
     @Override
+    public void declareExchange(String exchangeName) {
+
+    }
+
+    @Override
+    public void declareQueue(String queueName) {
+
+    }
+
+    @Override
+    public void declareBinding(String exchangeName, String queueName) {
+
+    }
+
+    @Override
     public void addMessageToQueue(String queueName, String exchangeName, String routingKey, String message) {
         createAmqpAdmin(queueName, exchangeName, routingKey); // Create exchanges with it's binding if needed.
         sendRabbitMQMessageOld(exchangeName, routingKey, message);
@@ -66,17 +81,17 @@ public class RabbitMQServiceImpl implements RabbitMQService {
      * @param exchangeName: Name of the exchange. Normally is conversation group ID.
      * @param routingKey:   Routing key. Normally it means type of message wish to receive.
      * @param consumerTag:  Consumer tag. Normally it's the ID of the user. It will help to differentiate consumers that listen the messages from the exchange.
-     *
-     * Steps:
-     * 1. Connect to RabbitMQ (Create connectionFactory)
-     * 2. Create Channel and Connection
-     * 3. Declare Queue, Exchanges and bind them together.
-     * 4. Get the remaining message count after Step 3 (must be in correct order, or else you won't get the correct remaining messages count)
-     * 5. If no messages, close the connection (not send anything to the user through WebSocket).
-     * 6. Read messages from the queue with a Consumer(Manual acknowledgement)
-     * 7. The message in handleDelivery() is coming in order. Delivery tag is the index number of the remaining messages.
-     * 8. Send the message to user through WebSocket.
-     * 9. When delivery tag is same with remaining message count(finish reading the queue's messages), close the connection.
+     *                      <p>
+     *                      Steps:
+     *                      1. Connect to RabbitMQ (Create connectionFactory)
+     *                      2. Create Channel and Connection
+     *                      3. Declare Queue, Exchanges and bind them together.
+     *                      4. Get the remaining message count after Step 3 (must be in correct order, or else you won't get the correct remaining messages count)
+     *                      5. If no messages, close the connection (not send anything to the user through WebSocket).
+     *                      6. Read messages from the queue with a Consumer(Manual acknowledgement)
+     *                      7. The message in handleDelivery() is coming in order. Delivery tag is the index number of the remaining messages.
+     *                      8. Send the message to user through WebSocket.
+     *                      9. When delivery tag is same with remaining message count(finish reading the queue's messages), close the connection.
      */
     private void listenRabbitMQMessagesNew(String queueName, String exchangeName, String routingKey, String consumerTag) {
 
@@ -182,19 +197,20 @@ public class RabbitMQServiceImpl implements RabbitMQService {
     }
 
     // The main guy
-    AmqpAdmin createAmqpAdmin(String queueName, String exchangeName, String routingKey) {
+    // TODO: Need a way to tell that is process is successful or failure (error management)
+    RabbitAdmin createAmqpAdmin(String queueName, String exchangeName, String routingKey) {
         Queue queue = createQueue(queueName);
         TopicExchange topicExchange = createTopicExchange(exchangeName);
         Binding binding = createBinding(queue, topicExchange, routingKey);
 
-        AmqpAdmin amqpAdmin = new RabbitAdmin(connectionFactory());
-        amqpAdmin.declareQueue(queue);
-        amqpAdmin.declareExchange(topicExchange);
-        amqpAdmin.declareBinding(binding);
+        RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory());
 
-        amqpAdmin.initialize();
+        rabbitAdmin.declareQueue(queue);
+        rabbitAdmin.declareExchange(topicExchange);
+        rabbitAdmin.declareBinding(binding);
 
+        rabbitAdmin.initialize();
 
-        return amqpAdmin;
+        return rabbitAdmin;
     }
 }
