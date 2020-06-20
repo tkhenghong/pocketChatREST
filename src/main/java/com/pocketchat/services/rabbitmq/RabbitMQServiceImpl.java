@@ -65,9 +65,9 @@ public class RabbitMQServiceImpl implements RabbitMQService {
     /**
      * Tried channel.basicPublish not yet succeed, use the more common one first.
      **/
-    private void sendRabbitMQMessageOld(String queueName, String exchangeName, String message) {
+    private void sendRabbitMQMessageOld(String exchangeName, String routingKey, String message) {
         AmqpTemplate amqpTemplate = amqpTemplate(exchangeName);
-        amqpTemplate.convertAndSend(exchangeName, queueName, message);
+        amqpTemplate.convertAndSend(exchangeName, routingKey, message);
     }
 
     /**
