@@ -11,6 +11,7 @@ import com.pocketchat.models.controllers.response.conversation_group.Conversatio
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
+import com.pocketchat.server.configurations.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
@@ -55,12 +56,12 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         createConversationGroupRequest.setCreatedDate(new DateTime());
 
         ConversationGroup conversationGroup = createConversationGroupRequestToConversationGroupMapper(createConversationGroupRequest);
-        if (conversationGroup.getType().getConversationGroupType().equals("Personal")) {
+        if (conversationGroup.getConversationGroupType().equals(ConversationGroupType.Single)) {
             // 1. Find a list of conversationGroup that has same memberIds
             List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(conversationGroup.getMemberIds());
             // 2. Filter to get the Personal ConversationGroup
             List<ConversationGroup> personalConversationGroupList = conversationGroupList
-                    .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getType().getConversationGroupType().equals("Personal")
+                    .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getConversationGroupType().equals(ConversationGroupType.Single)
                             && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())).collect(Collectors.toList());
             // 3. Should found the exact group
             if (personalConversationGroupList.size() == 1) {
@@ -86,9 +87,13 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                             .sentTime(new DateTime())
                             .build();
 
+            WebSocketMessage webSocketMessage = WebSocketMessage.builder()
+                    .chatMessage(chatMessage)
+                    .build();
+
             // TODO: Create queues based on userContactIds, exchange based on conversationGroupId and Binding between 2 of them using conversationGroupID(for now)
             conversationGroup1.getMemberIds().forEach(memberId -> {
-                this.rabbitMQService.addMessageToQueue(memberId, conversationGroup1.getId(), conversationGroup1.getId(), message);
+                this.rabbitMQService.addMessageToQueue(memberId, conversationGroup1.getId(), conversationGroup1.getId(), webSocketMessage.toString());
             });
 
             // TODO: Send first message: You have been added to this group, system message.
@@ -141,7 +146,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     @Override
     public ConversationGroup createConversationGroupRequestToConversationGroupMapper(CreateConversationGroupRequest createConversationGroupRequest) {
         return ConversationGroup.builder()
-                .type(ConversationGroupType.valueOf(createConversationGroupRequest.getType()))
+                .conversationGroupType(createConversationGroupRequest.getConversationGroupType())
                 .notificationExpireDate(createConversationGroupRequest.getNotificationExpireDate())
                 .name(createConversationGroupRequest.getName())
                 .creatorUserId(createConversationGroupRequest.getCreatorUserId())
@@ -157,7 +162,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     public ConversationGroup updateConversationGroupRequestToConversationGroupMapper(UpdateConversationGroupRequest updateConversationGroupRequest) {
         return ConversationGroup.builder()
                 .id(updateConversationGroupRequest.getId())
-                .type(ConversationGroupType.valueOf(updateConversationGroupRequest.getType()))
+                .conversationGroupType(ConversationGroupType.valueOf(updateConversationGroupRequest.getType()))
                 .notificationExpireDate(updateConversationGroupRequest.getNotificationExpireDate())
                 .name(updateConversationGroupRequest.getName())
                 .creatorUserId(updateConversationGroupRequest.getCreatorUserId())
@@ -181,7 +186,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .memberIds(conversationGroup.getMemberIds())
                 .name(conversationGroup.getName())
                 .notificationExpireDate(conversationGroup.getNotificationExpireDate().getMillis())
-                .type(conversationGroup.getType().getConversationGroupType())
+                .conversationGroupType(conversationGroup.getConversationGroupType())
                 .build();
     }
 }

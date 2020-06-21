@@ -5,7 +5,6 @@ import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
 import com.pocketchat.models.controllers.request.user_contact.CreateUserContactRequest;
 import com.pocketchat.models.controllers.request.user_contact.UpdateUserContactRequest;
-import com.pocketchat.models.controllers.request.user_contact.UserContactRequest;
 import com.pocketchat.models.controllers.response.user_contact.UserContactResponse;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,9 +87,9 @@ public class UserContactServiceImpl implements UserContactService {
     }
 
     @Override
-    public UserContactResponse editUserContact(UpdateUserContactRequest userContact) {
-        getUserContact(userContact.getId());
-        return addUserContact((CreateUserContactRequest) (UserContactRequest) userContact);
+    public UserContactResponse editUserContact(UpdateUserContactRequest updateUserContactRequest) {
+        getUserContact(updateUserContactRequest.getId());
+        return userContactResponseMapper(userContactRepoService.save(updateUserContactRequestToUserContactMapper(updateUserContactRequest)));
     }
 
     @Override
@@ -101,7 +100,7 @@ public class UserContactServiceImpl implements UserContactService {
     @Override
     public UserContact getUserContact(String userContactId) {
         Optional<UserContact> userContactOptional = userContactRepoService.findById(userContactId);
-        if (!userContactOptional.isPresent()) {
+        if (userContactOptional.isEmpty()) {
             throw new UserContactNotFoundException("userContactId-" + userContactId);
         }
         return userContactOptional.get();

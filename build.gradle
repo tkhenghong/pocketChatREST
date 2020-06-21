@@ -58,9 +58,10 @@ dependencies {
     // Annotation process for recognizing properties' values
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation 'org.junit.jupiter:junit-jupiter' // Use JUnit 5. Following https://www.baeldung.com/junit-5-gradle
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.integration:spring-integration-test'
