@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 // Reference: https://www.baeldung.com/spring-boot-testing
 // https://mkyong.com/spring-boot/spring-boot-junit-5-mockito/
+// https://spring.io/guides/gs/testing-web/
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 public class ConversationGroupServiceTests {
