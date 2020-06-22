@@ -1,34 +1,30 @@
 package com.pocketchat.server.configurations.websocket;
 
+import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.settings.Settings;
 import com.pocketchat.db.models.unread_message.UnreadMessage;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_contact.UserContact;
-import com.pocketchat.server.configurations.websocket.old.CustomizedMessage;
 
 public class WebSocketMessage {
     private ConversationGroup conversationGroup;
-    // private Message message;
-    private CustomizedMessage message;
+    private ChatMessage chatMessage;
     private Multimedia multimedia;
     private Settings settings;
     private UnreadMessage unreadMessage;
     private User user;
     private UserContact userContact;
 
-    WebSocketMessage(ConversationGroup conversationGroup, CustomizedMessage message, Multimedia multimedia, Settings settings, UnreadMessage unreadMessage, User user, UserContact userContact) {
+    WebSocketMessage(ConversationGroup conversationGroup, ChatMessage chatMessage, Multimedia multimedia, Settings settings, UnreadMessage unreadMessage, User user, UserContact userContact) {
         this.conversationGroup = conversationGroup;
-        this.message = message;
+        this.chatMessage = chatMessage;
         this.multimedia = multimedia;
         this.settings = settings;
         this.unreadMessage = unreadMessage;
         this.user = user;
         this.userContact = userContact;
-    }
-
-    WebSocketMessage() {
     }
 
     public static WebSocketMessageBuilder builder() {
@@ -39,8 +35,8 @@ public class WebSocketMessage {
         return this.conversationGroup;
     }
 
-    public CustomizedMessage getMessage() {
-        return this.message;
+    public ChatMessage getChatMessage() {
+        return this.chatMessage;
     }
 
     public Multimedia getMultimedia() {
@@ -67,8 +63,8 @@ public class WebSocketMessage {
         this.conversationGroup = conversationGroup;
     }
 
-    public void setMessage(CustomizedMessage message) {
-        this.message = message;
+    public void setChatMessage(ChatMessage chatMessage) {
+        this.chatMessage = chatMessage;
     }
 
     public void setMultimedia(Multimedia multimedia) {
@@ -100,9 +96,10 @@ public class WebSocketMessage {
         final Object other$conversationGroup = other.getConversationGroup();
         if (this$conversationGroup == null ? other$conversationGroup != null : !this$conversationGroup.equals(other$conversationGroup))
             return false;
-        final Object this$message = this.getMessage();
-        final Object other$message = other.getMessage();
-        if (this$message == null ? other$message != null : !this$message.equals(other$message)) return false;
+        final Object this$chatMessage = this.getChatMessage();
+        final Object other$chatMessage = other.getChatMessage();
+        if (this$chatMessage == null ? other$chatMessage != null : !this$chatMessage.equals(other$chatMessage))
+            return false;
         final Object this$multimedia = this.getMultimedia();
         final Object other$multimedia = other.getMultimedia();
         if (this$multimedia == null ? other$multimedia != null : !this$multimedia.equals(other$multimedia))
@@ -133,8 +130,8 @@ public class WebSocketMessage {
         int result = 1;
         final Object $conversationGroup = this.getConversationGroup();
         result = result * PRIME + ($conversationGroup == null ? 43 : $conversationGroup.hashCode());
-        final Object $message = this.getMessage();
-        result = result * PRIME + ($message == null ? 43 : $message.hashCode());
+        final Object $chatMessage = this.getChatMessage();
+        result = result * PRIME + ($chatMessage == null ? 43 : $chatMessage.hashCode());
         final Object $multimedia = this.getMultimedia();
         result = result * PRIME + ($multimedia == null ? 43 : $multimedia.hashCode());
         final Object $settings = this.getSettings();
@@ -149,12 +146,12 @@ public class WebSocketMessage {
     }
 
     public String toString() {
-        return "WebSocketMessage(conversationGroup=" + this.getConversationGroup() + ", message=" + this.getMessage() + ", multimedia=" + this.getMultimedia() + ", settings=" + this.getSettings() + ", unreadMessage=" + this.getUnreadMessage() + ", user=" + this.getUser() + ", userContact=" + this.getUserContact() + ")";
+        return "WebSocketMessage(conversationGroup=" + this.getConversationGroup() + ", chatMessage=" + this.getChatMessage() + ", multimedia=" + this.getMultimedia() + ", settings=" + this.getSettings() + ", unreadMessage=" + this.getUnreadMessage() + ", user=" + this.getUser() + ", userContact=" + this.getUserContact() + ")";
     }
 
     public static class WebSocketMessageBuilder {
         private ConversationGroup conversationGroup;
-        private CustomizedMessage message;
+        private ChatMessage chatMessage;
         private Multimedia multimedia;
         private Settings settings;
         private UnreadMessage unreadMessage;
@@ -169,8 +166,8 @@ public class WebSocketMessage {
             return this;
         }
 
-        public WebSocketMessage.WebSocketMessageBuilder message(CustomizedMessage message) {
-            this.message = message;
+        public WebSocketMessage.WebSocketMessageBuilder chatMessage(ChatMessage chatMessage) {
+            this.chatMessage = chatMessage;
             return this;
         }
 
@@ -200,11 +197,11 @@ public class WebSocketMessage {
         }
 
         public WebSocketMessage build() {
-            return new WebSocketMessage(conversationGroup, message, multimedia, settings, unreadMessage, user, userContact);
+            return new WebSocketMessage(conversationGroup, chatMessage, multimedia, settings, unreadMessage, user, userContact);
         }
 
         public String toString() {
-            return "WebSocketMessage.WebSocketMessageBuilder(conversationGroup=" + this.conversationGroup + ", message=" + this.message + ", multimedia=" + this.multimedia + ", settings=" + this.settings + ", unreadMessage=" + this.unreadMessage + ", user=" + this.user + ", userContact=" + this.userContact + ")";
+            return "WebSocketMessage.WebSocketMessageBuilder(conversationGroup=" + this.conversationGroup + ", chatMessage=" + this.chatMessage + ", multimedia=" + this.multimedia + ", settings=" + this.settings + ", unreadMessage=" + this.unreadMessage + ", user=" + this.user + ", userContact=" + this.userContact + ")";
         }
     }
 }

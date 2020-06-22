@@ -25,7 +25,7 @@ public class ConversationGroup {
     private String name;
 
     @NotBlank
-    private ConversationGroupType type;
+    private ConversationGroupType conversationGroupType;
 
     private String description;
 
@@ -43,12 +43,12 @@ public class ConversationGroup {
 
     private DateTime notificationExpireDate;
 
-    ConversationGroup(String id, @NotBlank String creatorUserId, @NotNull DateTime createdDate, @NotBlank String name, @NotBlank ConversationGroupType type, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, DateTime notificationExpireDate) {
+    ConversationGroup(String id, @NotBlank String creatorUserId, @NotNull DateTime createdDate, @NotBlank String name, @NotBlank ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, DateTime notificationExpireDate) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.createdDate = createdDate;
         this.name = name;
-        this.type = type;
+        this.conversationGroupType = conversationGroupType;
         this.description = description;
         this.memberIds = memberIds;
         this.adminMemberIds = adminMemberIds;
@@ -76,8 +76,8 @@ public class ConversationGroup {
         return this.name;
     }
 
-    public @NotBlank ConversationGroupType getType() {
-        return this.type;
+    public @NotBlank ConversationGroupType getConversationGroupType() {
+        return this.conversationGroupType;
     }
 
     public String getDescription() {
@@ -116,8 +116,8 @@ public class ConversationGroup {
         this.name = name;
     }
 
-    public void setType(@NotBlank ConversationGroupType type) {
-        this.type = type;
+    public void setConversationGroupType(@NotBlank ConversationGroupType conversationGroupType) {
+        this.conversationGroupType = conversationGroupType;
     }
 
     public void setDescription(String description) {
@@ -159,9 +159,10 @@ public class ConversationGroup {
         final Object this$name = this.getName();
         final Object other$name = other.getName();
         if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
-        final Object this$type = this.getType();
-        final Object other$type = other.getType();
-        if (this$type == null ? other$type != null : !this$type.equals(other$type)) return false;
+        final Object this$conversationGroupType = this.getConversationGroupType();
+        final Object other$conversationGroupType = other.getConversationGroupType();
+        if (this$conversationGroupType == null ? other$conversationGroupType != null : !this$conversationGroupType.equals(other$conversationGroupType))
+            return false;
         final Object this$description = this.getDescription();
         final Object other$description = other.getDescription();
         if (this$description == null ? other$description != null : !this$description.equals(other$description))
@@ -196,8 +197,8 @@ public class ConversationGroup {
         result = result * PRIME + ($createdDate == null ? 43 : $createdDate.hashCode());
         final Object $name = this.getName();
         result = result * PRIME + ($name == null ? 43 : $name.hashCode());
-        final Object $type = this.getType();
-        result = result * PRIME + ($type == null ? 43 : $type.hashCode());
+        final Object $conversationGroupType = this.getConversationGroupType();
+        result = result * PRIME + ($conversationGroupType == null ? 43 : $conversationGroupType.hashCode());
         final Object $description = this.getDescription();
         result = result * PRIME + ($description == null ? 43 : $description.hashCode());
         final Object $memberIds = this.getMemberIds();
@@ -211,7 +212,7 @@ public class ConversationGroup {
     }
 
     public String toString() {
-        return "ConversationGroup(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", createdDate=" + this.getCreatedDate() + ", name=" + this.getName() + ", type=" + this.getType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", block=" + this.isBlock() + ", notificationExpireDate=" + this.getNotificationExpireDate() + ")";
+        return "ConversationGroup(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", createdDate=" + this.getCreatedDate() + ", name=" + this.getName() + ", conversationGroupType=" + this.getConversationGroupType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", block=" + this.isBlock() + ", notificationExpireDate=" + this.getNotificationExpireDate() + ")";
     }
 
     public static class ConversationGroupBuilder {
@@ -219,7 +220,7 @@ public class ConversationGroup {
         private @NotBlank String creatorUserId;
         private @NotNull DateTime createdDate;
         private @NotBlank String name;
-        private @NotBlank ConversationGroupType type;
+        private @NotBlank ConversationGroupType conversationGroupType;
         private String description;
         private List<String> memberIds;
         private List<String> adminMemberIds;
@@ -249,8 +250,8 @@ public class ConversationGroup {
             return this;
         }
 
-        public ConversationGroup.ConversationGroupBuilder type(@NotBlank ConversationGroupType type) {
-            this.type = type;
+        public ConversationGroup.ConversationGroupBuilder conversationGroupType(@NotBlank ConversationGroupType conversationGroupType) {
+            this.conversationGroupType = conversationGroupType;
             return this;
         }
 
@@ -280,11 +281,11 @@ public class ConversationGroup {
         }
 
         public ConversationGroup build() {
-            return new ConversationGroup(id, creatorUserId, createdDate, name, type, description, memberIds, adminMemberIds, block, notificationExpireDate);
+            return new ConversationGroup(id, creatorUserId, createdDate, name, conversationGroupType, description, memberIds, adminMemberIds, block, notificationExpireDate);
         }
 
         public String toString() {
-            return "ConversationGroup.ConversationGroupBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", createdDate=" + this.createdDate + ", name=" + this.name + ", type=" + this.type + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", block=" + this.block + ", notificationExpireDate=" + this.notificationExpireDate + ")";
+            return "ConversationGroup.ConversationGroupBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", createdDate=" + this.createdDate + ", name=" + this.name + ", conversationGroupType=" + this.conversationGroupType + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", block=" + this.block + ", notificationExpireDate=" + this.notificationExpireDate + ")";
         }
     }
 }

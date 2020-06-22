@@ -67,11 +67,11 @@ public class UserContactRepoService {
         return userContactRepository.findByUserIds(userId);
     }
 
-    public UserContact save(UserContact conversationGroup) {
-        return userContactRepository.save(conversationGroup);
+    public UserContact save(UserContact userContact) {
+        return userContactRepository.save(userContact);
     }
 
-    public void delete(UserContact conversationGroup) {
-        userContactRepository.delete(conversationGroup);
+    public void delete(UserContact userContact) {
+        userContactRepository.delete(userContact);
     }
 }
