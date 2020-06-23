@@ -8,19 +8,19 @@ import com.pocketchat.models.controllers.response.chat_message.ChatMessageRespon
 import java.util.List;
 
 public interface ChatMessageService {
-    ChatMessageResponse addChatMessage(CreateChatMessageRequest chatMessage);
+    ChatMessage addChatMessage(CreateChatMessageRequest chatMessage);
 
-    ChatMessageResponse editChatMessage(UpdateChatMessageRequest chatMessage);
+    ChatMessage editChatMessage(UpdateChatMessageRequest chatMessage);
 
     void deleteChatMessage(String messageId);
 
     ChatMessage getSingleChatMessage(String messageId);
 
-    List<ChatMessageResponse> getChatMessagesOfAConversation(String conversationGroupId);
+    List<ChatMessage> getChatMessagesOfAConversation(String conversationGroupId);
 
-    ChatMessage createCreateChatMessageToChatMessage(CreateChatMessageRequest createChatMessageRequest);
+    ChatMessage createChatMessageToChatMessage(CreateChatMessageRequest createChatMessageRequest);
 
-    ChatMessage updateCreateChatMessageToChatMessage(UpdateChatMessageRequest updateMessageRequest);
+    ChatMessage updateChatMessageToChatMessage(UpdateChatMessageRequest updateMessageRequest);
 
     ChatMessageResponse chatMessageResponseMapper(ChatMessage chatMessage);
 }

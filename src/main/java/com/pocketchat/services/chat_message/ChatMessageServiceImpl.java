@@ -3,45 +3,61 @@ package com.pocketchat.services.chat_message;
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.repo_services.chat_message.ChatMessageRepoService;
-import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.chat_message.UpdateChatMessageRequest;
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.enums.chat_message.ChatMessageType;
+import com.pocketchat.server.configurations.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
-import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
+import com.pocketchat.services.conversation_group.ConversationGroupService;
+import com.pocketchat.services.rabbitmq.RabbitMQService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ChatMessageRepoService chatMessageRepoService;
 
-    private final ConversationGroupRepoService conversationGroupRepoService;
+    private final ConversationGroupService conversationGroupService;
+
+    private final RabbitMQService rabbitMQService;
 
     @Autowired
-    public ChatMessageServiceImpl(ChatMessageRepoService chatMessageRepoService, ConversationGroupRepoService conversationGroupRepoService) {
+    public ChatMessageServiceImpl(ChatMessageRepoService chatMessageRepoService,
+                                  ConversationGroupService conversationGroupService,
+                                  RabbitMQService rabbitMQService) {
         this.chatMessageRepoService = chatMessageRepoService;
-        this.conversationGroupRepoService = conversationGroupRepoService;
+        this.conversationGroupService = conversationGroupService;
+        this.rabbitMQService = rabbitMQService;
     }
 
     @Override
-    public ChatMessageResponse addChatMessage(CreateChatMessageRequest createChatMessageRequest) {
-        ChatMessage chatMessage = createCreateChatMessageToChatMessage(createChatMessageRequest);
-        return chatMessageResponseMapper(chatMessageRepoService.save(chatMessage));
+    public ChatMessage addChatMessage(CreateChatMessageRequest createChatMessageRequest) {
+        ConversationGroup conversationGroup = conversationGroupService.getSingleConversation(createChatMessageRequest.getConversationId());
+
+        ChatMessage chatMessage = createChatMessageToChatMessage(createChatMessageRequest);
+
+        ChatMessage newChatMessage = chatMessageRepoService.save(chatMessage);
+
+        sendMessageToRabbitMQ(conversationGroup, newChatMessage);
+
+        return newChatMessage;
     }
 
     @Override
-    public ChatMessageResponse editChatMessage(UpdateChatMessageRequest updateMessageRequest) {
-        ChatMessage chatMessage = updateCreateChatMessageToChatMessage(updateMessageRequest);
-        getSingleChatMessage(chatMessage.getId());
-        return chatMessageResponseMapper(chatMessageRepoService.save(chatMessage));
+    public ChatMessage editChatMessage(UpdateChatMessageRequest updateMessageRequest) {
+        conversationGroupService.getSingleConversation(updateMessageRequest.getConversationId());
+
+        getSingleChatMessage(updateMessageRequest.getId());
+
+        ChatMessage chatMessage = updateChatMessageToChatMessage(updateMessageRequest);
+
+        return chatMessageRepoService.save(chatMessage);
     }
 
     @Override
@@ -52,27 +68,24 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public ChatMessage getSingleChatMessage(String messageId) {
         Optional<ChatMessage> messageOptional = chatMessageRepoService.findById(messageId);
-        if (!messageOptional.isPresent()) {
+        if (messageOptional.isEmpty()) {
             throw new ChatMessageNotFoundException("messageId-" + messageId);
         }
         return messageOptional.get();
     }
 
     @Override
-    public List<ChatMessageResponse> getChatMessagesOfAConversation(String conversationGroupId) {
-        Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
-        if (!conversationGroupOptional.isPresent()) {
-            throw new ConversationGroupNotFoundException("conversationGroupId:-" + conversationGroupId);
-        }
+    public List<ChatMessage> getChatMessagesOfAConversation(String conversationGroupId) {
+        conversationGroupService.getSingleConversation(conversationGroupId);
         List<ChatMessage> chatMessageList = chatMessageRepoService.findAllMessagesByConversationId(conversationGroupId);
         if (chatMessageList.isEmpty()) {
             throw new ChatMessageNotFoundException("No message found for this conversationGroupId:-" + conversationGroupId);
         }
-        return chatMessageList.stream().map(this::chatMessageResponseMapper).collect(Collectors.toList());
+        return chatMessageList;
     }
 
     @Override
-    public ChatMessage createCreateChatMessageToChatMessage(CreateChatMessageRequest createChatMessageRequest) {
+    public ChatMessage createChatMessageToChatMessage(CreateChatMessageRequest createChatMessageRequest) {
         return ChatMessage.builder()
                 .id(createChatMessageRequest.getId())
                 .conversationId(createChatMessageRequest.getConversationId())
@@ -92,7 +105,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public ChatMessage updateCreateChatMessageToChatMessage(UpdateChatMessageRequest updateMessageRequest) {
+    public ChatMessage updateChatMessageToChatMessage(UpdateChatMessageRequest updateMessageRequest) {
         return ChatMessage.builder()
                 .id(updateMessageRequest.getId())
                 .conversationId(updateMessageRequest.getConversationId())
@@ -129,5 +142,15 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .status(chatMessage.getStatus().getChatMessageStatus())
                 .type(chatMessage.getType().getChatMessageType())
                 .build();
+    }
+
+    private void sendMessageToRabbitMQ(ConversationGroup conversationGroup, ChatMessage chatMessage) {
+        WebSocketMessage webSocketMessage = WebSocketMessage.builder()
+                .chatMessage(chatMessage)
+                .build();
+
+        conversationGroup.getMemberIds().forEach(memberId -> {
+            rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(), conversationGroup.getId(), webSocketMessage.toString());
+        });
     }
 }

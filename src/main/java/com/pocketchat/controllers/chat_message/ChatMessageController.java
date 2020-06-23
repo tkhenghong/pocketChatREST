@@ -1,5 +1,6 @@
 package com.pocketchat.controllers.chat_message;
 
+import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.chat_message.UpdateChatMessageRequest;
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // TODO: Message Controller may get removed because of Websocket
 @RestController
@@ -27,7 +29,7 @@ public class ChatMessageController {
 
     @PostMapping("")
     public ResponseEntity<Object> addMessage(@Valid @RequestBody CreateChatMessageRequest chatMessage) {
-        ChatMessageResponse savedChatMessage = chatMessageService.addChatMessage(chatMessage);
+        ChatMessage savedChatMessage = chatMessageService.addChatMessage(chatMessage);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedChatMessage.getId())
                 .toUri();
         return ResponseEntity.created(location).build();
@@ -35,7 +37,7 @@ public class ChatMessageController {
 
     @PutMapping("")
     public ChatMessageResponse editMessage(@Valid @RequestBody UpdateChatMessageRequest chatMessage) {
-        return chatMessageService.editChatMessage(chatMessage);
+        return chatMessageService.chatMessageResponseMapper(chatMessageService.editChatMessage(chatMessage));
     }
 
     @DeleteMapping("/{messageId}")
@@ -50,7 +52,8 @@ public class ChatMessageController {
 
     @GetMapping("/conversation/{conversationGroupId}")
     public List<ChatMessageResponse> getMessagesOfAConversation(String conversationGroupId) {
-        return chatMessageService.getChatMessagesOfAConversation(conversationGroupId);
+        List<ChatMessage> chatMessagesList = chatMessageService.getChatMessagesOfAConversation(conversationGroupId);
+        return chatMessagesList.stream().map(chatMessageService::chatMessageResponseMapper).collect(Collectors.toList());
     }
 
     // Research it's definition for more usages
