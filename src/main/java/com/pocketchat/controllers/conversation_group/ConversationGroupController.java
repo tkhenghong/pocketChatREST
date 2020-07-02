@@ -1,5 +1,6 @@
 package com.pocketchat.controllers.conversation_group;
 
+import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/conversationGroup")
@@ -27,7 +29,7 @@ public class ConversationGroupController {
 
     @PostMapping("")
     public ResponseEntity<Object> addConversation(@Valid @RequestBody CreateConversationGroupRequest conversationGroup) {
-        ConversationGroupResponse savedConversationGroup = conversationGroupService.addConversation(conversationGroup);
+        ConversationGroup savedConversationGroup = conversationGroupService.addConversation(conversationGroup);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedConversationGroup.getId())
                 .toUri();
         return ResponseEntity.created(location).build();
@@ -35,7 +37,7 @@ public class ConversationGroupController {
 
     @PutMapping("")
     public ConversationGroupResponse editConversation(@Valid @RequestBody UpdateConversationGroupRequest updateConversationGroupRequest) {
-        return conversationGroupService.editConversation(updateConversationGroupRequest);
+        return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.editConversation(updateConversationGroupRequest));
     }
 
     @DeleteMapping("/{conversationGroupId}")
@@ -50,6 +52,7 @@ public class ConversationGroupController {
 
     @GetMapping("/user/mobileNo/{mobileNo}")
     public List<ConversationGroupResponse> getConversationsForUserByMobileNo(@PathVariable String mobileNo) {
-        return conversationGroupService.getConversationsForUserByMobileNo(mobileNo);
+        List<ConversationGroup> conversationGroupList = conversationGroupService.getConversationsForUserByMobileNo(mobileNo);
+        return conversationGroupList.stream().map(conversationGroupService::conversationGroupResponseMapper).collect(Collectors.toList());
     }
 }

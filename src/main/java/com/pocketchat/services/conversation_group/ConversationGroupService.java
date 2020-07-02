@@ -8,15 +8,15 @@ import com.pocketchat.models.controllers.response.conversation_group.Conversatio
 import java.util.List;
 
 public interface ConversationGroupService {
-    ConversationGroupResponse addConversation(CreateConversationGroupRequest createConversationGroupRequest);
+    ConversationGroup addConversation(CreateConversationGroupRequest createConversationGroupRequest);
 
-    ConversationGroupResponse editConversation(UpdateConversationGroupRequest updateConversationGroupRequest);
+    ConversationGroup editConversation(UpdateConversationGroupRequest updateConversationGroupRequest);
 
     void deleteConversation(String conversationId);
 
     ConversationGroup getSingleConversation(String conversationId);
 
-    List<ConversationGroupResponse> getConversationsForUserByMobileNo(String mobileNo);
+    List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo);
 
     List<ConversationGroup> findAllByMemberIds(String userContactId);
 

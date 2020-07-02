@@ -4,17 +4,17 @@ import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
-import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
+import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
-import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
-import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.server.configurations.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
+import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
+import com.pocketchat.services.user_contact.UserContactService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,29 +29,27 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     private final ConversationGroupRepoService conversationGroupRepoService;
 
-    private final UserContactRepoService userContactRepoService;
+    private final ChatMessageService chatMessageService;
+
+    private final UserContactService userContactService;
 
     private final RabbitMQService rabbitMQService;
 
     // Avoid Field Injection
     @Autowired
     public ConversationGroupServiceImpl(ConversationGroupRepoService conversationGroupRepoService,
-                                        UserContactRepoService userContactRepoService,
+                                        ChatMessageService chatMessageService,
+                                        UserContactService userContactService,
                                         RabbitMQService rabbitMQService) {
         this.conversationGroupRepoService = conversationGroupRepoService;
-        this.userContactRepoService = userContactRepoService;
+        this.chatMessageService = chatMessageService;
+        this.userContactService = userContactService;
         this.rabbitMQService = rabbitMQService;
     }
 
     @Override
-    public ConversationGroupResponse addConversation(CreateConversationGroupRequest createConversationGroupRequest) {
-        Optional<UserContact> userContactOptional = this.userContactRepoService.findById(createConversationGroupRequest.getCreatorUserId());
-
-        if (userContactOptional.isEmpty()) {
-            throw new UserContactNotFoundException("Not able to find the userContact during creation of conversation group. userContactId: " + createConversationGroupRequest.getCreatorUserId());
-        }
-
-        UserContact creatorUserContact = userContactOptional.get();
+    public ConversationGroup addConversation(CreateConversationGroupRequest createConversationGroupRequest) {
+        UserContact creatorUserContact = userContactService.getUserContact(createConversationGroupRequest.getCreatorUserId());
 
         createConversationGroupRequest.setCreatedDate(new DateTime());
 
@@ -65,47 +63,25 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                             && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())).collect(Collectors.toList());
             // 3. Should found the exact group
             if (personalConversationGroupList.size() == 1) {
-                return conversationGroupResponseMapper(personalConversationGroupList.iterator().next());
+                return personalConversationGroupList.iterator().next();
             } else if (personalConversationGroupList.isEmpty()) { // Must be 0 conversationGroup
-                return conversationGroupResponseMapper(conversationGroupRepoService.save(conversationGroup));
+                String message = "You have been added into this group by" + creatorUserContact.getDisplayName() + " on " + createConversationGroupRequest.getCreatedDate().toString("dd/mm/yyyy HH:mm:ss");
+                return createAndSendMessage(conversationGroup, message);
             } else {
                 return null;
             }
         } else {
             // Group/Broadcast
-            ConversationGroup conversationGroup1 = conversationGroupRepoService.save(conversationGroup);
-
             String message = "You have been added into this group by" + creatorUserContact.getDisplayName() + " on " + createConversationGroupRequest.getCreatedDate().toString("dd/mm/yyyy HH:mm:ss");
-
-            ChatMessage chatMessage =
-                    ChatMessage.builder()
-                            .type(ChatMessageType.Text)
-                            .conversationId(conversationGroup1.getId())
-                            .createdTime(new DateTime())
-                            .messageContent(message)
-                            .status(ChatMessageStatus.Sent)
-                            .sentTime(new DateTime())
-                            .build();
-
-            WebSocketMessage webSocketMessage = WebSocketMessage.builder()
-                    .chatMessage(chatMessage)
-                    .build();
-
-            // TODO: Create queues based on userContactIds, exchange based on conversationGroupId and Binding between 2 of them using conversationGroupID(for now)
-            conversationGroup1.getMemberIds().forEach(memberId -> {
-                this.rabbitMQService.addMessageToQueue(memberId, conversationGroup1.getId(), conversationGroup1.getId(), webSocketMessage.toString());
-            });
-
-            // TODO: Send first message: You have been added to this group, system message.
-            return conversationGroupResponseMapper(conversationGroup1);
+            return createAndSendMessage(conversationGroup, message);
         }
     }
 
     @Override
-    public ConversationGroupResponse editConversation(UpdateConversationGroupRequest updateConversationGroupRequest) {
+    public ConversationGroup editConversation(UpdateConversationGroupRequest updateConversationGroupRequest) {
         ConversationGroup conversationGroup = updateConversationGroupRequestToConversationGroupMapper(updateConversationGroupRequest);
         getSingleConversation(conversationGroup.getId());
-        return conversationGroupResponseMapper(conversationGroupRepoService.save(conversationGroup));
+        return conversationGroupRepoService.save(conversationGroup);
     }
 
     @Override
@@ -116,22 +92,21 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     @Override
     public ConversationGroup getSingleConversation(String conversationGroupId) {
         Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
-        if (!conversationGroupOptional.isPresent()) {
+        if (conversationGroupOptional.isEmpty()) {
             throw new ConversationGroupNotFoundException("conversationGroupId-" + conversationGroupId);
         }
         return conversationGroupOptional.get();
     }
 
     @Override
-    public List<ConversationGroupResponse> getConversationsForUserByMobileNo(String mobileNo) {
+    public List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo) {
         // Retrieve conversations for the user
-        UserContact userContact = userContactRepoService.findByMobileNo(mobileNo);
+        UserContact userContact = userContactService.getUserContactByMobileNo(mobileNo);
 
         if (ObjectUtils.isEmpty(userContact)) {
             throw new UserContactNotFoundException("UserContact not found: " + mobileNo);
         }
-        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContact.getId());
-        return conversationGroupList.stream().map(this::conversationGroupResponseMapper).collect(Collectors.toList());
+        return conversationGroupRepoService.findAllByMemberIds(userContact.getId());
     }
 
     @Override
@@ -141,6 +116,41 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             throw new UserContactNotFoundException("UserContactId not found: " + userContactId);
         }
         return conversationGroupList;
+    }
+
+    private void checkUserContactsExist(List<String> userContactIds) {
+        userContactIds.forEach(userContactService::getUserContact);
+    }
+
+    ConversationGroup createAndSendMessage(ConversationGroup conversationGroup, String message) {
+        checkUserContactsExist(conversationGroup.getMemberIds());
+        checkUserContactsExist(conversationGroup.getAdminMemberIds());
+        ConversationGroup newConversationGroup = conversationGroupRepoService.save(conversationGroup);
+        sendWelcomeMessage(newConversationGroup, message);
+
+        return newConversationGroup;
+    }
+
+    private void sendWelcomeMessage(ConversationGroup conversationGroup, String message) {
+
+        CreateChatMessageRequest createChatMessageRequest = CreateChatMessageRequest.builder()
+                .type("Text")
+                .conversationId(conversationGroup.getId())
+                .createdTime(new DateTime())
+                .messageContent(message)
+                .status("Sent")
+                .sentTime(new DateTime())
+                .build();
+
+        ChatMessage chatMessage = chatMessageService.addChatMessage(createChatMessageRequest);
+
+        WebSocketMessage webSocketMessage = WebSocketMessage.builder()
+                .chatMessage(chatMessage)
+                .build();
+
+        conversationGroup.getMemberIds().forEach(memberId ->
+                this.rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(),
+                        conversationGroup.getId(), webSocketMessage.toString()));
     }
 
     @Override
