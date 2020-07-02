@@ -9,7 +9,7 @@ import com.pocketchat.models.controllers.request.conversation_group.CreateConver
 import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
-import com.pocketchat.server.configurations.websocket.WebSocketMessage;
+import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import com.pocketchat.services.chat_message.ChatMessageService;

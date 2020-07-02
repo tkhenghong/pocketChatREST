@@ -31,27 +31,3 @@ class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(new WebsocketChannelInterceptor());
     }
 }
-
-
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.web.socket.config.annotation.EnableWebSocket;
-//import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-//import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-// Working
-//@Configuration
-//@EnableWebSocket
-//class WebSocketConfig2 implements WebSocketConfigurer {
-//    @Override
-//    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-//        registry.addHandler(myHandler(), "/socket")
-//                .setAllowedOrigins("*");
-////                .withSockJS().setWebSocketEnabled(true)
-////                .setInterceptors(new MyHandshakeInterceptor());
-//    }
-//
-//    @Bean
-//    public WebSocketHandler2 myHandler() {
-//        return new WebSocketHandler2();
-//    }
-//}

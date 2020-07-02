@@ -8,7 +8,7 @@ import com.pocketchat.models.controllers.request.chat_message.UpdateChatMessageR
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.enums.chat_message.ChatMessageType;
-import com.pocketchat.server.configurations.websocket.WebSocketMessage;
+import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;

@@ -1,4 +1,4 @@
-package com.pocketchat.server.configurations.websocket;
+package com.pocketchat.models.websocket;
 
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
