@@ -2,48 +2,58 @@ package com.pocketchat.conversation_group.service;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.user_contact.UserContact;
-import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
-import com.pocketchat.db.repositories.conversation_group.ConversationGroupRepository;
+import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.controllers.request.user.CreateUserRequest;
-import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
+import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
-import com.pocketchat.services.user.UserService;
+import com.pocketchat.services.conversation_group.ConversationGroupServiceImpl;
+import com.pocketchat.services.rabbitmq.RabbitMQService;
+import com.pocketchat.services.user_contact.UserContactService;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
-// Reference: https://www.baeldung.com/spring-boot-testing
-// https://mkyong.com/spring-boot/spring-boot-junit-5-mockito/
-// https://spring.io/guides/gs/testing-web/
-// https://www.javaworld.com/article/3537563/junit-5-tutorial-part-1-unit-testing-with-junit-5-mockito-and-hamcrest.html
-// https://www.baeldung.com/mockito-annotations
+// https://www.infoworld.com/article/3537563/junit-5-tutorial-part-1-unit-testing-with-junit-5-mockito-and-hamcrest.html
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 public class ConversationGroupServiceTests {
 
-    @Autowired
+    @Mock
+    ConversationGroupRepoService conversationGroupRepoService;
+
+    @Mock
+    ChatMessageService chatMessageService;
+
+    @Mock
+    UserContactService userContactService;
+
+    @Mock
+    RabbitMQService rabbitMQService;
+
     ConversationGroupService conversationGroupService;
 
-    @Autowired
-    ConversationGroupRepository conversationGroupRepository;
-
-    @Autowired
-    UserContactRepoService userContactRepoService;
-
-    @Autowired
-    UserService userService;
+    @BeforeEach
+    void setUp() {
+        conversationGroupService = new ConversationGroupServiceImpl(conversationGroupRepoService, chatMessageService, userContactService, rabbitMQService);
+    }
 
     @Test
     @DisplayName("Conversation Group Service Test")
@@ -55,12 +65,17 @@ public class ConversationGroupServiceTests {
     @DisplayName("testAddConversationGroupWithoutUserContactsFound")
     public void testAddConversationGroupWithoutUserContactsFound() {
         CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
-        UserContact adminUserContact = generateUserContactObject();
-        Exception exception = assertThrows(UserContactNotFoundException.class, () -> {
-            //  Mockito.when(userContactRepoService.findById(eq(createConversationGroupRequest.getCreatorUserId()))).thenReturn(Optional.of(adminUserContact));
-            ConversationGroupResponse conversationGroupResponse = conversationGroupService.addConversation(createConversationGroupRequest);
-            //  Mockito.verify(userContactRepoService.findById(eq(createConversationGroupRequest.getCreatorUserId())));
-        });
+        try {
+            System.out.println("userContactService: " + userContactService);
+            System.out.println("conversationGroupService: " + conversationGroupService);
+            Mockito.when(userContactService.getUserContact(eq(createConversationGroupRequest.getCreatorUserId())))
+                    .thenThrow(UserContactNotFoundException.class);
+            ConversationGroup conversationGroup = conversationGroupService.addConversation(createConversationGroupRequest);
+            failBecauseExceptionWasNotThrown(Exception.class);
+        } catch (Exception exception) {
+            Mockito.verify(userContactService).getUserContact(any());
+            assertThat(exception).isInstanceOf(UserContactNotFoundException.class);
+        }
     }
 
     private CreateUserRequest generateCreateUserRequestObject() {
@@ -95,7 +110,7 @@ public class ConversationGroupServiceTests {
                 .displayName(UUID.randomUUID().toString())
                 .realName(UUID.randomUUID().toString())
                 .userId(UUID.randomUUID().toString())
-                .userIds(Arrays.asList())
+                .userIds(new ArrayList<>())
                 .userId(UUID.randomUUID().toString())
                 .multimediaId(UUID.randomUUID().toString())
                 .mobileNo(UUID.randomUUID().toString())

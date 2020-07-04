@@ -1,21 +1,23 @@
 package com.pocketchat.conversation_group.controller;
 
+import com.pocketchat.controllers.conversation_group.ConversationGroupController;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -29,17 +31,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// Reference: https://www.baeldung.com/spring-boot-testing
-// https://mkyong.com/spring-boot/spring-boot-junit-5-mockito/
-// https://spring.io/guides/gs/testing-web/
-// https://www.javaworld.com/article/3537563/junit-5-tutorial-part-1-unit-testing-with-junit-5-mockito-and-hamcrest.html
-// https://www.baeldung.com/mockito-annotations
-// Lessons learned: You do not use @WebMvcTest as it will only @Autowire or @Mock related @Service @Repository beans.
-// You have to use the below 2 annotations to test the Controller layer.
-@ExtendWith(MockitoExtension.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@WebAppConfiguration
+// https://www.infoworld.com/article/3537563/junit-5-tutorial-part-1-unit-testing-with-junit-5-mockito-and-hamcrest.html
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(
+        value = ConversationGroupController.class,
+        useDefaultFilters = false,
+        includeFilters = {
+                @ComponentScan.Filter(
+                        type = FilterType.ASSIGNABLE_TYPE,
+                        value = ConversationGroupController.class
+                )
+        }
+)
+@AutoConfigureMockMvc(addFilters = false)
 public class ConversationGroupControllerTests {
     @Autowired
     private MockMvc mockMvc;
@@ -48,18 +52,21 @@ public class ConversationGroupControllerTests {
     ConversationGroupService conversationGroupService;
 
     @Test
-    @DisplayName("Conversation Group Controller Test")
-    @Disabled
+    @DisplayName("Test Get Conversation Group API")
+    @WithMockUser
+    // @Disabled
     public void testConversationGroupController() throws Exception {
-        System.out.println("Conversation Group Controller Test Successful.");
         String conversationGroupId = UUID.randomUUID().toString();
         ConversationGroup entity = generateConversationGroupObject();
         String url = "/conversationGroup/" + conversationGroupId;
 
-        Mockito.when(conversationGroupService.getSingleConversation(eq(conversationGroupId))).thenReturn(entity);
+        MvcResult mvcResult = mockMvc.perform(get(url)).andDo(print()).andExpect(status().isOk())
+                .andReturn();
 
-        MvcResult mvcResult = mockMvc.perform(get(url)).andDo(print()).andExpect(status().isNotFound()).andReturn();
-        String content = mvcResult.getResponse().getContentAsString();
+        Mockito.verify(conversationGroupService).getSingleConversation(eq(conversationGroupId));
+
+        String content = mvcResult.getResponse().getContentAsString(); // TODO: Unable to get correct response from the API call
+        // Need to try RESTTemplate type of tests
 
         System.out.println("CONTENT: " + content);
     }
