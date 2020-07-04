@@ -3,7 +3,7 @@ package com.pocketchat.controllers.user_authentication;
 import com.pocketchat.models.controllers.request.user_authentication.*;
 import com.pocketchat.models.controllers.response.user_authentication.UserAuthenticationResponse;
 import com.pocketchat.models.controllers.response.user_authentication.OTPResponse;
-import com.pocketchat.services.authentication.UserAuthenticationService;
+import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

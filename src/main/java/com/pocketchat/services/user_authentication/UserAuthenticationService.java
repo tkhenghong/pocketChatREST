@@ -1,4 +1,4 @@
-package com.pocketchat.services.authentication;
+package com.pocketchat.services.user_authentication;
 
 import com.pocketchat.models.controllers.request.user_authentication.*;
 import com.pocketchat.models.controllers.response.user_authentication.UserAuthenticationResponse;

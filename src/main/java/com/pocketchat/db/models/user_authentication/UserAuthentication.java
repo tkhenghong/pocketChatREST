@@ -1,9 +1,11 @@
 package com.pocketchat.db.models.user_authentication;
 
+import com.pocketchat.db.models.user_role.UserRole;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Collection;
 
 @Document(collection = "user_authentication")
 public class UserAuthentication {
@@ -17,12 +19,13 @@ public class UserAuthentication {
     @NotBlank
     private String password;
 
-    // TODO: Roles
+    private Collection<UserRole> userRoles;
 
-    UserAuthentication(String id, @NotBlank String username, @NotBlank String password) {
+    UserAuthentication(String id, @NotBlank String username, @NotBlank String password, Collection<UserRole> userRoles) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.userRoles = userRoles;
     }
 
     public static UserAuthenticationBuilder builder() {
@@ -41,6 +44,10 @@ public class UserAuthentication {
         return this.password;
     }
 
+    public Collection<UserRole> getUserRoles() {
+        return this.userRoles;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -51,6 +58,10 @@ public class UserAuthentication {
 
     public void setPassword(@NotBlank String password) {
         this.password = password;
+    }
+
+    public void setUserRoles(Collection<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 
     public boolean equals(final Object o) {
@@ -67,6 +78,9 @@ public class UserAuthentication {
         final Object this$password = this.getPassword();
         final Object other$password = other.getPassword();
         if (this$password == null ? other$password != null : !this$password.equals(other$password)) return false;
+        final Object this$userRoles = this.getUserRoles();
+        final Object other$userRoles = other.getUserRoles();
+        if (this$userRoles == null ? other$userRoles != null : !this$userRoles.equals(other$userRoles)) return false;
         return true;
     }
 
@@ -83,17 +97,20 @@ public class UserAuthentication {
         result = result * PRIME + ($username == null ? 43 : $username.hashCode());
         final Object $password = this.getPassword();
         result = result * PRIME + ($password == null ? 43 : $password.hashCode());
+        final Object $userRoles = this.getUserRoles();
+        result = result * PRIME + ($userRoles == null ? 43 : $userRoles.hashCode());
         return result;
     }
 
     public String toString() {
-        return "UserAuthentication(id=" + this.getId() + ", username=" + this.getUsername() + ", password=" + this.getPassword() + ")";
+        return "UserAuthentication(id=" + this.getId() + ", username=" + this.getUsername() + ", password=" + this.getPassword() + ", userRoles=" + this.getUserRoles() + ")";
     }
 
     public static class UserAuthenticationBuilder {
         private String id;
         private @NotBlank String username;
         private @NotBlank String password;
+        private Collection<UserRole> userUserRoles;
 
         UserAuthenticationBuilder() {
         }
@@ -113,12 +130,17 @@ public class UserAuthentication {
             return this;
         }
 
+        public UserAuthentication.UserAuthenticationBuilder userRoles(Collection<UserRole> userUserRoles) {
+            this.userUserRoles = userUserRoles;
+            return this;
+        }
+
         public UserAuthentication build() {
-            return new UserAuthentication(id, username, password);
+            return new UserAuthentication(id, username, password, userUserRoles);
         }
 
         public String toString() {
-            return "UserAuthentication.UserAuthenticationBuilder(id=" + this.id + ", username=" + this.username + ", password=" + this.password + ")";
+            return "UserAuthentication.UserAuthenticationBuilder(id=" + this.id + ", username=" + this.username + ", password=" + this.password + ", userRoles=" + this.userUserRoles + ")";
         }
     }
 }

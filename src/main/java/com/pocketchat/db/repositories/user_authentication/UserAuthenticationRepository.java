@@ -1,10 +1,10 @@
-package com.pocketchat.db.repositories.authentication;
+package com.pocketchat.db.repositories.user_authentication;
 
 import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface AuthenticationRepository extends MongoRepository<UserAuthentication, String> {
+public interface UserAuthenticationRepository extends MongoRepository<UserAuthentication, String> {
     Optional<UserAuthentication> findFirstByUsername(String username);
 }

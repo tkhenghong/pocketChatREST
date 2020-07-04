@@ -1,4 +1,4 @@
-package com.pocketchat.server.configurations.init;
+package com.pocketchat.init;
 
 import com.pocketchat.models.email.SendEmailRequest;
 import com.pocketchat.models.sms.SendSMSRequest;

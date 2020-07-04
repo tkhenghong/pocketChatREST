@@ -1,9 +1,11 @@
-package com.pocketchat.services.authentication;
+package com.pocketchat.services.user_authentication;
 
 import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.models.user.User;
-import com.pocketchat.db.repo_services.authentication.AuthenticationRepoService;
+import com.pocketchat.db.models.user_role.UserRole;
+import com.pocketchat.db.repo_services.user_authentication.UserAuthenticationRepoService;
 import com.pocketchat.db.repo_services.user.UserRepoService;
+import com.pocketchat.db.repo_services.user_role.UserRoleRepoService;
 import com.pocketchat.models.controllers.request.user_authentication.*;
 import com.pocketchat.models.controllers.response.user_authentication.UserAuthenticationResponse;
 import com.pocketchat.models.controllers.response.user_authentication.OTPResponse;
@@ -13,6 +15,7 @@ import com.pocketchat.models.otp.OTP;
 import com.pocketchat.models.sms.SendSMSRequest;
 import com.pocketchat.server.configurations.security.service.MyUserDetailsService;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
+import com.pocketchat.server.exceptions.user_role.UserRoleNotFoundException;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.services.sms.SMSService;
 import com.pocketchat.utils.jwt.JwtUtil;
@@ -24,18 +27,22 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
 
-    private final AuthenticationRepoService authenticationRepoService;
+    private final UserAuthenticationRepoService userAuthenticationRepoService;
+
+    private final UserRoleRepoService userRoleRepoService;
 
     private final UserRepoService userRepoService;
 
@@ -51,6 +58,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     private final JwtUtil jwtUtil;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Value("${server.otp.length}")
     private int otpLength;
 
@@ -59,15 +68,18 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     @Autowired
     UserAuthenticationServiceImpl(
-            AuthenticationRepoService authenticationRepoService,
+            UserAuthenticationRepoService userAuthenticationRepoService,
+            UserRoleRepoService userRoleRepoService,
             UserRepoService userRepoService,
             SMSService smsService,
             EmailService emailService,
             AuthenticationManager authenticationManager,
             MyUserDetailsService myUserDetailsService,
             OTPNumberGenerator otpNumberGenerator,
-            JwtUtil jwtUtil) {
-        this.authenticationRepoService = authenticationRepoService;
+            JwtUtil jwtUtil,
+            PasswordEncoder passwordEncoder) {
+        this.userAuthenticationRepoService = userAuthenticationRepoService;
+        this.userRoleRepoService = userRoleRepoService;
         this.userRepoService = userRepoService;
         this.smsService = smsService;
         this.emailService = emailService;
@@ -75,6 +87,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         this.myUserDetailsService = myUserDetailsService;
         this.otpNumberGenerator = otpNumberGenerator;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // 1. Find User in DB.
@@ -174,12 +187,18 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     @Transactional
     public UserAuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest) {
         // TODO: Decrypt the password from frontend
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(usernamePasswordUserAuthenticationRequest.getPassword());
+        String assignedUserRole = "ROLE_USER";
+        Optional<UserRole> userRoleOptional = userRoleRepoService.findByName(assignedUserRole);
+        if (userRoleOptional.isEmpty()) {
+            throw new UserRoleNotFoundException("Unable to find such user role during registration" +
+                    " of the new User using UsernamePasswordAuthenticationRequest. User Role name: " + assignedUserRole);
+        }
 
-        UserAuthentication userAuthentication = authenticationRepoService.save(UserAuthentication.builder()
+        UserAuthentication userAuthentication = userAuthenticationRepoService.save(UserAuthentication.builder()
                 .username(usernamePasswordUserAuthenticationRequest.getUsername())
                 .password(encodedPassword)
+                .userRoles(Arrays.asList(userRoleOptional.get()))
                 .build());
 
         final UserDetails userDetails = myUserDetailsService.loadUserByUsername(userAuthentication.getUsername());
@@ -214,6 +233,9 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     @Override
     public UserAuthenticationResponse verifyMobileNumberOTP(MobileNumberOTPVerificationRequest mobileNumberOTPVerificationRequest) {
+        // Go to OTP service to verify
+        // If verified,
+
         return null;
     }
 
