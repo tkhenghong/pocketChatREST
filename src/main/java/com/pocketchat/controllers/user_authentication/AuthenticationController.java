@@ -51,7 +51,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/mobileNumber/authenticate")
-    public UserAuthenticationResponse mobileNumberAuthentication(@RequestBody MobileNumberOTPVerificationRequest mobileNumberOTPVerificationRequest) {
-        return userAuthenticationService.verifyMobileNumberOTP(mobileNumberOTPVerificationRequest);
+    public UserAuthenticationResponse mobileNumberAuthentication(@RequestBody VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
+        return userAuthenticationService.verifyMobileNumberOTP(verifyMobileNumberOTPRequest);
     }
 }

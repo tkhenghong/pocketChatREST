@@ -5,12 +5,14 @@ import org.joda.time.DateTime;
 public class OTP {
     private String userId;
     private Integer otp;
+    private String keyword;
     private Integer length;
     private DateTime otpExpirationDateTime;
 
-    OTP(String userId, Integer otp, Integer length, DateTime otpExpirationDateTime) {
+    OTP(String userId, Integer otp, String keyword, Integer length, DateTime otpExpirationDateTime) {
         this.userId = userId;
         this.otp = otp;
+        this.keyword = keyword;
         this.length = length;
         this.otpExpirationDateTime = otpExpirationDateTime;
     }
@@ -27,6 +29,10 @@ public class OTP {
         return this.otp;
     }
 
+    public String getKeyword() {
+        return this.keyword;
+    }
+
     public Integer getLength() {
         return this.length;
     }
@@ -41,6 +47,10 @@ public class OTP {
 
     public void setOtp(Integer otp) {
         this.otp = otp;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public void setLength(Integer length) {
@@ -62,6 +72,9 @@ public class OTP {
         final Object this$otp = this.getOtp();
         final Object other$otp = other.getOtp();
         if (this$otp == null ? other$otp != null : !this$otp.equals(other$otp)) return false;
+        final Object this$keyword = this.getKeyword();
+        final Object other$keyword = other.getKeyword();
+        if (this$keyword == null ? other$keyword != null : !this$keyword.equals(other$keyword)) return false;
         final Object this$length = this.getLength();
         final Object other$length = other.getLength();
         if (this$length == null ? other$length != null : !this$length.equals(other$length)) return false;
@@ -83,6 +96,8 @@ public class OTP {
         result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
         final Object $otp = this.getOtp();
         result = result * PRIME + ($otp == null ? 43 : $otp.hashCode());
+        final Object $keyword = this.getKeyword();
+        result = result * PRIME + ($keyword == null ? 43 : $keyword.hashCode());
         final Object $length = this.getLength();
         result = result * PRIME + ($length == null ? 43 : $length.hashCode());
         final Object $otpExpirationDateTime = this.getOtpExpirationDateTime();
@@ -91,12 +106,13 @@ public class OTP {
     }
 
     public String toString() {
-        return "OTP(userId=" + this.getUserId() + ", otp=" + this.getOtp() + ", length=" + this.getLength() + ", otpExpirationDateTime=" + this.getOtpExpirationDateTime() + ")";
+        return "OTP(userId=" + this.getUserId() + ", otp=" + this.getOtp() + ", keyword=" + this.getKeyword() + ", length=" + this.getLength() + ", otpExpirationDateTime=" + this.getOtpExpirationDateTime() + ")";
     }
 
     public static class OTPBuilder {
         private String userId;
         private Integer otp;
+        private String keyword;
         private Integer length;
         private DateTime otpExpirationDateTime;
 
@@ -113,6 +129,11 @@ public class OTP {
             return this;
         }
 
+        public OTP.OTPBuilder keyword(String keyword) {
+            this.keyword = keyword;
+            return this;
+        }
+
         public OTP.OTPBuilder length(Integer length) {
             this.length = length;
             return this;
@@ -124,11 +145,11 @@ public class OTP {
         }
 
         public OTP build() {
-            return new OTP(userId, otp, length, otpExpirationDateTime);
+            return new OTP(userId, otp, keyword, length, otpExpirationDateTime);
         }
 
         public String toString() {
-            return "OTP.OTPBuilder(userId=" + this.userId + ", otp=" + this.otp + ", length=" + this.length + ", otpExpirationDateTime=" + this.otpExpirationDateTime + ")";
+            return "OTP.OTPBuilder(userId=" + this.userId + ", otp=" + this.otp + ", keyword=" + this.keyword + ", length=" + this.length + ", otpExpirationDateTime=" + this.otpExpirationDateTime + ")";
         }
     }
 }

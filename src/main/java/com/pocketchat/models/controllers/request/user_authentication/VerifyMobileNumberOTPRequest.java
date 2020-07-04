@@ -1,10 +1,10 @@
 package com.pocketchat.models.controllers.request.user_authentication;
 
-public class MobileNumberOTPVerificationRequest {
+public class VerifyMobileNumberOTPRequest {
     private String mobileNo;
     private String otpNumber;
 
-    MobileNumberOTPVerificationRequest(String mobileNo, String otpNumber) {
+    VerifyMobileNumberOTPRequest(String mobileNo, String otpNumber) {
         this.mobileNo = mobileNo;
         this.otpNumber = otpNumber;
     }
@@ -40,18 +40,18 @@ public class MobileNumberOTPVerificationRequest {
         MobileNumberOTPVerificationRequestBuilder() {
         }
 
-        public MobileNumberOTPVerificationRequest.MobileNumberOTPVerificationRequestBuilder mobileNo(String mobileNo) {
+        public VerifyMobileNumberOTPRequest.MobileNumberOTPVerificationRequestBuilder mobileNo(String mobileNo) {
             this.mobileNo = mobileNo;
             return this;
         }
 
-        public MobileNumberOTPVerificationRequest.MobileNumberOTPVerificationRequestBuilder otpNumber(String otpNumber) {
+        public VerifyMobileNumberOTPRequest.MobileNumberOTPVerificationRequestBuilder otpNumber(String otpNumber) {
             this.otpNumber = otpNumber;
             return this;
         }
 
-        public MobileNumberOTPVerificationRequest build() {
-            return new MobileNumberOTPVerificationRequest(mobileNo, otpNumber);
+        public VerifyMobileNumberOTPRequest build() {
+            return new VerifyMobileNumberOTPRequest(mobileNo, otpNumber);
         }
 
         public String toString() {

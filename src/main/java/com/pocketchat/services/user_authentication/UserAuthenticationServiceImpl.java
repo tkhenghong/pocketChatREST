@@ -1,14 +1,16 @@
 package com.pocketchat.services.user_authentication;
 
-import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.models.user.User;
+import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.models.user_role.UserRole;
-import com.pocketchat.db.repo_services.user_authentication.UserAuthenticationRepoService;
 import com.pocketchat.db.repo_services.user.UserRepoService;
+import com.pocketchat.db.repo_services.user_authentication.UserAuthenticationRepoService;
 import com.pocketchat.db.repo_services.user_role.UserRoleRepoService;
 import com.pocketchat.models.controllers.request.user_authentication.*;
-import com.pocketchat.models.controllers.response.user_authentication.UserAuthenticationResponse;
 import com.pocketchat.models.controllers.response.user_authentication.OTPResponse;
+import com.pocketchat.models.controllers.response.user_authentication.PreVerifyMobileNumberOTPResponse;
+import com.pocketchat.models.controllers.response.user_authentication.UserAuthenticationResponse;
+import com.pocketchat.models.controllers.response.user_authentication.VerifyEmailAddressResponse;
 import com.pocketchat.models.email.SendEmailRequest;
 import com.pocketchat.models.otp.GenerateOTPRequest;
 import com.pocketchat.models.otp.OTP;
@@ -17,16 +19,17 @@ import com.pocketchat.server.configurations.security.service.MyUserDetailsServic
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import com.pocketchat.server.exceptions.user_role.UserRoleNotFoundException;
 import com.pocketchat.services.email.EmailService;
+import com.pocketchat.services.otp.OTPService;
 import com.pocketchat.services.sms.SMSService;
+import com.pocketchat.utils.email.EmailUtil;
 import com.pocketchat.utils.jwt.JwtUtil;
-import com.pocketchat.utils.otp.OTPNumberGenerator;
+import com.pocketchat.utils.phone.PhoneUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,11 +57,15 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     private final MyUserDetailsService myUserDetailsService;
 
-    private final OTPNumberGenerator otpNumberGenerator;
+    private final OTPService otpService;
 
     private final JwtUtil jwtUtil;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final PhoneUtil phoneUtil;
+
+    private final EmailUtil emailUtil;
 
     @Value("${server.otp.length}")
     private int otpLength;
@@ -75,8 +82,10 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             EmailService emailService,
             AuthenticationManager authenticationManager,
             MyUserDetailsService myUserDetailsService,
-            OTPNumberGenerator otpNumberGenerator,
+            OTPService otpService,
             JwtUtil jwtUtil,
+            PhoneUtil phoneUtil,
+            EmailUtil emailUtil,
             PasswordEncoder passwordEncoder) {
         this.userAuthenticationRepoService = userAuthenticationRepoService;
         this.userRoleRepoService = userRoleRepoService;
@@ -85,8 +94,10 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         this.emailService = emailService;
         this.authenticationManager = authenticationManager;
         this.myUserDetailsService = myUserDetailsService;
-        this.otpNumberGenerator = otpNumberGenerator;
+        this.otpService = otpService;
         this.jwtUtil = jwtUtil;
+        this.phoneUtil = phoneUtil;
+        this.emailUtil = emailUtil;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -103,13 +114,14 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             throw new UserNotFoundException("User is not found by using mobile number: " + mobileNoUserAuthenticationRequest.getMobileNo());
         }
 
-        OTP otp = otpNumberGenerator.generateOtpNumber(
+        OTP otp = otpService.generateOtpNumber(
                 GenerateOTPRequest.builder()
                         .userId(user.get().getId())
                         .otpLength(otpLength)
                         .otpAliveMinutes(otpAliveMinutes)
                         .build()
         );
+        otpService.saveOTPNumber(otp);
 
         String messageTitle = "PocketChat Verification Code: " + otp.getOtp();
 
@@ -148,13 +160,14 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             throw new UserNotFoundException("User is not found by using Email address: " + mobileNoAuthenticationRequest.getEmailAddress());
         }
 
-        OTP otp = otpNumberGenerator.generateOtpNumber(
+        OTP otp = otpService.generateOtpNumber(
                 GenerateOTPRequest.builder()
                         .userId(user.get().getId())
                         .otpLength(otpLength)
                         .otpAliveMinutes(otpAliveMinutes)
                         .build()
         );
+        otpService.saveOTPNumber(otp);
 
         String messageTitle = "PocketChat Verification Code: " + otp.getOtp();
 
@@ -226,15 +239,75 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         return UserAuthenticationResponse.builder().jwt(jwt).build();
     }
 
+
     @Override
     public UserAuthenticationResponse verifyEmailAddressOTP(EmailOTPVerificationRequest emailOTPVerificationRequest) {
         return null;
     }
 
+    // Used for OTP on mobile phone (Step 1)
     @Override
-    public UserAuthenticationResponse verifyMobileNumberOTP(MobileNumberOTPVerificationRequest mobileNumberOTPVerificationRequest) {
+    public PreVerifyMobileNumberOTPResponse preVerifyMobileNumber(PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest) {
+
+        Optional<User> userOptional = userRepoService.findByMobileNo(preVerifyMobileNumberOTPRequest.getMobileNumber());
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("Unable to find User using mobile number: " + preVerifyMobileNumberOTPRequest.getMobileNumber());
+        }
+
+        User user = userOptional.get();
+
+        OTP otp = otpService.generateOtpNumber(
+                GenerateOTPRequest.builder()
+                        .userId(user.getId())
+                        .otpLength(otpLength)
+                        .otpAliveMinutes(otpAliveMinutes)
+                        .build()
+        );
+        otpService.saveOTPNumber(otp);
+
+        String messageBody = "Here's your OTP number: " + otp.getOtp().toString()
+                + ". Your keyword is: " + otp.getKeyword()
+                + ". This OTP will expire in " + otpAliveMinutes + " minutes.";
+
+        emailService.sendEmail(SendEmailRequest.builder()
+                .receiverList(Arrays.asList(user.getEmailAddress()))
+                .emailSubject("PocketChat OTP Verification")
+                .emailContent(messageBody)
+                .build());
+        smsService.sendSMS(SendSMSRequest.builder()
+                .mobileNumber(user.getMobileNo())
+                .message(messageBody)
+                .build());
+
+        return PreVerifyMobileNumberOTPResponse.builder()
+                .tokenExpiryTime(otp.getOtpExpirationDateTime())
+                .emailAddress(emailUtil.maskEmail(user.getEmailAddress()))
+                .mobileNumber(phoneUtil.maskPhoneNumber(user.getMobileNo()))
+                .build();
+    }
+
+    // Used for OTP on mobile phone (Step 2)
+    @Override
+    public UserAuthenticationResponse verifyMobileNumberOTP(VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
         // Go to OTP service to verify
         // If verified,
+
+        return null;
+    }
+
+    @Override
+    public VerifyEmailAddressResponse requestVerifyEmailAddress(VerifyEmailAddressRequest verifyEmailADdressRequest) {
+        // TODO: Generate a token that represents the user and concatenate it with the web address of the email verification API
+        // TODO: Create EmailVerificationToken DB, RepoService with CRD
+        // TODO: Create Email Controller with an API with @PathVariable of the token to GET.
+        // TODO: When Should open a page from here in the backend, respond "Email Address Verified Successful" HTML page.
+
+//        SendEmailResponse sendEmailResponse =
+        emailService.sendEmail(SendEmailRequest.builder()
+                .receiverList(Arrays.asList(verifyEmailADdressRequest.getEmailAddress()))
+                .emailSubject("")
+                .emailContent("")
+                .build());
 
         return null;
     }
