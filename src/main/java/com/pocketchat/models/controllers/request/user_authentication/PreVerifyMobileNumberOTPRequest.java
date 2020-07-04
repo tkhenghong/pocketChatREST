@@ -1,9 +1,9 @@
 package com.pocketchat.models.controllers.request.user_authentication;
 
-public class MobileNumberVerificationRequest {
+public class RequestVerifyMobileNumberRequest {
     private String mobileNumber;
 
-    MobileNumberVerificationRequest(String mobileNumber) {
+    RequestVerifyMobileNumberRequest(String mobileNumber) {
         this.mobileNumber = mobileNumber;
     }
 
@@ -29,13 +29,13 @@ public class MobileNumberVerificationRequest {
         MobileNumberVerificationRequestBuilder() {
         }
 
-        public MobileNumberVerificationRequest.MobileNumberVerificationRequestBuilder mobileNumber(String mobileNumber) {
+        public RequestVerifyMobileNumberRequest.MobileNumberVerificationRequestBuilder mobileNumber(String mobileNumber) {
             this.mobileNumber = mobileNumber;
             return this;
         }
 
-        public MobileNumberVerificationRequest build() {
-            return new MobileNumberVerificationRequest(mobileNumber);
+        public RequestVerifyMobileNumberRequest build() {
+            return new RequestVerifyMobileNumberRequest(mobileNumber);
         }
 
         public String toString() {
