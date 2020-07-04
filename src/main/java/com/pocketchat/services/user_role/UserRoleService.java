@@ -1,4 +1,4 @@
 package com.pocketchat.services.user_role;
 
-public interface UserPrivilegeService {
+public interface UserRoleService {
 }
