@@ -15,6 +15,7 @@ import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundExceptio
 import com.pocketchat.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
     }
 
     @Override
+    @Transactional
     public UnreadMessageResponse addUnreadMessage(CreateUnreadMessageRequest createUnreadMessageRequest) {
         UnreadMessage unreadMessage = createUnreadMessageRequestToUnreadMessageMapper(createUnreadMessageRequest);
         // Find the unreadMessage that has the same conversationId in the DB
@@ -52,12 +54,14 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
     }
 
     @Override
+    @Transactional
     public UnreadMessageResponse editUnreadMessage(UpdateUnreadMessageRequest updateUnreadMessageRequest) {
         getSingleUnreadMessage(updateUnreadMessageRequest.getId());
         return unreadMessageResponseMapper(unreadMessageRepoService.save(updateUnreadMessageRequestToUnreadMessageMapper(updateUnreadMessageRequest)));
     }
 
     @Override
+    @Transactional
     public void deleteUnreadMessage(String unreadMessageId) {
         unreadMessageRepoService.delete(getSingleUnreadMessage(unreadMessageId));
     }

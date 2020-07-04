@@ -1,6 +1,6 @@
 package com.pocketchat.server.configurations.security.service;
 
-import com.pocketchat.db.models.authentication.Authentication;
+import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.repo_services.authentication.AuthenticationRepoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -24,11 +24,11 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        Optional<Authentication> authenticationOptional = authenticationRepoService.findFirstByUsername(username);
+        Optional<UserAuthentication> authenticationOptional = authenticationRepoService.findFirstByUsername(username);
         if (!authenticationOptional.isPresent()) {
             throw new UsernameNotFoundException("Username not found with this username: " + username);
         }
-        Authentication authentication = authenticationOptional.get();
-        return new User(authentication.getUsername(), authentication.getPassword(), Collections.emptyList());
+        UserAuthentication userAuthentication = authenticationOptional.get();
+        return new User(userAuthentication.getUsername(), userAuthentication.getPassword(), Collections.emptyList());
     }
 }

@@ -1,9 +1,9 @@
-package com.pocketchat.models.controllers.request.authentication;
+package com.pocketchat.models.controllers.request.user_authentication;
 
-public class MobileNoAuthenticationRequest {
+public class MobileNoUserAuthenticationRequest {
     private String mobileNo;
 
-    MobileNoAuthenticationRequest(String mobileNo) {
+    MobileNoUserAuthenticationRequest(String mobileNo) {
         this.mobileNo = mobileNo;
     }
 
@@ -21,9 +21,9 @@ public class MobileNoAuthenticationRequest {
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof MobileNoAuthenticationRequest))
+        if (!(o instanceof MobileNoUserAuthenticationRequest))
             return false;
-        final MobileNoAuthenticationRequest other = (MobileNoAuthenticationRequest) o;
+        final MobileNoUserAuthenticationRequest other = (MobileNoUserAuthenticationRequest) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$mobileNo = this.getMobileNo();
         final Object other$mobileNo = other.getMobileNo();
@@ -32,7 +32,7 @@ public class MobileNoAuthenticationRequest {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof MobileNoAuthenticationRequest;
+        return other instanceof MobileNoUserAuthenticationRequest;
     }
 
     public int hashCode() {
@@ -53,13 +53,13 @@ public class MobileNoAuthenticationRequest {
         MobileNoAuthenticationRequestBuilder() {
         }
 
-        public MobileNoAuthenticationRequest.MobileNoAuthenticationRequestBuilder mobileNo(String mobileNo) {
+        public MobileNoUserAuthenticationRequest.MobileNoAuthenticationRequestBuilder mobileNo(String mobileNo) {
             this.mobileNo = mobileNo;
             return this;
         }
 
-        public MobileNoAuthenticationRequest build() {
-            return new MobileNoAuthenticationRequest(mobileNo);
+        public MobileNoUserAuthenticationRequest build() {
+            return new MobileNoUserAuthenticationRequest(mobileNo);
         }
 
         public String toString() {

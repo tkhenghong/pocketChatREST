@@ -1,9 +1,8 @@
 package com.pocketchat.db.repo_services.authentication;
 
-import com.pocketchat.db.models.authentication.Authentication;
+import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.repositories.authentication.AuthenticationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,19 +17,19 @@ public class AuthenticationRepoService {
         this.authenticationRepository = authenticationRepository;
     }
 
-    public Optional<Authentication> findById(String id) {
+    public Optional<UserAuthentication> findById(String id) {
         return authenticationRepository.findById(id);
     }
 
-    public Optional<Authentication> findFirstByUsername(String username) {
+    public Optional<UserAuthentication> findFirstByUsername(String username) {
         return authenticationRepository.findFirstByUsername(username);
     }
 
-    public Authentication save(Authentication authentication) {
-        return authenticationRepository.save(authentication);
+    public UserAuthentication save(UserAuthentication userAuthentication) {
+        return authenticationRepository.save(userAuthentication);
     }
 
-    public void delete(Authentication authentication) {
-        authenticationRepository.delete(authentication);
+    public void delete(UserAuthentication userAuthentication) {
+        authenticationRepository.delete(userAuthentication);
     }
 }

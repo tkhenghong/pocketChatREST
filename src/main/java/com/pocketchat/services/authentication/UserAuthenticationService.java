@@ -1,30 +1,30 @@
 package com.pocketchat.services.authentication;
 
-import com.pocketchat.models.controllers.request.authentication.*;
-import com.pocketchat.models.controllers.response.authentication.AuthenticationResponse;
-import com.pocketchat.models.controllers.response.authentication.OTPResponse;
+import com.pocketchat.models.controllers.request.user_authentication.*;
+import com.pocketchat.models.controllers.response.user_authentication.UserAuthenticationResponse;
+import com.pocketchat.models.controllers.response.user_authentication.OTPResponse;
 import com.pocketchat.models.otp.OTP;
 
 
-public interface AuthenticationService {
+public interface UserAuthenticationService {
 
-    OTPResponse requestToAuthenticateWithMobileNo(MobileNoAuthenticationRequest mobileNoAuthenticationRequest);
+    OTPResponse requestToAuthenticateWithMobileNo(MobileNoUserAuthenticationRequest mobileNoUserAuthenticationRequest);
 
-    OTPResponse requestToAuthenticateWithEmailAddress(EmailAddressAuthenticationRequest mobileNoAuthenticationRequest);
+    OTPResponse requestToAuthenticateWithEmailAddress(EmailAddressUserAuthenticationRequest mobileNoAuthenticationRequest);
 
     // For testing only
     // Registration
     @Deprecated
-    AuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest);
+    UserAuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest);
 
     // For testing only
     // Login
     @Deprecated
-    AuthenticationResponse authenticateUsingUsernamePassword(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest);
+    UserAuthenticationResponse authenticateUsingUsernamePassword(UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest);
 
-    AuthenticationResponse verifyEmailAddressOTP(EmailOTPVerificationRequest emailOTPVerificationRequest);
+    UserAuthenticationResponse verifyEmailAddressOTP(EmailOTPVerificationRequest emailOTPVerificationRequest);
 
-    AuthenticationResponse verifyMobileNumberOTP(MobileNumberOTPVerificationRequest mobileNumberOTPVerificationRequest);
+    UserAuthenticationResponse verifyMobileNumberOTP(MobileNumberOTPVerificationRequest mobileNumberOTPVerificationRequest);
 
     OTPResponse otpResponseMapper(OTP otp);
 }

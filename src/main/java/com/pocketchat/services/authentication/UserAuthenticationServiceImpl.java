@@ -1,12 +1,12 @@
 package com.pocketchat.services.authentication;
 
-import com.pocketchat.db.models.authentication.Authentication;
+import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.repo_services.authentication.AuthenticationRepoService;
 import com.pocketchat.db.repo_services.user.UserRepoService;
-import com.pocketchat.models.controllers.request.authentication.*;
-import com.pocketchat.models.controllers.response.authentication.AuthenticationResponse;
-import com.pocketchat.models.controllers.response.authentication.OTPResponse;
+import com.pocketchat.models.controllers.request.user_authentication.*;
+import com.pocketchat.models.controllers.response.user_authentication.UserAuthenticationResponse;
+import com.pocketchat.models.controllers.response.user_authentication.OTPResponse;
 import com.pocketchat.models.email.SendEmailRequest;
 import com.pocketchat.models.otp.GenerateOTPRequest;
 import com.pocketchat.models.otp.OTP;
@@ -25,6 +25,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class UserAuthenticationServiceImpl implements UserAuthenticationService {
 
     private final AuthenticationRepoService authenticationRepoService;
 
@@ -57,7 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private int otpAliveMinutes;
 
     @Autowired
-    AuthenticationServiceImpl(
+    UserAuthenticationServiceImpl(
             AuthenticationRepoService authenticationRepoService,
             UserRepoService userRepoService,
             SMSService smsService,
@@ -82,11 +83,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     // 4. Send SMS.
     // 5. Send Email.
     @Override
-    public OTPResponse requestToAuthenticateWithMobileNo(MobileNoAuthenticationRequest mobileNoAuthenticationRequest) {
-        Optional<User> user = userRepoService.findByMobileNo(mobileNoAuthenticationRequest.getMobileNo());
+    public OTPResponse requestToAuthenticateWithMobileNo(MobileNoUserAuthenticationRequest mobileNoUserAuthenticationRequest) {
+        Optional<User> user = userRepoService.findByMobileNo(mobileNoUserAuthenticationRequest.getMobileNo());
 
         if (!user.isPresent()) {
-            throw new UserNotFoundException("User is not found by using mobile number: " + mobileNoAuthenticationRequest.getMobileNo());
+            throw new UserNotFoundException("User is not found by using mobile number: " + mobileNoUserAuthenticationRequest.getMobileNo());
         }
 
         OTP otp = otpNumberGenerator.generateOtpNumber(
@@ -127,7 +128,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     // 4. Send Email.
     // 5. Send SMS.
     @Override
-    public OTPResponse requestToAuthenticateWithEmailAddress(EmailAddressAuthenticationRequest mobileNoAuthenticationRequest) {
+    public OTPResponse requestToAuthenticateWithEmailAddress(EmailAddressUserAuthenticationRequest mobileNoAuthenticationRequest) {
         Optional<User> user = userRepoService.findByEmailAddress(mobileNoAuthenticationRequest.getEmailAddress());
 
         if (!user.isPresent()) {
@@ -170,48 +171,49 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     // Register
     @Deprecated
     @Override
-    public AuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
+    @Transactional
+    public UserAuthenticationResponse addUsernamePasswordAuthenticationRequest(UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest) {
         // TODO: Decrypt the password from frontend
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String encodedPassword = passwordEncoder.encode(usernamePasswordAuthenticationRequest.getPassword());
+        String encodedPassword = passwordEncoder.encode(usernamePasswordUserAuthenticationRequest.getPassword());
 
-        Authentication authentication = authenticationRepoService.save(Authentication.builder()
-                .username(usernamePasswordAuthenticationRequest.getUsername())
+        UserAuthentication userAuthentication = authenticationRepoService.save(UserAuthentication.builder()
+                .username(usernamePasswordUserAuthenticationRequest.getUsername())
                 .password(encodedPassword)
                 .build());
 
-        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(authentication.getUsername());
+        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(userAuthentication.getUsername());
 
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return AuthenticationResponse.builder().jwt(jwt).build();
+        return UserAuthenticationResponse.builder().jwt(jwt).build();
     }
 
     // For testing only
     // Login
     @Deprecated
     @Override
-    public AuthenticationResponse authenticateUsingUsernamePassword(UsernamePasswordAuthenticationRequest usernamePasswordAuthenticationRequest) {
+    public UserAuthenticationResponse authenticateUsingUsernamePassword(UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(usernamePasswordAuthenticationRequest.getUsername(), usernamePasswordAuthenticationRequest.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(usernamePasswordUserAuthenticationRequest.getUsername(), usernamePasswordUserAuthenticationRequest.getPassword()));
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Incorrect username or password", e);
         }
 
-        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(usernamePasswordAuthenticationRequest.getUsername());
+        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(usernamePasswordUserAuthenticationRequest.getUsername());
 
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return AuthenticationResponse.builder().jwt(jwt).build();
+        return UserAuthenticationResponse.builder().jwt(jwt).build();
     }
 
     @Override
-    public AuthenticationResponse verifyEmailAddressOTP(EmailOTPVerificationRequest emailOTPVerificationRequest) {
+    public UserAuthenticationResponse verifyEmailAddressOTP(EmailOTPVerificationRequest emailOTPVerificationRequest) {
         return null;
     }
 
     @Override
-    public AuthenticationResponse verifyMobileNumberOTP(MobileNumberOTPVerificationRequest mobileNumberOTPVerificationRequest) {
+    public UserAuthenticationResponse verifyMobileNumberOTP(MobileNumberOTPVerificationRequest mobileNumberOTPVerificationRequest) {
         return null;
     }
 

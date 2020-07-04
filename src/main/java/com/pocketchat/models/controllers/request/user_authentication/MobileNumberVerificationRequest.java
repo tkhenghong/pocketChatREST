@@ -1,4 +1,4 @@
-package com.pocketchat.models.controllers.request.authentication;
+package com.pocketchat.models.controllers.request.user_authentication;
 
 public class MobileNumberVerificationRequest {
     private String mobileNumber;

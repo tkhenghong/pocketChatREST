@@ -1,4 +1,4 @@
-package com.pocketchat.models.controllers.response.authentication;
+package com.pocketchat.models.controllers.response.user_authentication;
 
 import org.joda.time.DateTime;
 

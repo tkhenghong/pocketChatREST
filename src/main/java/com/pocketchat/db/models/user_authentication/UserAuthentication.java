@@ -1,4 +1,4 @@
-package com.pocketchat.db.models.authentication;
+package com.pocketchat.db.models.user_authentication;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotBlank;
 
 @Document(collection = "user_authentication")
-public class Authentication {
+public class UserAuthentication {
 
     @Id
     private String id;
@@ -17,14 +17,16 @@ public class Authentication {
     @NotBlank
     private String password;
 
-    Authentication(String id, @NotBlank String username, @NotBlank String password) {
+    // TODO: Roles
+
+    UserAuthentication(String id, @NotBlank String username, @NotBlank String password) {
         this.id = id;
         this.username = username;
         this.password = password;
     }
 
-    public static AuthenticationBuilder builder() {
-        return new AuthenticationBuilder();
+    public static UserAuthenticationBuilder builder() {
+        return new UserAuthenticationBuilder();
     }
 
     public String getId() {
@@ -53,8 +55,8 @@ public class Authentication {
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof Authentication)) return false;
-        final Authentication other = (Authentication) o;
+        if (!(o instanceof UserAuthentication)) return false;
+        final UserAuthentication other = (UserAuthentication) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$id = this.getId();
         final Object other$id = other.getId();
@@ -69,7 +71,7 @@ public class Authentication {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof Authentication;
+        return other instanceof UserAuthentication;
     }
 
     public int hashCode() {
@@ -85,38 +87,38 @@ public class Authentication {
     }
 
     public String toString() {
-        return "Authentication(id=" + this.getId() + ", username=" + this.getUsername() + ", password=" + this.getPassword() + ")";
+        return "UserAuthentication(id=" + this.getId() + ", username=" + this.getUsername() + ", password=" + this.getPassword() + ")";
     }
 
-    public static class AuthenticationBuilder {
+    public static class UserAuthenticationBuilder {
         private String id;
         private @NotBlank String username;
         private @NotBlank String password;
 
-        AuthenticationBuilder() {
+        UserAuthenticationBuilder() {
         }
 
-        public Authentication.AuthenticationBuilder id(String id) {
+        public UserAuthentication.UserAuthenticationBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public Authentication.AuthenticationBuilder username(@NotBlank String username) {
+        public UserAuthentication.UserAuthenticationBuilder username(@NotBlank String username) {
             this.username = username;
             return this;
         }
 
-        public Authentication.AuthenticationBuilder password(@NotBlank String password) {
+        public UserAuthentication.UserAuthenticationBuilder password(@NotBlank String password) {
             this.password = password;
             return this;
         }
 
-        public Authentication build() {
-            return new Authentication(id, username, password);
+        public UserAuthentication build() {
+            return new UserAuthentication(id, username, password);
         }
 
         public String toString() {
-            return "Authentication.AuthenticationBuilder(id=" + this.id + ", username=" + this.username + ", password=" + this.password + ")";
+            return "UserAuthentication.UserAuthenticationBuilder(id=" + this.id + ", username=" + this.username + ", password=" + this.password + ")";
         }
     }
 }

@@ -1,9 +1,9 @@
-package com.pocketchat.models.controllers.response.authentication;
+package com.pocketchat.models.controllers.response.user_authentication;
 
-public class AuthenticationResponse {
+public class UserAuthenticationResponse {
     private String jwt;
 
-    AuthenticationResponse(String jwt) {
+    UserAuthenticationResponse(String jwt) {
         this.jwt = jwt;
     }
 
@@ -21,9 +21,9 @@ public class AuthenticationResponse {
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof AuthenticationResponse))
+        if (!(o instanceof UserAuthenticationResponse))
             return false;
-        final AuthenticationResponse other = (AuthenticationResponse) o;
+        final UserAuthenticationResponse other = (UserAuthenticationResponse) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$jwt = this.getJwt();
         final Object other$jwt = other.getJwt();
@@ -32,7 +32,7 @@ public class AuthenticationResponse {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof AuthenticationResponse;
+        return other instanceof UserAuthenticationResponse;
     }
 
     public int hashCode() {
@@ -53,13 +53,13 @@ public class AuthenticationResponse {
         AuthenticationResponseBuilder() {
         }
 
-        public AuthenticationResponse.AuthenticationResponseBuilder jwt(String jwt) {
+        public UserAuthenticationResponse.AuthenticationResponseBuilder jwt(String jwt) {
             this.jwt = jwt;
             return this;
         }
 
-        public AuthenticationResponse build() {
-            return new AuthenticationResponse(jwt);
+        public UserAuthenticationResponse build() {
+            return new UserAuthenticationResponse(jwt);
         }
 
         public String toString() {

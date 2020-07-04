@@ -9,6 +9,7 @@ import com.pocketchat.models.controllers.response.user_contact.UserContactRespon
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +31,7 @@ public class UserContactServiceImpl implements UserContactService {
     }
 
     @Override
+    @Transactional
     public UserContactResponse addUserContact(CreateUserContactRequest createUserContactRequest) {
         UserContact userContact = createUserContactRequestToUserContactMapper(createUserContactRequest);
 
@@ -87,12 +89,14 @@ public class UserContactServiceImpl implements UserContactService {
     }
 
     @Override
+    @Transactional
     public UserContactResponse editUserContact(UpdateUserContactRequest updateUserContactRequest) {
         getUserContact(updateUserContactRequest.getId());
         return userContactResponseMapper(userContactRepoService.save(updateUserContactRequestToUserContactMapper(updateUserContactRequest)));
     }
 
     @Override
+    @Transactional
     public void deleteUserContact(String userContactId) {
         userContactRepoService.delete(getUserContact(userContactId));
     }

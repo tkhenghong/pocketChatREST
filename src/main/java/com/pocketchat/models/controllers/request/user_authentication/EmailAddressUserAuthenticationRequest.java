@@ -1,9 +1,9 @@
-package com.pocketchat.models.controllers.request.authentication;
+package com.pocketchat.models.controllers.request.user_authentication;
 
-public class EmailAddressAuthenticationRequest {
+public class EmailAddressUserAuthenticationRequest {
     private String emailAddress;
 
-    EmailAddressAuthenticationRequest(String emailAddress) {
+    EmailAddressUserAuthenticationRequest(String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
@@ -21,9 +21,9 @@ public class EmailAddressAuthenticationRequest {
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof EmailAddressAuthenticationRequest))
+        if (!(o instanceof EmailAddressUserAuthenticationRequest))
             return false;
-        final EmailAddressAuthenticationRequest other = (EmailAddressAuthenticationRequest) o;
+        final EmailAddressUserAuthenticationRequest other = (EmailAddressUserAuthenticationRequest) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$emailAddress = this.getEmailAddress();
         final Object other$emailAddress = other.getEmailAddress();
@@ -33,7 +33,7 @@ public class EmailAddressAuthenticationRequest {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof EmailAddressAuthenticationRequest;
+        return other instanceof EmailAddressUserAuthenticationRequest;
     }
 
     public int hashCode() {
@@ -54,13 +54,13 @@ public class EmailAddressAuthenticationRequest {
         EmailAddressAuthenticationRequestBuilder() {
         }
 
-        public EmailAddressAuthenticationRequest.EmailAddressAuthenticationRequestBuilder emailAddress(String emailAddress) {
+        public EmailAddressUserAuthenticationRequest.EmailAddressAuthenticationRequestBuilder emailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
             return this;
         }
 
-        public EmailAddressAuthenticationRequest build() {
-            return new EmailAddressAuthenticationRequest(emailAddress);
+        public EmailAddressUserAuthenticationRequest build() {
+            return new EmailAddressUserAuthenticationRequest(emailAddress);
         }
 
         public String toString() {

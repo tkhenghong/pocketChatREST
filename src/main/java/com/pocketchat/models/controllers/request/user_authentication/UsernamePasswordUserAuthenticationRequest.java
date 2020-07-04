@@ -1,15 +1,15 @@
-package com.pocketchat.models.controllers.request.authentication;
+package com.pocketchat.models.controllers.request.user_authentication;
 
 // Model for accepting user credentials
-public class UsernamePasswordAuthenticationRequest {
+public class UsernamePasswordUserAuthenticationRequest {
 
     private String username;
     private String password;
 
-    public UsernamePasswordAuthenticationRequest() {
+    public UsernamePasswordUserAuthenticationRequest() {
     }
 
-    public UsernamePasswordAuthenticationRequest(String username, String password) {
+    public UsernamePasswordUserAuthenticationRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }

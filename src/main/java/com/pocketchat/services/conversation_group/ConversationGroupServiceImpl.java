@@ -18,6 +18,7 @@ import com.pocketchat.services.user_contact.UserContactService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
@@ -48,36 +49,41 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     }
 
     @Override
+    @Transactional
     public ConversationGroup addConversation(CreateConversationGroupRequest createConversationGroupRequest) {
         UserContact creatorUserContact = userContactService.getUserContact(createConversationGroupRequest.getCreatorUserId());
 
         createConversationGroupRequest.setCreatedDate(new DateTime());
 
         ConversationGroup conversationGroup = createConversationGroupRequestToConversationGroupMapper(createConversationGroupRequest);
-        if (conversationGroup.getConversationGroupType().equals(ConversationGroupType.Single)) {
-            // 1. Find a list of conversationGroup that has same memberIds
-            List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(conversationGroup.getMemberIds());
-            // 2. Filter to get the Personal ConversationGroup
-            List<ConversationGroup> personalConversationGroupList = conversationGroupList
-                    .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getConversationGroupType().equals(ConversationGroupType.Single)
-                            && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())).collect(Collectors.toList());
-            // 3. Should found the exact group
-            if (personalConversationGroupList.size() == 1) {
-                return personalConversationGroupList.iterator().next();
-            } else if (personalConversationGroupList.isEmpty()) { // Must be 0 conversationGroup
-                String message = "You have been added into this group by" + creatorUserContact.getDisplayName() + " on " + createConversationGroupRequest.getCreatedDate().toString("dd/mm/yyyy HH:mm:ss");
+        String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + " on " + createConversationGroupRequest.getCreatedDate().toString("dd/mm/yyyy HH:mm:ss");
+        switch (conversationGroup.getConversationGroupType()) {
+            case Group:
+            case Broadcast:
+                // Group/Broadcast
                 return createAndSendMessage(conversationGroup, message);
-            } else {
+            case Single:
+                // 1. Find a list of conversationGroup that has same memberIds
+                List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(conversationGroup.getMemberIds());
+                // 2. Filter to get the Personal ConversationGroup
+                List<ConversationGroup> personalConversationGroupList = conversationGroupList
+                        .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getConversationGroupType().equals(ConversationGroupType.Single)
+                                && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())).collect(Collectors.toList());
+                // 3. Should found the exact group
+                if (personalConversationGroupList.size() == 1) {
+                    return personalConversationGroupList.iterator().next();
+                } else if (personalConversationGroupList.isEmpty()) { // Must be 0 conversationGroup
+                    return createAndSendMessage(conversationGroup, message);
+                } else {
+                    return null;
+                }
+            default:
                 return null;
-            }
-        } else {
-            // Group/Broadcast
-            String message = "You have been added into this group by" + creatorUserContact.getDisplayName() + " on " + createConversationGroupRequest.getCreatedDate().toString("dd/mm/yyyy HH:mm:ss");
-            return createAndSendMessage(conversationGroup, message);
         }
     }
 
     @Override
+    @Transactional
     public ConversationGroup editConversation(UpdateConversationGroupRequest updateConversationGroupRequest) {
         ConversationGroup conversationGroup = updateConversationGroupRequestToConversationGroupMapper(updateConversationGroupRequest);
         getSingleConversation(conversationGroup.getId());
@@ -85,6 +91,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     }
 
     @Override
+    @Transactional
     public void deleteConversation(String conversationGroupId) {
         conversationGroupRepoService.delete(getSingleConversation(conversationGroupId));
     }

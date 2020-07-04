@@ -11,6 +11,7 @@ import com.pocketchat.server.exceptions.settings.SettingsNotFoundException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -28,6 +29,7 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    @Transactional
     public SettingsResponse addSettings(CreateSettingsRequest createSettingsRequest) {
         Settings settings = createSettingsRequestToSettingsMapper(createSettingsRequest);
         Optional<Settings> settingsOptional = settingsRepoService.findByUserId(settings.getUserId());
@@ -35,6 +37,7 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    @Transactional
     public SettingsResponse editSettings(UpdateSettingsRequest updateSettingsRequest) {
         Settings settings = updateSettingsRequestToSettingsMapper(updateSettingsRequest);
         getSingleSettings(settings.getId());
@@ -42,6 +45,7 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    @Transactional
     public void deleteSettings(String settingsId) {
         settingsRepoService.delete(getSingleSettings(settingsId));
     }

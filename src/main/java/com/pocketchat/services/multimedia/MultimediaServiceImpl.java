@@ -12,6 +12,7 @@ import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class MultimediaServiceImpl implements MultimediaService {
     }
 
     @Override
+    @Transactional
     public MultimediaResponse addMultimedia(CreateMultimediaRequest createMultimediaRequest) {
         Multimedia multimedia = createMultimediaRequestToMultimediaMapper(createMultimediaRequest);
         Optional<Multimedia> multimediaOptional = Optional.empty();
@@ -53,6 +55,7 @@ public class MultimediaServiceImpl implements MultimediaService {
     }
 
     @Override
+    @Transactional
     public MultimediaResponse editMultimedia(UpdateMultimediaRequest updateMultimediaRequest) {
         Multimedia multimedia = updateMultimediaRequestToMultimediaMapper(updateMultimediaRequest);
         getSingleMultimedia(multimedia.getId());
@@ -60,6 +63,7 @@ public class MultimediaServiceImpl implements MultimediaService {
     }
 
     @Override
+    @Transactional
     public void deleteMultimedia(String multimediaId) {
         multimediaRepoService.delete(getSingleMultimedia(multimediaId));
     }
