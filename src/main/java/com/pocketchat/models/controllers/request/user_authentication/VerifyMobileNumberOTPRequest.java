@@ -1,8 +1,15 @@
 package com.pocketchat.models.controllers.request.user_authentication;
 
+import javax.validation.constraints.NotBlank;
+
 public class VerifyMobileNumberOTPRequest {
+    @NotBlank
     private String mobileNo;
+
+    @NotBlank
     private String otpNumber;
+
+    @NotBlank
     private String secureKeyword;
 
     VerifyMobileNumberOTPRequest(String mobileNo, String otpNumber, String secureKeyword) {

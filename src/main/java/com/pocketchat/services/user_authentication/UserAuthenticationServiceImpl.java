@@ -106,16 +106,18 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         this.passwordEncoder = passwordEncoder;
     }
 
+    // NOT RELATED TO POCKETCHAT
+    // This is used for user's that has mobile number ONLY, when secure authentication action is needed, they'll have to trigger this API.
     // 1. Find User in DB.
     // 2. Generate OTP number.
     // 3. Prepare message title and content.
-    // 4. Send SMS.
+    // 4. Send SMS First.
     // 5. Send Email.
     @Override
     public OTPResponse requestToAuthenticateWithMobileNo(MobileNoUserAuthenticationRequest mobileNoUserAuthenticationRequest) {
         Optional<User> user = userRepoService.findByMobileNo(mobileNoUserAuthenticationRequest.getMobileNo());
 
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new UserNotFoundException("User is not found by using mobile number: " + mobileNoUserAuthenticationRequest.getMobileNo());
         }
 
@@ -152,16 +154,18 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         return otpResponseMapper(otp);
     }
 
+    // NOT RELATED TO POCKETCHAT
+    // This is used for user's that has email address ONLY, when secure authentication action is needed, they'll have to trigger this API.
     // 1. Find User in DB.
     // 2. Generate OTP number.
     // 3. Prepare message title and content.
-    // 4. Send Email.
+    // 4. Send Email First.
     // 5. Send SMS.
     @Override
     public OTPResponse requestToAuthenticateWithEmailAddress(EmailAddressUserAuthenticationRequest mobileNoAuthenticationRequest) {
         Optional<User> user = userRepoService.findByEmailAddress(mobileNoAuthenticationRequest.getEmailAddress());
 
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new UserNotFoundException("User is not found by using Email address: " + mobileNoAuthenticationRequest.getEmailAddress());
         }
 
@@ -242,12 +246,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         final String jwt = jwtUtil.generateToken(userDetails);
 
         return UserAuthenticationResponse.builder().jwt(jwt).build();
-    }
-
-
-    @Override
-    public UserAuthenticationResponse verifyEmailAddressOTP(EmailOTPVerificationRequest emailOTPVerificationRequest) {
-        return null;
     }
 
     // Used for OTP on mobile phone (Step 1)

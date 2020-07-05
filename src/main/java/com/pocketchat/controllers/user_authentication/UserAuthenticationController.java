@@ -1,14 +1,18 @@
 package com.pocketchat.controllers.user_authentication;
 
 import com.pocketchat.models.controllers.request.user_authentication.*;
+import com.pocketchat.models.controllers.response.user_authentication.PreVerifyMobileNumberOTPResponse;
 import com.pocketchat.models.controllers.response.user_authentication.UserAuthenticationResponse;
 import com.pocketchat.models.controllers.response.user_authentication.OTPResponse;
+import com.pocketchat.models.controllers.response.user_authentication.VerifyEmailAddressResponse;
 import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/authentication")
@@ -45,13 +49,18 @@ public class UserAuthenticationController {
         return userAuthenticationService.authenticateUsingUsernamePassword(usernamePasswordUserAuthenticationRequest);
     }
 
-    @PostMapping("/emailAddress/authenticate")
-    public UserAuthenticationResponse emailAuthentication(@RequestBody EmailOTPVerificationRequest emailOTPVerificationRequest) {
-        return userAuthenticationService.verifyEmailAddressOTP(emailOTPVerificationRequest);
+    @PostMapping("/mobileNumber/preAuthenticate")
+    public PreVerifyMobileNumberOTPResponse preVerifyMobileNumber(@Valid @RequestBody PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest) {
+        return userAuthenticationService.preVerifyMobileNumber(preVerifyMobileNumberOTPRequest);
     }
 
     @PostMapping("/mobileNumber/authenticate")
-    public UserAuthenticationResponse mobileNumberAuthentication(@RequestBody VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
+    public UserAuthenticationResponse mobileNumberAuthentication(@Valid @RequestBody VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
         return userAuthenticationService.verifyMobileNumberOTP(verifyMobileNumberOTPRequest);
+    }
+
+    @PostMapping("/emailAddress/preVerify")
+    public VerifyEmailAddressResponse requestVerifyEmailAddress(@Valid @RequestBody VerifyEmailAddressRequest verifyEmailADdressRequest) {
+        return userAuthenticationService.requestVerifyEmailAddress(verifyEmailADdressRequest);
     }
 }
