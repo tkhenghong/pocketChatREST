@@ -1,4 +1,4 @@
-package com.pocketchat.server.exceptions.authentication;
+package com.pocketchat.server.exceptions.user_authentication;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

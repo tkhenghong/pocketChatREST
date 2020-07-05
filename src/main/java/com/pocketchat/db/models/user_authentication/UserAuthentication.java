@@ -13,6 +13,8 @@ public class UserAuthentication {
     @Id
     private String id;
 
+    private String userId;
+
     @NotBlank
     private String username;
 
@@ -21,8 +23,9 @@ public class UserAuthentication {
 
     private Collection<UserRole> userRoles;
 
-    UserAuthentication(String id, @NotBlank String username, @NotBlank String password, Collection<UserRole> userRoles) {
+    UserAuthentication(String id, String userId, @NotBlank String username, @NotBlank String password, Collection<UserRole> userRoles) {
         this.id = id;
+        this.userId = userId;
         this.username = username;
         this.password = password;
         this.userRoles = userRoles;
@@ -34,6 +37,10 @@ public class UserAuthentication {
 
     public String getId() {
         return this.id;
+    }
+
+    public String getUserId() {
+        return this.userId;
     }
 
     public @NotBlank String getUsername() {
@@ -50,6 +57,10 @@ public class UserAuthentication {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public void setUsername(@NotBlank String username) {
@@ -72,6 +83,9 @@ public class UserAuthentication {
         final Object this$id = this.getId();
         final Object other$id = other.getId();
         if (this$id == null ? other$id != null : !this$id.equals(other$id)) return false;
+        final Object this$userId = this.getUserId();
+        final Object other$userId = other.getUserId();
+        if (this$userId == null ? other$userId != null : !this$userId.equals(other$userId)) return false;
         final Object this$username = this.getUsername();
         final Object other$username = other.getUsername();
         if (this$username == null ? other$username != null : !this$username.equals(other$username)) return false;
@@ -93,6 +107,8 @@ public class UserAuthentication {
         int result = 1;
         final Object $id = this.getId();
         result = result * PRIME + ($id == null ? 43 : $id.hashCode());
+        final Object $userId = this.getUserId();
+        result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
         final Object $username = this.getUsername();
         result = result * PRIME + ($username == null ? 43 : $username.hashCode());
         final Object $password = this.getPassword();
@@ -103,20 +119,26 @@ public class UserAuthentication {
     }
 
     public String toString() {
-        return "UserAuthentication(id=" + this.getId() + ", username=" + this.getUsername() + ", password=" + this.getPassword() + ", userRoles=" + this.getUserRoles() + ")";
+        return "UserAuthentication(id=" + this.getId() + ", userId=" + this.getUserId() + ", username=" + this.getUsername() + ", password=" + this.getPassword() + ", userRoles=" + this.getUserRoles() + ")";
     }
 
     public static class UserAuthenticationBuilder {
         private String id;
+        private String userId;
         private @NotBlank String username;
         private @NotBlank String password;
-        private Collection<UserRole> userUserRoles;
+        private Collection<UserRole> userRoles;
 
         UserAuthenticationBuilder() {
         }
 
         public UserAuthentication.UserAuthenticationBuilder id(String id) {
             this.id = id;
+            return this;
+        }
+
+        public UserAuthentication.UserAuthenticationBuilder userId(String userId) {
+            this.userId = userId;
             return this;
         }
 
@@ -130,17 +152,17 @@ public class UserAuthentication {
             return this;
         }
 
-        public UserAuthentication.UserAuthenticationBuilder userRoles(Collection<UserRole> userUserRoles) {
-            this.userUserRoles = userUserRoles;
+        public UserAuthentication.UserAuthenticationBuilder userRoles(Collection<UserRole> userRoles) {
+            this.userRoles = userRoles;
             return this;
         }
 
         public UserAuthentication build() {
-            return new UserAuthentication(id, username, password, userUserRoles);
+            return new UserAuthentication(id, userId, username, password, userRoles);
         }
 
         public String toString() {
-            return "UserAuthentication.UserAuthenticationBuilder(id=" + this.id + ", username=" + this.username + ", password=" + this.password + ", userRoles=" + this.userUserRoles + ")";
+            return "UserAuthentication.UserAuthenticationBuilder(id=" + this.id + ", userId=" + this.userId + ", username=" + this.username + ", password=" + this.password + ", userRoles=" + this.userRoles + ")";
         }
     }
 }

@@ -14,8 +14,12 @@ import com.pocketchat.models.controllers.response.user_authentication.VerifyEmai
 import com.pocketchat.models.email.SendEmailRequest;
 import com.pocketchat.models.otp.GenerateOTPRequest;
 import com.pocketchat.models.otp.OTP;
+import com.pocketchat.models.otp.VerifyOTPNumberResponse;
 import com.pocketchat.models.sms.SendSMSRequest;
 import com.pocketchat.server.configurations.security.service.MyUserDetailsService;
+import com.pocketchat.server.exceptions.otp.MaximumOTPVerificationAttemptReachedException;
+import com.pocketchat.server.exceptions.otp.OTPNotFoundException;
+import com.pocketchat.server.exceptions.otp.WrongOTPException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import com.pocketchat.server.exceptions.user_role.UserRoleNotFoundException;
 import com.pocketchat.services.email.EmailService;
@@ -30,6 +34,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -287,12 +292,42 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     }
 
     // Used for OTP on mobile phone (Step 2)
+    // TODO: Encrypt secureKeyword and OTP number from frontend
     @Override
     public UserAuthenticationResponse verifyMobileNumberOTP(VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
         // Go to OTP service to verify
         // If verified,
+        Optional<User> userOptional = userRepoService.findByMobileNo(verifyMobileNumberOTPRequest.getMobileNo());
 
-        return null;
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("Unable to find the user during verifyMobileNumberOTP. Mobile Number: " + verifyMobileNumberOTPRequest.getMobileNo());
+        }
+
+        VerifyOTPNumberResponse verifyOTPNumberResponse = otpService.verifyOTPNumber(userOptional.get().getId(), verifyMobileNumberOTPRequest.getOtpNumber(), verifyMobileNumberOTPRequest.getSecureKeyword());
+
+        if (!verifyOTPNumberResponse.isCorrect() && verifyOTPNumberResponse.isHasError()) {
+            // Incorrect, has error (unable to find that OTP)
+            throw new OTPNotFoundException("Unable to find that OTP using this user ID: " + userOptional.get().getId() + ".High possibility user didn't request for the OTP number.");
+        } else if (!verifyOTPNumberResponse.isCorrect() && !verifyOTPNumberResponse.isHasError()) {
+            // Incorrect, no error (Wrong OTP/Secure keyword)
+            throw new WrongOTPException("Wrong OTP/Secure Keyword. Please try again. Mobile Number: " + verifyMobileNumberOTPRequest.getMobileNo());
+        } else if (!verifyOTPNumberResponse.isCorrect() && !verifyOTPNumberResponse.isHasError() && verifyOTPNumberResponse.getLimitRemaining() == -1) {
+            // Reached maximum OTP verify attempt
+            throw new MaximumOTPVerificationAttemptReachedException("Maximum attempt OTP verification reached. Please request new OTP again. Mobile number: " + verifyMobileNumberOTPRequest.getMobileNo());
+        }
+
+        // Correct, no error
+        Optional<UserAuthentication> userAuthenticationOptional = userAuthenticationRepoService.findByUserId(userOptional.get().getId());
+
+        if (userAuthenticationOptional.isEmpty()) {
+            throw new UsernameNotFoundException("Unable to find the User's Authentication using userId: " + userOptional.get().getId());
+        }
+
+        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(userAuthenticationOptional.get().getUsername());
+
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        return UserAuthenticationResponse.builder().jwt(jwt).build();
     }
 
     @Override

@@ -25,6 +25,10 @@ public class UserAuthenticationRepoService {
         return userAuthenticationRepository.findFirstByUsername(username);
     }
 
+    public Optional<UserAuthentication> findByUserId(String userId) {
+        return userAuthenticationRepository.findFirstByUserId(userId);
+    }
+
     public UserAuthentication save(UserAuthentication userAuthentication) {
         return userAuthenticationRepository.save(userAuthentication);
     }

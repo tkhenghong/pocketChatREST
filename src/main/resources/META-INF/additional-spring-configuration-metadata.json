@@ -89,6 +89,11 @@
       "name": "rabbitmq.connection.factory.password",
       "type": "java.lang.String",
       "description": "Password for accessing RabbitMQ client in your machine."
+    },
+    {
+      "name": "server.otp.maximum.retry.attempt",
+      "type": "java.lang.String",
+      "description": "All OTPs maximum retry attempt. If maximum attempt reached, the OTP will be disabled and the frontend have to request a new OTP again."
     }
   ]
 }

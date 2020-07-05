@@ -5,12 +5,15 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.pocketchat.models.otp.GenerateOTPRequest;
 import com.pocketchat.models.otp.OTP;
+import com.pocketchat.models.otp.VerifyOTPNumberResponse;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -18,6 +21,9 @@ public class OTPService {
 
     @Value("${server.otp.maximum.alive.minutes}")
     private int maximumOTPAliveMinutes;
+
+    @Value("${server.otp.maximum.retry.attempt}")
+    private int maximumOTPRetryAttempt;
 
     // UserID with OTP object
     private final LoadingCache<String, OTP> otpCache;
@@ -43,6 +49,7 @@ public class OTPService {
                 .otp(otpNumber)
                 .keyword(generateRandomSecureKeyword())
                 .otpExpirationDateTime(new DateTime())
+                .verifyAttempt(0)
                 .length(generateOTPRequest.getOtpLength())
                 .build();
     }
@@ -51,12 +58,51 @@ public class OTPService {
         otpCache.put(otp.getUserId(), otp);
     }
 
-    Integer generatePowerNumber(Integer number, Integer baseNumber, Integer exponentNumber) {
+    public VerifyOTPNumberResponse verifyOTPNumber(String userId, String otpNumber, String secureKeyword)  {
+        try {
+            OTP otp = otpCache.get(userId);
+
+            if (otp.getVerifyAttempt() >= maximumOTPRetryAttempt) {
+                otpCache.invalidate(otp.getUserId());
+                return VerifyOTPNumberResponse.builder()
+                        .correct(false)
+                        .hasError(false)
+                        .limitRemaining(-1)
+                        .build();
+            }
+
+            boolean correctOTP = otp.getKeyword().equals(secureKeyword) && otp.getOtp().toString().equals(otpNumber);
+            if (correctOTP) {
+               otpCache.invalidate(otp.getUserId());
+               return VerifyOTPNumberResponse.builder()
+                       .correct(true)
+                       .hasError(false)
+                       .limitRemaining(0)
+                       .build();
+            } else {
+             otp.setVerifyAttempt(otp.getVerifyAttempt() + 1);
+             otpCache.put(otp.getUserId(), otp);
+             return VerifyOTPNumberResponse.builder()
+                     .correct(false)
+                     .hasError(false)
+                     .limitRemaining(maximumOTPRetryAttempt - otp.getVerifyAttempt())
+                     .build();
+            }
+        } catch(ExecutionException ex) {
+            return VerifyOTPNumberResponse.builder()
+                    .correct(false)
+                    .hasError(true)
+                    .limitRemaining(0)
+                    .build();
+        }
+    }
+
+    private Integer generatePowerNumber(Integer number, Integer baseNumber, Integer exponentNumber) {
         return (int) (number * Math.pow(baseNumber, exponentNumber));
     }
 
     // https://www.baeldung.com/java-random-string#java8-alphabetic
-    public String generateRandomSecureKeyword() {
+    private String generateRandomSecureKeyword() {
         int leftLimit = 97; // letter 'a'
         int rightLimit = 122; // letter 'z'
         int targetStringLength = 6;

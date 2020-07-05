@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface UserAuthenticationRepository extends MongoRepository<UserAuthentication, String> {
     Optional<UserAuthentication> findFirstByUsername(String username);
+
+    Optional<UserAuthentication> findFirstByUserId(String userId);
 }
