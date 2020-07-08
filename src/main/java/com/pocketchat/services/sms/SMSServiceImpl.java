@@ -32,7 +32,7 @@ public class SMSServiceImpl implements SMSService {
                 new PhoneNumber(fromNumber),
                 sendSMSRequest.getMessage())
                 .create();
-        System.out.println("here is my id:" + message.getSid());// Unique resource ID created to manage this transaction
+        logger.info("Here's my id: {}", message.getSid());// Unique resource ID created to manage this transaction
         return null;
     }
 

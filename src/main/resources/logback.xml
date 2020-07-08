@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--Log path variable defined in Logback-->
+
+    <property name="LOG_PATH" value="logs"/>
+
+    <logger name="org.springframework.boot" level="info"/>
+
+    <logger name="org.springframework" level="info"/>
+
+    <logger name="com.pocketchat" level="debug"/>
+
+    <appender name="CONSOLE"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1.}): %msg%n%throwable
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="MAIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!--
+        file: The current log file that the system is currently using
+        -->
+        <file>${LOG_PATH}/pocketChatREST.log</file>
+
+        <!--
+        encoder: Format of each log message
+        -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n</Pattern>
+        </encoder>
+
+        <!--
+            rollingPolicy: Rolling policy of the log, there's mainly 2 classes that gives you hint on how the logs are treated, which are:
+            FixedWindowRollingPolicy: (Normally auto create another log file when the maxFileSize reached, paired with triggeringPolicy)
+            SizeAndTimeBasedRollingPolicy: (Like below, it will auto create another log file when maxFileSize reached,
+            how many days logs will be stored and maximum size of all log files)
+            fileNamePattern: The file name of the file that will be created when the current logging file max file size has reached.
+            maxFileSize: Maximum file size of the log before the system will stop logging to the same file and create a new one.
+            maxHistory: Maximum days that the log files will be kept.
+            totalSizeCap: Maximum size of the log files made by the system before the system will start delete the oldest logs.
+        -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/pocketChatREST.log_%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- LOG everything at INFO level -->
+    <root level="info">
+        <appender-ref ref="MAIN" />
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

@@ -1,34 +1,41 @@
 package com.pocketchat.conversation_group.repository;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
+import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.db.repositories.conversation_group.ConversationGroupRepository;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-// Reference: https://www.baeldung.com/spring-boot-testing
-// https://mkyong.com/spring-boot/spring-boot-junit-5-mockito/
-// https://spring.io/guides/gs/testing-web/
-// https://www.javaworld.com/article/3537563/junit-5-tutorial-part-1-unit-testing-with-junit-5-mockito-and-hamcrest.html
-// https://www.baeldung.com/mockito-annotations
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.eq;
+
+// https://www.infoworld.com/article/3537563/junit-5-tutorial-part-1-unit-testing-with-junit-5-mockito-and-hamcrest.html
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 public class ConversationGroupRepositoryTests {
 
-    @Autowired
+    @Mock
     ConversationGroupRepository conversationGroupRepository;
+
+    @InjectMocks
+    ConversationGroupRepoService conversationGroupRepoService;
 
     @Test
     @DisplayName("Conversation Group Repository Test")
@@ -42,9 +49,11 @@ public class ConversationGroupRepositoryTests {
 
         ConversationGroup entity = generateConversationGroupObject();
 
-        ConversationGroup conversationGroup = conversationGroupRepository.save(entity);
-        Assertions.assertNotNull(conversationGroup);
-        Assertions.assertEquals(entity.getName(), conversationGroup.getName());
+        Mockito.when(conversationGroupRepoService.save(eq(entity))).thenReturn(entity);
+
+        ConversationGroup conversationGroup = conversationGroupRepoService.save(entity);
+        assertNotNull(conversationGroup);
+        assertEquals(entity.getName(), conversationGroup.getName());
     }
 
     private ConversationGroup generateConversationGroupObject() {

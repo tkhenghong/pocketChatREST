@@ -8,12 +8,14 @@ import com.pocketchat.models.controllers.request.chat_message.UpdateChatMessageR
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.enums.chat_message.ChatMessageType;
-import com.pocketchat.server.configurations.websocket.WebSocketMessage;
+import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,9 +29,10 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final RabbitMQService rabbitMQService;
 
+    // @Lazy to prevent circular dependencies in Spring Boot. https://www.baeldung.com/circular-dependencies-in-spring
     @Autowired
     public ChatMessageServiceImpl(ChatMessageRepoService chatMessageRepoService,
-                                  ConversationGroupService conversationGroupService,
+                                  @Lazy  ConversationGroupService conversationGroupService,
                                   RabbitMQService rabbitMQService) {
         this.chatMessageRepoService = chatMessageRepoService;
         this.conversationGroupService = conversationGroupService;
@@ -37,6 +40,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
+    @Transactional
     public ChatMessage addChatMessage(CreateChatMessageRequest createChatMessageRequest) {
         ConversationGroup conversationGroup = conversationGroupService.getSingleConversation(createChatMessageRequest.getConversationId());
 
@@ -50,6 +54,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
+    @Transactional
     public ChatMessage editChatMessage(UpdateChatMessageRequest updateMessageRequest) {
         conversationGroupService.getSingleConversation(updateMessageRequest.getConversationId());
 
@@ -61,6 +66,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
+    @Transactional
     public void deleteChatMessage(String messageId) {
         chatMessageRepoService.delete(getSingleChatMessage(messageId));
     }
@@ -78,9 +84,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     public List<ChatMessage> getChatMessagesOfAConversation(String conversationGroupId) {
         conversationGroupService.getSingleConversation(conversationGroupId);
         List<ChatMessage> chatMessageList = chatMessageRepoService.findAllMessagesByConversationId(conversationGroupId);
-        if (chatMessageList.isEmpty()) {
-            throw new ChatMessageNotFoundException("No message found for this conversationGroupId:-" + conversationGroupId);
-        }
+//        rabbitMQService.listenMessagesFromQueue();
         return chatMessageList;
     }
 
