@@ -6,17 +6,17 @@ import com.pocketchat.models.controllers.request.user.UpdateUserRequest;
 import com.pocketchat.models.controllers.response.user.UserResponse;
 
 public interface UserService {
-    UserResponse addUser(CreateUserRequest user);
+    User addUser(CreateUserRequest user);
 
-    UserResponse editUser(UpdateUserRequest user);
+    User editUser(UpdateUserRequest user);
 
     void deleteUser(String userId);
 
     User getUser(String userId);
 
-    UserResponse getUserByGoogleAccountId(String googleAccountId);
+    User getUserByGoogleAccountId(String googleAccountId);
 
-    UserResponse getUserByMobileNo(String mobileNo);
+    User getUserByMobileNo(String mobileNo);
 
     User createUserRequestToUserMapper(CreateUserRequest createUserRequest);
 

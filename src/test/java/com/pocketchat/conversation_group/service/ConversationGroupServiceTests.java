@@ -83,10 +83,8 @@ public class ConversationGroupServiceTests {
                 .realName(UUID.randomUUID().toString())
                 .displayName(UUID.randomUUID().toString())
                 .countryCode(UUID.randomUUID().toString())
-                .effectivePhoneNumber(UUID.randomUUID().toString())
                 .emailAddress(UUID.randomUUID().toString())
                 .mobileNo(UUID.randomUUID().toString())
-                .googleAccountId(UUID.randomUUID().toString())
                 .build();
     }
 

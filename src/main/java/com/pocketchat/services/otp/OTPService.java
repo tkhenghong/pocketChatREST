@@ -7,10 +7,8 @@ import com.pocketchat.models.otp.GenerateOTPRequest;
 import com.pocketchat.models.otp.OTP;
 import com.pocketchat.models.otp.VerifyOTPNumberResponse;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.util.Random;
 import java.util.concurrent.ExecutionException;

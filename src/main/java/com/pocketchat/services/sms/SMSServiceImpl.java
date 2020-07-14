@@ -3,14 +3,13 @@ package com.pocketchat.services.sms;
 import com.pocketchat.models.sms.SendSMSRequest;
 import com.pocketchat.models.sms.SendSMSResponse;
 import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
-
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
 
 @Service
 public class SMSServiceImpl implements SMSService {

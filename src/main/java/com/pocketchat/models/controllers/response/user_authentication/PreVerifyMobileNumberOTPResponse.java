@@ -9,15 +9,19 @@ public class PreVerifyMobileNumberOTPResponse {
 
     private String emailAddress;
 
-    PreVerifyMobileNumberOTPResponse(DateTime tokenExpiryTime, String mobileNumber, String emailAddress) {
+    private String secureKeyword;
+
+    PreVerifyMobileNumberOTPResponse(DateTime tokenExpiryTime, String mobileNumber, String emailAddress, String secureKeyword) {
         this.tokenExpiryTime = tokenExpiryTime;
         this.mobileNumber = mobileNumber;
         this.emailAddress = emailAddress;
+        this.secureKeyword = secureKeyword;
     }
 
-    public static RequestVerifyMobileNumberResponseBuilder builder() {
-        return new RequestVerifyMobileNumberResponseBuilder();
+    public static PreVerifyMobileNumberOTPResponseBuilder builder() {
+        return new PreVerifyMobileNumberOTPResponseBuilder();
     }
+
 
     public DateTime getTokenExpiryTime() {
         return this.tokenExpiryTime;
@@ -31,6 +35,10 @@ public class PreVerifyMobileNumberOTPResponse {
         return this.emailAddress;
     }
 
+    public String getSecureKeyword() {
+        return this.secureKeyword;
+    }
+
     public void setTokenExpiryTime(DateTime tokenExpiryTime) {
         this.tokenExpiryTime = tokenExpiryTime;
     }
@@ -41,6 +49,10 @@ public class PreVerifyMobileNumberOTPResponse {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public void setSecureKeyword(String secureKeyword) {
+        this.secureKeyword = secureKeyword;
     }
 
     public boolean equals(final Object o) {
@@ -61,6 +73,10 @@ public class PreVerifyMobileNumberOTPResponse {
         final Object other$emailAddress = other.getEmailAddress();
         if (this$emailAddress == null ? other$emailAddress != null : !this$emailAddress.equals(other$emailAddress))
             return false;
+        final Object this$secureKeyword = this.getSecureKeyword();
+        final Object other$secureKeyword = other.getSecureKeyword();
+        if (this$secureKeyword == null ? other$secureKeyword != null : !this$secureKeyword.equals(other$secureKeyword))
+            return false;
         return true;
     }
 
@@ -77,42 +93,50 @@ public class PreVerifyMobileNumberOTPResponse {
         result = result * PRIME + ($mobileNumber == null ? 43 : $mobileNumber.hashCode());
         final Object $emailAddress = this.getEmailAddress();
         result = result * PRIME + ($emailAddress == null ? 43 : $emailAddress.hashCode());
+        final Object $secureKeyword = this.getSecureKeyword();
+        result = result * PRIME + ($secureKeyword == null ? 43 : $secureKeyword.hashCode());
         return result;
     }
 
     public String toString() {
-        return "RequestVerifyMobileNumberResponse(tokenExpiryTime=" + this.getTokenExpiryTime() + ", mobileNumber=" + this.getMobileNumber() + ", emailAddress=" + this.getEmailAddress() + ")";
+        return "PreVerifyMobileNumberOTPResponse(tokenExpiryTime=" + this.getTokenExpiryTime() + ", mobileNumber=" + this.getMobileNumber() + ", emailAddress=" + this.getEmailAddress() + ", secureKeyword=" + this.getSecureKeyword() + ")";
     }
 
-    public static class RequestVerifyMobileNumberResponseBuilder {
+    public static class PreVerifyMobileNumberOTPResponseBuilder {
         private DateTime tokenExpiryTime;
         private String mobileNumber;
         private String emailAddress;
+        private String secureKeyword;
 
-        RequestVerifyMobileNumberResponseBuilder() {
+        PreVerifyMobileNumberOTPResponseBuilder() {
         }
 
-        public PreVerifyMobileNumberOTPResponse.RequestVerifyMobileNumberResponseBuilder tokenExpiryTime(DateTime tokenExpiryTime) {
+        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder tokenExpiryTime(DateTime tokenExpiryTime) {
             this.tokenExpiryTime = tokenExpiryTime;
             return this;
         }
 
-        public PreVerifyMobileNumberOTPResponse.RequestVerifyMobileNumberResponseBuilder mobileNumber(String mobileNumber) {
+        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder mobileNumber(String mobileNumber) {
             this.mobileNumber = mobileNumber;
             return this;
         }
 
-        public PreVerifyMobileNumberOTPResponse.RequestVerifyMobileNumberResponseBuilder emailAddress(String emailAddress) {
+        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder emailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
             return this;
         }
 
+        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder secureKeyword(String secureKeyword) {
+            this.secureKeyword = secureKeyword;
+            return this;
+        }
+
         public PreVerifyMobileNumberOTPResponse build() {
-            return new PreVerifyMobileNumberOTPResponse(tokenExpiryTime, mobileNumber, emailAddress);
+            return new PreVerifyMobileNumberOTPResponse(tokenExpiryTime, mobileNumber, emailAddress, secureKeyword);
         }
 
         public String toString() {
-            return "RequestVerifyMobileNumberResponse.RequestVerifyMobileNumberResponseBuilder(tokenExpiryTime=" + this.tokenExpiryTime + ", mobileNumber=" + this.mobileNumber + ", emailAddress=" + this.emailAddress + ")";
+            return "PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder(tokenExpiryTime=" + this.tokenExpiryTime + ", mobileNumber=" + this.mobileNumber + ", emailAddress=" + this.emailAddress + ", secureKeyword=" + this.secureKeyword + ")";
         }
     }
 }

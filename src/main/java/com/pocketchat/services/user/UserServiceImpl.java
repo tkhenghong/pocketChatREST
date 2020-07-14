@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse addUser(CreateUserRequest createUserRequest) {
+    public User addUser(CreateUserRequest createUserRequest) {
         User user = createUserRequestToUserMapper(createUserRequest);
 
         Optional<User> userOptional = userRepoService.findByGoogleAccountId(user.getGoogleAccountId());
@@ -33,14 +33,14 @@ public class UserServiceImpl implements UserService {
             throw new UserGoogleAccountIsAlreadyRegisteredException("Google Account has already registered. Google Account ID: " + user.getGoogleAccountId());
         }
 
-        return userResponseMapper(userRepoService.save(user)); // userOptional.isPresent() ? userOptional.get() : userRepoService.save(user)
+        return userRepoService.save(user); // userOptional.isPresent() ? userOptional.get() : userRepoService.save(user)
     }
 
     @Override
     @Transactional
-    public UserResponse editUser(UpdateUserRequest updateUserRequest) {
+    public User editUser(UpdateUserRequest updateUserRequest) {
         getUser(updateUserRequest.getId());
-        return userResponseMapper(userRepoService.save(updateUserRequestToUserMapper(updateUserRequest)));
+        return userRepoService.save(updateUserRequestToUserMapper(updateUserRequest));
     }
 
     @Override
@@ -59,34 +59,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserByGoogleAccountId(String googleAccountId) {
+    public User getUserByGoogleAccountId(String googleAccountId) {
         // NOTE: normally you wouldn't find multiple Users with same googleAccountId back from database,
         // But for safety, I have used findFirst in MongoRepository of User class.
         Optional<User> userOptional = userRepoService.findByGoogleAccountId(googleAccountId);
         if (!userOptional.isPresent()) {
             throw new UserNotFoundException("User not found by using googleAccountId: " + googleAccountId);
         }
-        return userResponseMapper(userOptional.get());
+        return userOptional.get();
     }
 
     @Override
-    public UserResponse getUserByMobileNo(String mobileNo) {
+    public User getUserByMobileNo(String mobileNo) {
         Optional<User> userOptional = userRepoService.findByMobileNo(mobileNo);
         if (!userOptional.isPresent()) {
             throw new UserNotFoundException("User not found by using mobileNo: " + mobileNo);
         }
-        return userResponseMapper(userOptional.get());
+        return userOptional.get();
     }
 
     @Override
     public User createUserRequestToUserMapper(CreateUserRequest createUserRequest) {
         return User.builder()
-                .id(createUserRequest.getId())
                 .countryCode(createUserRequest.getCountryCode())
                 .displayName(createUserRequest.getDisplayName())
                 .realName(createUserRequest.getRealName())
-                .effectivePhoneNumber(createUserRequest.getEffectivePhoneNumber())
-                .googleAccountId(createUserRequest.getGoogleAccountId())
                 .mobileNo(createUserRequest.getMobileNo())
                 .build();
     }
@@ -98,9 +95,9 @@ public class UserServiceImpl implements UserService {
                 .countryCode(updateUserRequest.getCountryCode())
                 .displayName(updateUserRequest.getDisplayName())
                 .realName(updateUserRequest.getRealName())
-                .effectivePhoneNumber(updateUserRequest.getEffectivePhoneNumber())
                 .googleAccountId(updateUserRequest.getGoogleAccountId())
                 .mobileNo(updateUserRequest.getMobileNo())
+                .emailAddress(updateUserRequest.getEmailAddress())
                 .build();
     }
 
@@ -112,7 +109,7 @@ public class UserServiceImpl implements UserService {
                 .realName(user.getRealName())
                 .mobileNo(user.getMobileNo())
                 .googleAccountId(user.getGoogleAccountId())
-                .effectivePhoneNumber(user.getEffectivePhoneNumber())
+                .emailAddress(user.getEmailAddress())
                 .displayName(user.getDisplayName())
                 .build();
     }

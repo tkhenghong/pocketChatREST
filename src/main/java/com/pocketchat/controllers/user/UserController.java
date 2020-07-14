@@ -25,7 +25,7 @@ public class UserController {
 
     @PostMapping("")
     public ResponseEntity<Object> addUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        UserResponse savedUser = userService.addUser(createUserRequest);
+        UserResponse savedUser = userService.userResponseMapper(userService.addUser(createUserRequest));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId())
                 .toUri();
         return ResponseEntity.created(location).build();
@@ -33,7 +33,7 @@ public class UserController {
 
     @PutMapping("")
     public UserResponse editUser(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
-        return userService.editUser(updateUserRequest);
+        return userService.userResponseMapper(userService.editUser(updateUserRequest));
     }
 
     @DeleteMapping("/{userId}")
@@ -48,11 +48,11 @@ public class UserController {
 
     @GetMapping("/googleAccountId/{googleAccountId}")
     public UserResponse getUserByGoogleAccountId(@PathVariable String googleAccountId) {
-        return userService.getUserByGoogleAccountId(googleAccountId);
+        return userService.userResponseMapper(userService.getUserByGoogleAccountId(googleAccountId));
     }
 
     @GetMapping("/mobileNo/{mobileNo}")
     public UserResponse getUserByMobileNo(@PathVariable String mobileNo) {
-        return userService.getUserByMobileNo(mobileNo);
+        return userService.userResponseMapper(userService.getUserByMobileNo(mobileNo));
     }
 }
