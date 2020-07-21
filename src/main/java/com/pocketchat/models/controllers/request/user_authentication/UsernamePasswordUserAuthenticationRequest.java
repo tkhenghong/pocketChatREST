@@ -1,32 +1,28 @@
 package com.pocketchat.models.controllers.request.user_authentication;
 
+import javax.validation.constraints.NotBlank;
+
 // Model for accepting user credentials
 public class UsernamePasswordUserAuthenticationRequest {
-
+    @NotBlank
     private String username;
+
+    @NotBlank
     private String password;
 
-    public UsernamePasswordUserAuthenticationRequest() {
+    public @NotBlank String getUsername() {
+        return this.username;
     }
 
-    public UsernamePasswordUserAuthenticationRequest(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public @NotBlank String getPassword() {
+        return this.password;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
+    public void setUsername(@NotBlank String username) {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
+    public void setPassword(@NotBlank String password) {
         this.password = password;
     }
 }
