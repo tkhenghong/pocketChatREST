@@ -1,11 +1,11 @@
 package com.pocketchat.db.models.unread_message;
 
-import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Document(collection = "unread_message")
 public class UnreadMessage {
@@ -23,11 +23,11 @@ public class UnreadMessage {
     private String lastMessage;
 
     @NotNull
-    private DateTime date;
+    private LocalDateTime date;
 
     private Integer count;
 
-    UnreadMessage(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull DateTime date, Integer count) {
+    UnreadMessage(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull LocalDateTime date, Integer count) {
         this.id = id;
         this.conversationId = conversationId;
         this.userId = userId;
@@ -56,7 +56,7 @@ public class UnreadMessage {
         return this.lastMessage;
     }
 
-    public @NotNull DateTime getDate() {
+    public @NotNull LocalDateTime getDate() {
         return this.date;
     }
 
@@ -80,7 +80,7 @@ public class UnreadMessage {
         this.lastMessage = lastMessage;
     }
 
-    public void setDate(@NotNull DateTime date) {
+    public void setDate(@NotNull LocalDateTime date) {
         this.date = date;
     }
 
@@ -147,7 +147,7 @@ public class UnreadMessage {
         private @NotBlank String conversationId;
         private @NotBlank String userId;
         private String lastMessage;
-        private @NotNull DateTime date;
+        private @NotNull LocalDateTime date;
         private Integer count;
 
         UnreadMessageBuilder() {
@@ -173,7 +173,7 @@ public class UnreadMessage {
             return this;
         }
 
-        public UnreadMessage.UnreadMessageBuilder date(@NotNull DateTime date) {
+        public UnreadMessage.UnreadMessageBuilder date(@NotNull LocalDateTime date) {
             this.date = date;
             return this;
         }

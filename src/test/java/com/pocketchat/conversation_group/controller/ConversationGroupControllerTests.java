@@ -5,7 +5,6 @@ import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,10 +79,10 @@ public class ConversationGroupControllerTests {
                 .name(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(new DateTime())
+                .createdDate(LocalDateTime.now())
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
-                .notificationExpireDate(new DateTime())
+                .notificationExpireDate(LocalDateTime.now())
                 .block(false)
                 .build();
     }

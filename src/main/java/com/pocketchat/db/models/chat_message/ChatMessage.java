@@ -2,12 +2,12 @@ package com.pocketchat.db.models.chat_message;
 
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.enums.chat_message.ChatMessageType;
-import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Document(collection = "message")
 public class ChatMessage {
@@ -45,11 +45,11 @@ public class ChatMessage {
     private String multimediaId;
 
     @NotNull
-    private DateTime createdTime;
+    private LocalDateTime createdTime;
 
-    private DateTime sentTime;
+    private LocalDateTime sentTime;
 
-    ChatMessage(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, ChatMessageType type, ChatMessageStatus status, @NotBlank String messageContent, String multimediaId, @NotNull DateTime createdTime, DateTime sentTime) {
+    ChatMessage(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, ChatMessageType type, ChatMessageStatus status, @NotBlank String messageContent, String multimediaId, @NotNull LocalDateTime createdTime, LocalDateTime sentTime) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
@@ -69,7 +69,6 @@ public class ChatMessage {
     public static ChatMessageBuilder builder() {
         return new ChatMessageBuilder();
     }
-
 
     public String getId() {
         return this.id;
@@ -119,11 +118,11 @@ public class ChatMessage {
         return this.multimediaId;
     }
 
-    public @NotNull DateTime getCreatedTime() {
+    public @NotNull LocalDateTime getCreatedTime() {
         return this.createdTime;
     }
 
-    public DateTime getSentTime() {
+    public LocalDateTime getSentTime() {
         return this.sentTime;
     }
 
@@ -175,11 +174,11 @@ public class ChatMessage {
         this.multimediaId = multimediaId;
     }
 
-    public void setCreatedTime(@NotNull DateTime createdTime) {
+    public void setCreatedTime(@NotNull LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
 
-    public void setSentTime(DateTime sentTime) {
+    public void setSentTime(LocalDateTime sentTime) {
         this.sentTime = sentTime;
     }
 
@@ -297,8 +296,8 @@ public class ChatMessage {
         private ChatMessageStatus status;
         private @NotBlank String messageContent;
         private String multimediaId;
-        private @NotNull DateTime createdTime;
-        private DateTime sentTime;
+        private @NotNull LocalDateTime createdTime;
+        private LocalDateTime sentTime;
 
         ChatMessageBuilder() {
         }
@@ -363,12 +362,12 @@ public class ChatMessage {
             return this;
         }
 
-        public ChatMessage.ChatMessageBuilder createdTime(@NotNull DateTime createdTime) {
+        public ChatMessage.ChatMessageBuilder createdTime(@NotNull LocalDateTime createdTime) {
             this.createdTime = createdTime;
             return this;
         }
 
-        public ChatMessage.ChatMessageBuilder sentTime(DateTime sentTime) {
+        public ChatMessage.ChatMessageBuilder sentTime(LocalDateTime sentTime) {
             this.sentTime = sentTime;
             return this;
         }

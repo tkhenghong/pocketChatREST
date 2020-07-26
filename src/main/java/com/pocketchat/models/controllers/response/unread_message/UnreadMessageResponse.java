@@ -1,5 +1,7 @@
 package com.pocketchat.models.controllers.response.unread_message;
 
+import java.time.LocalDateTime;
+
 public class UnreadMessageResponse {
     private String id;
 
@@ -9,11 +11,11 @@ public class UnreadMessageResponse {
 
     private String lastMessage;
 
-    private long date;
+    private LocalDateTime date;
 
     private Integer count;
 
-    UnreadMessageResponse(String id, String conversationId, String userId, String lastMessage, long date, Integer count) {
+    UnreadMessageResponse(String id, String conversationId, String userId, String lastMessage, LocalDateTime date, Integer count) {
         this.id = id;
         this.conversationId = conversationId;
         this.userId = userId;
@@ -42,7 +44,7 @@ public class UnreadMessageResponse {
         return this.lastMessage;
     }
 
-    public long getDate() {
+    public LocalDateTime getDate() {
         return this.date;
     }
 
@@ -66,7 +68,7 @@ public class UnreadMessageResponse {
         this.lastMessage = lastMessage;
     }
 
-    public void setDate(long date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
@@ -94,7 +96,9 @@ public class UnreadMessageResponse {
         final Object other$lastMessage = other.getLastMessage();
         if (this$lastMessage == null ? other$lastMessage != null : !this$lastMessage.equals(other$lastMessage))
             return false;
-        if (this.getDate() != other.getDate()) return false;
+        final Object this$date = this.getDate();
+        final Object other$date = other.getDate();
+        if (this$date == null ? other$date != null : !this$date.equals(other$date)) return false;
         final Object this$count = this.getCount();
         final Object other$count = other.getCount();
         if (this$count == null ? other$count != null : !this$count.equals(other$count)) return false;
@@ -116,8 +120,8 @@ public class UnreadMessageResponse {
         result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
         final Object $lastMessage = this.getLastMessage();
         result = result * PRIME + ($lastMessage == null ? 43 : $lastMessage.hashCode());
-        final long $date = this.getDate();
-        result = result * PRIME + (int) ($date >>> 32 ^ $date);
+        final Object $date = this.getDate();
+        result = result * PRIME + ($date == null ? 43 : $date.hashCode());
         final Object $count = this.getCount();
         result = result * PRIME + ($count == null ? 43 : $count.hashCode());
         return result;
@@ -132,7 +136,7 @@ public class UnreadMessageResponse {
         private String conversationId;
         private String userId;
         private String lastMessage;
-        private long date;
+        private LocalDateTime date;
         private Integer count;
 
         UnreadMessageResponseBuilder() {
@@ -158,7 +162,7 @@ public class UnreadMessageResponse {
             return this;
         }
 
-        public UnreadMessageResponse.UnreadMessageResponseBuilder date(long date) {
+        public UnreadMessageResponse.UnreadMessageResponseBuilder date(LocalDateTime date) {
             this.date = date;
             return this;
         }

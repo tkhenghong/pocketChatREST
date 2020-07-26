@@ -166,7 +166,7 @@ public class UserContactServiceImpl implements UserContactService {
                 .multimediaId(userContact.getMultimediaId())
                 .userIds(userContact.getUserIds())
                 .userId(userContact.getUserId())
-                .lastSeenDate(userContact.getLastSeenDate().getMillis())
+                .lastSeenDate(userContact.getLastSeenDate())
                 .build();
     }
 }

@@ -40,7 +40,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-amqp' // Used for RabbiMQ
-    compile 'joda-time:joda-time:2.10'
     // Create compatibility with libraries, solves problem when creating JWT token in JWTUtil.java file.
     compile('javax.xml.bind:jaxb-api')
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
@@ -52,6 +51,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'javax.validation:validation-api:2.0.1.Final' // Missing javax.validation in Spring Boot 2.3.0
     implementation 'com.twilio.sdk:twilio:7.50.0' // Send SMS, WhatsApp messages
+    implementation 'org.apache.commons:commons-lang3' // For convert Exception's stack trace to string
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

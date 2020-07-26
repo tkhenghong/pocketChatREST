@@ -1,13 +1,13 @@
 package com.pocketchat.models.controllers.request.conversation_group;
 
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
-import org.joda.time.DateTime;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CreateConversationGroupRequest {
@@ -18,7 +18,7 @@ public class CreateConversationGroupRequest {
     private String creatorUserId;
 
     @NotNull
-    private DateTime createdDate;
+    private LocalDateTime createdDate;
 
     @NotBlank
     private String name;
@@ -40,9 +40,9 @@ public class CreateConversationGroupRequest {
 
     private boolean block;
 
-    private DateTime notificationExpireDate;
+    private LocalDateTime notificationExpireDate;
 
-    CreateConversationGroupRequest(String id, @NotBlank String creatorUserId, @NotNull DateTime createdDate, @NotBlank String name, @NotBlank ConversationGroupType conversationGroupType, String description, @Valid @NotEmpty @Size(min = 1) List<String> memberIds, @Valid @NotEmpty @Size(min = 1) List<String> adminMemberIds, boolean block, DateTime notificationExpireDate) {
+    CreateConversationGroupRequest(String id, @NotBlank String creatorUserId, @NotNull LocalDateTime createdDate, @NotBlank String name, @NotBlank ConversationGroupType conversationGroupType, String description, @Valid @NotEmpty @Size(min = 1) List<String> memberIds, @Valid @NotEmpty @Size(min = 1) List<String> adminMemberIds, boolean block, LocalDateTime notificationExpireDate) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.createdDate = createdDate;
@@ -59,7 +59,6 @@ public class CreateConversationGroupRequest {
         return new CreateConversationGroupRequestBuilder();
     }
 
-
     public String getId() {
         return this.id;
     }
@@ -68,7 +67,7 @@ public class CreateConversationGroupRequest {
         return this.creatorUserId;
     }
 
-    public @NotNull DateTime getCreatedDate() {
+    public @NotNull LocalDateTime getCreatedDate() {
         return this.createdDate;
     }
 
@@ -96,7 +95,7 @@ public class CreateConversationGroupRequest {
         return this.block;
     }
 
-    public DateTime getNotificationExpireDate() {
+    public LocalDateTime getNotificationExpireDate() {
         return this.notificationExpireDate;
     }
 
@@ -108,7 +107,7 @@ public class CreateConversationGroupRequest {
         this.creatorUserId = creatorUserId;
     }
 
-    public void setCreatedDate(@NotNull DateTime createdDate) {
+    public void setCreatedDate(@NotNull LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -136,7 +135,7 @@ public class CreateConversationGroupRequest {
         this.block = block;
     }
 
-    public void setNotificationExpireDate(DateTime notificationExpireDate) {
+    public void setNotificationExpireDate(LocalDateTime notificationExpireDate) {
         this.notificationExpireDate = notificationExpireDate;
     }
 
@@ -219,14 +218,14 @@ public class CreateConversationGroupRequest {
     public static class CreateConversationGroupRequestBuilder {
         private String id;
         private @NotBlank String creatorUserId;
-        private @NotNull DateTime createdDate;
+        private @NotNull LocalDateTime createdDate;
         private @NotBlank String name;
         private @NotBlank ConversationGroupType conversationGroupType;
         private String description;
         private @Valid @NotEmpty @Size(min = 1) List<String> memberIds;
         private @Valid @NotEmpty @Size(min = 1) List<String> adminMemberIds;
         private boolean block;
-        private DateTime notificationExpireDate;
+        private LocalDateTime notificationExpireDate;
 
         CreateConversationGroupRequestBuilder() {
         }
@@ -241,7 +240,7 @@ public class CreateConversationGroupRequest {
             return this;
         }
 
-        public CreateConversationGroupRequest.CreateConversationGroupRequestBuilder createdDate(@NotNull DateTime createdDate) {
+        public CreateConversationGroupRequest.CreateConversationGroupRequestBuilder createdDate(@NotNull LocalDateTime createdDate) {
             this.createdDate = createdDate;
             return this;
         }
@@ -276,7 +275,7 @@ public class CreateConversationGroupRequest {
             return this;
         }
 
-        public CreateConversationGroupRequest.CreateConversationGroupRequestBuilder notificationExpireDate(DateTime notificationExpireDate) {
+        public CreateConversationGroupRequest.CreateConversationGroupRequestBuilder notificationExpireDate(LocalDateTime notificationExpireDate) {
             this.notificationExpireDate = notificationExpireDate;
             return this;
         }

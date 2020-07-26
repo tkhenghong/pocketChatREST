@@ -2,6 +2,7 @@ package com.pocketchat.models.controllers.response.conversation_group;
 
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ConversationGroupResponse {
@@ -9,7 +10,7 @@ public class ConversationGroupResponse {
 
     private String creatorUserId;
 
-    private long createdDate;
+    private LocalDateTime createdDate;
 
     private String name;
 
@@ -23,9 +24,9 @@ public class ConversationGroupResponse {
 
     private boolean block;
 
-    private long notificationExpireDate;
+    private LocalDateTime notificationExpireDate;
 
-    ConversationGroupResponse(String id, String creatorUserId, long createdDate, String name, ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, long notificationExpireDate) {
+    ConversationGroupResponse(String id, String creatorUserId, LocalDateTime createdDate, String name, ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, LocalDateTime notificationExpireDate) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.createdDate = createdDate;
@@ -50,7 +51,7 @@ public class ConversationGroupResponse {
         return this.creatorUserId;
     }
 
-    public long getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return this.createdDate;
     }
 
@@ -78,7 +79,7 @@ public class ConversationGroupResponse {
         return this.block;
     }
 
-    public long getNotificationExpireDate() {
+    public LocalDateTime getNotificationExpireDate() {
         return this.notificationExpireDate;
     }
 
@@ -90,7 +91,7 @@ public class ConversationGroupResponse {
         this.creatorUserId = creatorUserId;
     }
 
-    public void setCreatedDate(long createdDate) {
+    public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -118,7 +119,7 @@ public class ConversationGroupResponse {
         this.block = block;
     }
 
-    public void setNotificationExpireDate(long notificationExpireDate) {
+    public void setNotificationExpireDate(LocalDateTime notificationExpireDate) {
         this.notificationExpireDate = notificationExpireDate;
     }
 
@@ -135,7 +136,10 @@ public class ConversationGroupResponse {
         final Object other$creatorUserId = other.getCreatorUserId();
         if (this$creatorUserId == null ? other$creatorUserId != null : !this$creatorUserId.equals(other$creatorUserId))
             return false;
-        if (this.getCreatedDate() != other.getCreatedDate()) return false;
+        final Object this$createdDate = this.getCreatedDate();
+        final Object other$createdDate = other.getCreatedDate();
+        if (this$createdDate == null ? other$createdDate != null : !this$createdDate.equals(other$createdDate))
+            return false;
         final Object this$name = this.getName();
         final Object other$name = other.getName();
         if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
@@ -155,7 +159,10 @@ public class ConversationGroupResponse {
         if (this$adminMemberIds == null ? other$adminMemberIds != null : !this$adminMemberIds.equals(other$adminMemberIds))
             return false;
         if (this.isBlock() != other.isBlock()) return false;
-        if (this.getNotificationExpireDate() != other.getNotificationExpireDate()) return false;
+        final Object this$notificationExpireDate = this.getNotificationExpireDate();
+        final Object other$notificationExpireDate = other.getNotificationExpireDate();
+        if (this$notificationExpireDate == null ? other$notificationExpireDate != null : !this$notificationExpireDate.equals(other$notificationExpireDate))
+            return false;
         return true;
     }
 
@@ -170,8 +177,8 @@ public class ConversationGroupResponse {
         result = result * PRIME + ($id == null ? 43 : $id.hashCode());
         final Object $creatorUserId = this.getCreatorUserId();
         result = result * PRIME + ($creatorUserId == null ? 43 : $creatorUserId.hashCode());
-        final long $createdDate = this.getCreatedDate();
-        result = result * PRIME + (int) ($createdDate >>> 32 ^ $createdDate);
+        final Object $createdDate = this.getCreatedDate();
+        result = result * PRIME + ($createdDate == null ? 43 : $createdDate.hashCode());
         final Object $name = this.getName();
         result = result * PRIME + ($name == null ? 43 : $name.hashCode());
         final Object $conversationGroupType = this.getConversationGroupType();
@@ -183,8 +190,8 @@ public class ConversationGroupResponse {
         final Object $adminMemberIds = this.getAdminMemberIds();
         result = result * PRIME + ($adminMemberIds == null ? 43 : $adminMemberIds.hashCode());
         result = result * PRIME + (this.isBlock() ? 79 : 97);
-        final long $notificationExpireDate = this.getNotificationExpireDate();
-        result = result * PRIME + (int) ($notificationExpireDate >>> 32 ^ $notificationExpireDate);
+        final Object $notificationExpireDate = this.getNotificationExpireDate();
+        result = result * PRIME + ($notificationExpireDate == null ? 43 : $notificationExpireDate.hashCode());
         return result;
     }
 
@@ -195,14 +202,14 @@ public class ConversationGroupResponse {
     public static class ConversationGroupResponseBuilder {
         private String id;
         private String creatorUserId;
-        private long createdDate;
+        private LocalDateTime createdDate;
         private String name;
         private ConversationGroupType conversationGroupType;
         private String description;
         private List<String> memberIds;
         private List<String> adminMemberIds;
         private boolean block;
-        private long notificationExpireDate;
+        private LocalDateTime notificationExpireDate;
 
         ConversationGroupResponseBuilder() {
         }
@@ -217,7 +224,7 @@ public class ConversationGroupResponse {
             return this;
         }
 
-        public ConversationGroupResponse.ConversationGroupResponseBuilder createdDate(long createdDate) {
+        public ConversationGroupResponse.ConversationGroupResponseBuilder createdDate(LocalDateTime createdDate) {
             this.createdDate = createdDate;
             return this;
         }
@@ -252,7 +259,7 @@ public class ConversationGroupResponse {
             return this;
         }
 
-        public ConversationGroupResponse.ConversationGroupResponseBuilder notificationExpireDate(long notificationExpireDate) {
+        public ConversationGroupResponse.ConversationGroupResponseBuilder notificationExpireDate(LocalDateTime notificationExpireDate) {
             this.notificationExpireDate = notificationExpireDate;
             return this;
         }

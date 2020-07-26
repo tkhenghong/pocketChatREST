@@ -1,12 +1,12 @@
 package com.pocketchat.db.models.conversation_group;
 
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
-import org.joda.time.DateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Document(collection = "conversation_group")
@@ -19,7 +19,7 @@ public class ConversationGroup {
     private String creatorUserId;
 
     @NotNull
-    private DateTime createdDate;
+    private LocalDateTime createdDate;
 
     @NotBlank
     private String name;
@@ -41,9 +41,9 @@ public class ConversationGroup {
 
     private boolean block;
 
-    private DateTime notificationExpireDate;
+    private LocalDateTime notificationExpireDate;
 
-    ConversationGroup(String id, @NotBlank String creatorUserId, @NotNull DateTime createdDate, @NotBlank String name, @NotBlank ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, DateTime notificationExpireDate) {
+    ConversationGroup(String id, @NotBlank String creatorUserId, @NotNull LocalDateTime createdDate, @NotBlank String name, @NotBlank ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, LocalDateTime notificationExpireDate) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.createdDate = createdDate;
@@ -68,7 +68,7 @@ public class ConversationGroup {
         return this.creatorUserId;
     }
 
-    public @NotNull DateTime getCreatedDate() {
+    public @NotNull LocalDateTime getCreatedDate() {
         return this.createdDate;
     }
 
@@ -96,7 +96,7 @@ public class ConversationGroup {
         return this.block;
     }
 
-    public DateTime getNotificationExpireDate() {
+    public LocalDateTime getNotificationExpireDate() {
         return this.notificationExpireDate;
     }
 
@@ -108,7 +108,7 @@ public class ConversationGroup {
         this.creatorUserId = creatorUserId;
     }
 
-    public void setCreatedDate(@NotNull DateTime createdDate) {
+    public void setCreatedDate(@NotNull LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -136,7 +136,7 @@ public class ConversationGroup {
         this.block = block;
     }
 
-    public void setNotificationExpireDate(DateTime notificationExpireDate) {
+    public void setNotificationExpireDate(LocalDateTime notificationExpireDate) {
         this.notificationExpireDate = notificationExpireDate;
     }
 
@@ -218,14 +218,14 @@ public class ConversationGroup {
     public static class ConversationGroupBuilder {
         private String id;
         private @NotBlank String creatorUserId;
-        private @NotNull DateTime createdDate;
+        private @NotNull LocalDateTime createdDate;
         private @NotBlank String name;
         private @NotBlank ConversationGroupType conversationGroupType;
         private String description;
         private List<String> memberIds;
         private List<String> adminMemberIds;
         private boolean block;
-        private DateTime notificationExpireDate;
+        private LocalDateTime notificationExpireDate;
 
         ConversationGroupBuilder() {
         }
@@ -240,7 +240,7 @@ public class ConversationGroup {
             return this;
         }
 
-        public ConversationGroup.ConversationGroupBuilder createdDate(@NotNull DateTime createdDate) {
+        public ConversationGroup.ConversationGroupBuilder createdDate(@NotNull LocalDateTime createdDate) {
             this.createdDate = createdDate;
             return this;
         }
@@ -275,7 +275,7 @@ public class ConversationGroup {
             return this;
         }
 
-        public ConversationGroup.ConversationGroupBuilder notificationExpireDate(DateTime notificationExpireDate) {
+        public ConversationGroup.ConversationGroupBuilder notificationExpireDate(LocalDateTime notificationExpireDate) {
             this.notificationExpireDate = notificationExpireDate;
             return this;
         }

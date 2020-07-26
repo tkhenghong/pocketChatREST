@@ -1,9 +1,8 @@
 package com.pocketchat.models.controllers.request.chat_message;
 
-import org.joda.time.DateTime;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 public class UpdateChatMessageRequest {
 
@@ -39,11 +38,11 @@ public class UpdateChatMessageRequest {
     private String multimediaId;
 
     @NotNull
-    private DateTime createdTime;
+    private LocalDateTime createdTime;
 
-    private DateTime sentTime;
+    private LocalDateTime sentTime;
 
-    UpdateChatMessageRequest(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, @NotBlank String messageContent, String multimediaId, @NotNull DateTime createdTime, DateTime sentTime) {
+    UpdateChatMessageRequest(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, @NotBlank String messageContent, String multimediaId, @NotNull LocalDateTime createdTime, LocalDateTime sentTime) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
@@ -112,11 +111,11 @@ public class UpdateChatMessageRequest {
         return this.multimediaId;
     }
 
-    public @NotNull DateTime getCreatedTime() {
+    public @NotNull LocalDateTime getCreatedTime() {
         return this.createdTime;
     }
 
-    public DateTime getSentTime() {
+    public LocalDateTime getSentTime() {
         return this.sentTime;
     }
 
@@ -168,11 +167,11 @@ public class UpdateChatMessageRequest {
         this.multimediaId = multimediaId;
     }
 
-    public void setCreatedTime(@NotNull DateTime createdTime) {
+    public void setCreatedTime(@NotNull LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
 
-    public void setSentTime(DateTime sentTime) {
+    public void setSentTime(LocalDateTime sentTime) {
         this.sentTime = sentTime;
     }
 
@@ -291,8 +290,8 @@ public class UpdateChatMessageRequest {
         private String status;
         private @NotBlank String messageContent;
         private String multimediaId;
-        private @NotNull DateTime createdTime;
-        private DateTime sentTime;
+        private @NotNull LocalDateTime createdTime;
+        private LocalDateTime sentTime;
 
         UpdateChatMessageRequestBuilder() {
         }
@@ -357,12 +356,12 @@ public class UpdateChatMessageRequest {
             return this;
         }
 
-        public UpdateChatMessageRequest.UpdateChatMessageRequestBuilder createdTime(@NotNull DateTime createdTime) {
+        public UpdateChatMessageRequest.UpdateChatMessageRequestBuilder createdTime(@NotNull LocalDateTime createdTime) {
             this.createdTime = createdTime;
             return this;
         }
 
-        public UpdateChatMessageRequest.UpdateChatMessageRequestBuilder sentTime(DateTime sentTime) {
+        public UpdateChatMessageRequest.UpdateChatMessageRequestBuilder sentTime(LocalDateTime sentTime) {
             this.sentTime = sentTime;
             return this;
         }

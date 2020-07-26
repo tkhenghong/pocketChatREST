@@ -43,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -79,7 +80,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     @Value("${server.otp.length}")
     private int otpLength;
 
-    @Value("${server.otp.alive.minutes}")
+    @Value("${server.otp.maximum.alive.minutes}")
     private int otpAliveMinutes;
 
     @Autowired
@@ -128,7 +129,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         otpService.saveOTPNumber(otp);
 
         String messageContent = "Your verification number is: " + otp.getOtp() + " that is valid for "
-                + otpAliveMinutes + " minutes. It will expire in " + otp.getOtpExpirationDateTime()
+                + otpAliveMinutes + " minutes. It will expire in " + otp.getOtpExpirationDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                + ". The secure keyword is " + otp.getKeyword()
                 + ". Do not share this OTP to anybody.";
 
         if (StringUtils.hasText(user.getMobileNo())) {
@@ -178,7 +180,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         otpService.saveOTPNumber(otp);
 
         String messageBody = "Here's your OTP number: " + otp.getOtp().toString()
-                + ". Your keyword is: " + otp.getKeyword()
+                + ". Your secure keyword is: " + otp.getKeyword()
                 + ". This OTP will expire in " + otpAliveMinutes + " minutes.";
 
         emailService.sendEmail(SendEmailRequest.builder()
@@ -199,6 +201,45 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                 .build();
     }
 
+
+    // Used for OTP on mobile phone (Step 2)
+    // TODO: Encrypt secureKeyword and OTP number from frontend
+    @Override
+    public UserAuthenticationResponse verifyMobileNumberOTP(VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
+        // Go to OTP service to verify
+        // If verified,
+        Optional<User> userOptional = userRepoService.findByMobileNo(verifyMobileNumberOTPRequest.getMobileNo());
+
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("Unable to find the user during verifyMobileNumberOTP. Mobile Number: " + verifyMobileNumberOTPRequest.getMobileNo());
+        }
+
+        VerifyOTPNumberResponse verifyOTPNumberResponse = otpService.verifyOTPNumber(userOptional.get().getId(), verifyMobileNumberOTPRequest.getOtpNumber(), verifyMobileNumberOTPRequest.getSecureKeyword());
+
+        if (!verifyOTPNumberResponse.isCorrect() && verifyOTPNumberResponse.isHasError()) {
+            // Incorrect, has error (unable to find that OTP)
+            throw new OTPNotFoundException("Unable to find that OTP using this user ID: " + userOptional.get().getId() + ".High possibility user didn't request for the OTP number.");
+        } else if (!verifyOTPNumberResponse.isCorrect() && !verifyOTPNumberResponse.isHasError()) {
+            // Incorrect, no error (Wrong OTP/Secure keyword)
+            throw new WrongOTPException("Wrong OTP/Secure Keyword. Please try again. Mobile Number: " + verifyMobileNumberOTPRequest.getMobileNo());
+        } else if (!verifyOTPNumberResponse.isCorrect() && !verifyOTPNumberResponse.isHasError() && verifyOTPNumberResponse.getLimitRemaining() == -1) {
+            // Reached maximum OTP verify attempt
+            throw new MaximumOTPVerificationAttemptReachedException("Maximum attempt OTP verification reached. Please request new OTP again. Mobile number: " + verifyMobileNumberOTPRequest.getMobileNo());
+        }
+
+        // Correct, no error
+        Optional<UserAuthentication> userAuthenticationOptional = userAuthenticationRepoService.findByUserId(userOptional.get().getId());
+
+        if (userAuthenticationOptional.isEmpty()) {
+            throw new UsernameNotFoundException("Unable to find the User's Authentication using userId: " + userOptional.get().getId());
+        }
+
+        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(userAuthenticationOptional.get().getUsername());
+
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        return UserAuthenticationResponse.builder().jwt(jwt).build();
+    }
 
     // NOT RELATED TO POCKETCHAT
     // This is used for user's that has mobile number ONLY, when secure authentication action is needed, they'll have to trigger this API.
@@ -227,7 +268,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         String messageTitle = "PocketChat Verification Code: " + otp.getOtp();
 
         String messageContent = "Your verification number is: " + otp.getOtp() + " that is valid for "
-                + otpAliveMinutes + " minutes. It will expire in " + otp.getOtpExpirationDateTime()
+                + otpAliveMinutes + " minutes. It will expire in " + otp.getOtpExpirationDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                + ". The secure keyword is " + otp.getKeyword()
                 + ". Do not share this OTP to anybody.";
 
         if (StringUtils.hasText(user.get().getMobileNo())) {
@@ -275,7 +317,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         String messageTitle = "PocketChat Verification Code: " + otp.getOtp();
 
         String messageContent = "Your verification number is: " + otp.getOtp() + " that is valid for "
-                + otpAliveMinutes + " minutes. It will expire in " + otp.getOtpExpirationDateTime()
+                + otpAliveMinutes + " minutes. It will expire in " + otp.getOtpExpirationDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                + ". The secure keyword is " + otp.getKeyword()
                 + ". Do not share this OTP to anybody.";
 
         List<String> receiverEmailAddresses = new ArrayList<>();
@@ -336,45 +379,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         }
 
         final UserDetails userDetails = myUserDetailsService.loadUserByUsername(usernamePasswordUserAuthenticationRequest.getUsername());
-
-        final String jwt = jwtUtil.generateToken(userDetails);
-
-        return UserAuthenticationResponse.builder().jwt(jwt).build();
-    }
-
-    // Used for OTP on mobile phone (Step 2)
-    // TODO: Encrypt secureKeyword and OTP number from frontend
-    @Override
-    public UserAuthenticationResponse verifyMobileNumberOTP(VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
-        // Go to OTP service to verify
-        // If verified,
-        Optional<User> userOptional = userRepoService.findByMobileNo(verifyMobileNumberOTPRequest.getMobileNo());
-
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("Unable to find the user during verifyMobileNumberOTP. Mobile Number: " + verifyMobileNumberOTPRequest.getMobileNo());
-        }
-
-        VerifyOTPNumberResponse verifyOTPNumberResponse = otpService.verifyOTPNumber(userOptional.get().getId(), verifyMobileNumberOTPRequest.getOtpNumber(), verifyMobileNumberOTPRequest.getSecureKeyword());
-
-        if (!verifyOTPNumberResponse.isCorrect() && verifyOTPNumberResponse.isHasError()) {
-            // Incorrect, has error (unable to find that OTP)
-            throw new OTPNotFoundException("Unable to find that OTP using this user ID: " + userOptional.get().getId() + ".High possibility user didn't request for the OTP number.");
-        } else if (!verifyOTPNumberResponse.isCorrect() && !verifyOTPNumberResponse.isHasError()) {
-            // Incorrect, no error (Wrong OTP/Secure keyword)
-            throw new WrongOTPException("Wrong OTP/Secure Keyword. Please try again. Mobile Number: " + verifyMobileNumberOTPRequest.getMobileNo());
-        } else if (!verifyOTPNumberResponse.isCorrect() && !verifyOTPNumberResponse.isHasError() && verifyOTPNumberResponse.getLimitRemaining() == -1) {
-            // Reached maximum OTP verify attempt
-            throw new MaximumOTPVerificationAttemptReachedException("Maximum attempt OTP verification reached. Please request new OTP again. Mobile number: " + verifyMobileNumberOTPRequest.getMobileNo());
-        }
-
-        // Correct, no error
-        Optional<UserAuthentication> userAuthenticationOptional = userAuthenticationRepoService.findByUserId(userOptional.get().getId());
-
-        if (userAuthenticationOptional.isEmpty()) {
-            throw new UsernameNotFoundException("Unable to find the User's Authentication using userId: " + userOptional.get().getId());
-        }
-
-        final UserDetails userDetails = myUserDetailsService.loadUserByUsername(userAuthenticationOptional.get().getUsername());
 
         final String jwt = jwtUtil.generateToken(userDetails);
 

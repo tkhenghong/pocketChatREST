@@ -130,7 +130,7 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
                 .id(unreadMessage.getId())
                 .conversationId(unreadMessage.getConversationId())
                 .count(unreadMessage.getCount())
-                .date(unreadMessage.getDate().getMillis())
+                .date(unreadMessage.getDate())
                 .lastMessage(unreadMessage.getLastMessage())
                 .userId(unreadMessage.getUserId())
                 .build();

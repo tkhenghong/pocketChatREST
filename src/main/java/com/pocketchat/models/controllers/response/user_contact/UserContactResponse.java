@@ -1,5 +1,6 @@
 package com.pocketchat.models.controllers.response.user_contact;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class UserContactResponse {
@@ -18,13 +19,13 @@ public class UserContactResponse {
 
     private String mobileNo;
 
-    private long lastSeenDate;
+    private LocalDateTime lastSeenDate;
 
     private boolean block;
 
     private String multimediaId;
 
-    UserContactResponse(String id, String displayName, String realName, String about, List<String> userIds, String userId, String mobileNo, long lastSeenDate, boolean block, String multimediaId) {
+    UserContactResponse(String id, String displayName, String realName, String about, List<String> userIds, String userId, String mobileNo, LocalDateTime lastSeenDate, boolean block, String multimediaId) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -69,7 +70,7 @@ public class UserContactResponse {
         return this.mobileNo;
     }
 
-    public long getLastSeenDate() {
+    public LocalDateTime getLastSeenDate() {
         return this.lastSeenDate;
     }
 
@@ -109,7 +110,7 @@ public class UserContactResponse {
         this.mobileNo = mobileNo;
     }
 
-    public void setLastSeenDate(long lastSeenDate) {
+    public void setLastSeenDate(LocalDateTime lastSeenDate) {
         this.lastSeenDate = lastSeenDate;
     }
 
@@ -148,7 +149,10 @@ public class UserContactResponse {
         final Object this$mobileNo = this.getMobileNo();
         final Object other$mobileNo = other.getMobileNo();
         if (this$mobileNo == null ? other$mobileNo != null : !this$mobileNo.equals(other$mobileNo)) return false;
-        if (this.getLastSeenDate() != other.getLastSeenDate()) return false;
+        final Object this$lastSeenDate = this.getLastSeenDate();
+        final Object other$lastSeenDate = other.getLastSeenDate();
+        if (this$lastSeenDate == null ? other$lastSeenDate != null : !this$lastSeenDate.equals(other$lastSeenDate))
+            return false;
         if (this.isBlock() != other.isBlock()) return false;
         final Object this$multimediaId = this.getMultimediaId();
         final Object other$multimediaId = other.getMultimediaId();
@@ -178,8 +182,8 @@ public class UserContactResponse {
         result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
         final Object $mobileNo = this.getMobileNo();
         result = result * PRIME + ($mobileNo == null ? 43 : $mobileNo.hashCode());
-        final long $lastSeenDate = this.getLastSeenDate();
-        result = result * PRIME + (int) ($lastSeenDate >>> 32 ^ $lastSeenDate);
+        final Object $lastSeenDate = this.getLastSeenDate();
+        result = result * PRIME + ($lastSeenDate == null ? 43 : $lastSeenDate.hashCode());
         result = result * PRIME + (this.isBlock() ? 79 : 97);
         final Object $multimediaId = this.getMultimediaId();
         result = result * PRIME + ($multimediaId == null ? 43 : $multimediaId.hashCode());
@@ -198,7 +202,7 @@ public class UserContactResponse {
         private List<String> userIds;
         private String userId;
         private String mobileNo;
-        private long lastSeenDate;
+        private LocalDateTime lastSeenDate;
         private boolean block;
         private String multimediaId;
 
@@ -240,7 +244,7 @@ public class UserContactResponse {
             return this;
         }
 
-        public UserContactResponse.UserContactResponseBuilder lastSeenDate(long lastSeenDate) {
+        public UserContactResponse.UserContactResponseBuilder lastSeenDate(LocalDateTime lastSeenDate) {
             this.lastSeenDate = lastSeenDate;
             return this;
         }

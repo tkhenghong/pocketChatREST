@@ -1,9 +1,8 @@
 package com.pocketchat.models.controllers.request.unread_message;
 
-import org.joda.time.DateTime;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 public class UpdateUnreadMessageRequest {
 
@@ -18,11 +17,11 @@ public class UpdateUnreadMessageRequest {
     private String lastMessage;
 
     @NotNull
-    private DateTime date;
+    private LocalDateTime date;
 
     private Integer count;
 
-    UpdateUnreadMessageRequest(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull DateTime date, Integer count) {
+    UpdateUnreadMessageRequest(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull LocalDateTime date, Integer count) {
         this.id = id;
         this.conversationId = conversationId;
         this.userId = userId;
@@ -51,7 +50,7 @@ public class UpdateUnreadMessageRequest {
         return this.lastMessage;
     }
 
-    public @NotNull DateTime getDate() {
+    public @NotNull LocalDateTime getDate() {
         return this.date;
     }
 
@@ -75,7 +74,7 @@ public class UpdateUnreadMessageRequest {
         this.lastMessage = lastMessage;
     }
 
-    public void setDate(@NotNull DateTime date) {
+    public void setDate(@NotNull LocalDateTime date) {
         this.date = date;
     }
 
@@ -143,7 +142,7 @@ public class UpdateUnreadMessageRequest {
         private @NotBlank String conversationId;
         private @NotBlank String userId;
         private String lastMessage;
-        private @NotNull DateTime date;
+        private @NotNull LocalDateTime date;
         private Integer count;
 
         UpdateUnreadMessageRequestBuilder() {
@@ -169,7 +168,7 @@ public class UpdateUnreadMessageRequest {
             return this;
         }
 
-        public UpdateUnreadMessageRequest.UpdateUnreadMessageRequestBuilder date(@NotNull DateTime date) {
+        public UpdateUnreadMessageRequest.UpdateUnreadMessageRequestBuilder date(@NotNull LocalDateTime date) {
             this.date = date;
             return this;
         }

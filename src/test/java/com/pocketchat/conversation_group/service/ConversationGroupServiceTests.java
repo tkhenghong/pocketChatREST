@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -95,10 +96,10 @@ public class ConversationGroupServiceTests {
                 .name(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(new DateTime())
+                .createdDate(LocalDateTime.now())
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
-                .notificationExpireDate(new DateTime())
+                .notificationExpireDate(LocalDateTime.now())
                 .block(false)
                 .build();
     }
@@ -113,7 +114,7 @@ public class ConversationGroupServiceTests {
                 .multimediaId(UUID.randomUUID().toString())
                 .mobileNo(UUID.randomUUID().toString())
                 .about(UUID.randomUUID().toString())
-                .lastSeenDate(new DateTime())
+                .lastSeenDate(LocalDateTime.now())
                 .block(false)
                 .build();
     }
@@ -126,10 +127,10 @@ public class ConversationGroupServiceTests {
                 .name(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(new DateTime())
+                .createdDate(LocalDateTime.now())
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
-                .notificationExpireDate(new DateTime())
+                .notificationExpireDate(LocalDateTime.now())
                 .block(false)
                 .build();
     }

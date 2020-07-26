@@ -1,16 +1,16 @@
 package com.pocketchat.models.otp;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 
 public class OTP {
     private String userId;
     private Integer otp;
     private String keyword;
     private Integer length;
-    private DateTime otpExpirationDateTime;
+    private LocalDateTime otpExpirationDateTime;
     private Integer verifyAttempt;
 
-    OTP(String userId, Integer otp, String keyword, Integer length, DateTime otpExpirationDateTime, Integer verifyAttempt) {
+    OTP(String userId, Integer otp, String keyword, Integer length, LocalDateTime otpExpirationDateTime, Integer verifyAttempt) {
         this.userId = userId;
         this.otp = otp;
         this.keyword = keyword;
@@ -22,7 +22,6 @@ public class OTP {
     public static OTPBuilder builder() {
         return new OTPBuilder();
     }
-
 
     public String getUserId() {
         return this.userId;
@@ -40,7 +39,7 @@ public class OTP {
         return this.length;
     }
 
-    public DateTime getOtpExpirationDateTime() {
+    public LocalDateTime getOtpExpirationDateTime() {
         return this.otpExpirationDateTime;
     }
 
@@ -64,7 +63,7 @@ public class OTP {
         this.length = length;
     }
 
-    public void setOtpExpirationDateTime(DateTime otpExpirationDateTime) {
+    public void setOtpExpirationDateTime(LocalDateTime otpExpirationDateTime) {
         this.otpExpirationDateTime = otpExpirationDateTime;
     }
 
@@ -131,7 +130,7 @@ public class OTP {
         private Integer otp;
         private String keyword;
         private Integer length;
-        private DateTime otpExpirationDateTime;
+        private LocalDateTime otpExpirationDateTime;
         private Integer verifyAttempt;
 
         OTPBuilder() {
@@ -157,7 +156,7 @@ public class OTP {
             return this;
         }
 
-        public OTP.OTPBuilder otpExpirationDateTime(DateTime otpExpirationDateTime) {
+        public OTP.OTPBuilder otpExpirationDateTime(LocalDateTime otpExpirationDateTime) {
             this.otpExpirationDateTime = otpExpirationDateTime;
             return this;
         }

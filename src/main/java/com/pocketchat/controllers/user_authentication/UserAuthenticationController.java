@@ -26,15 +26,17 @@ public class UserAuthenticationController {
     }
 
     @PostMapping("/register/mobileNumber")
-    public PreVerifyMobileNumberOTPResponse registerUsingMobileNumber(RegisterUsingMobileNumberRequest registerUsingMobileNumberRequest) {
+    public PreVerifyMobileNumberOTPResponse registerUsingMobileNumber(@Valid @RequestBody RegisterUsingMobileNumberRequest registerUsingMobileNumberRequest) {
         return userAuthenticationService.registerUsingMobileNumber(registerUsingMobileNumberRequest);
     }
 
+    // Used for OTP on mobile phone (Step 1)
     @PostMapping("/mobileNumber/preAuthenticate")
     public PreVerifyMobileNumberOTPResponse preVerifyMobileNumber(@Valid @RequestBody PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest) {
         return userAuthenticationService.preVerifyMobileNumber(preVerifyMobileNumberOTPRequest);
     }
 
+    // Used for OTP on mobile phone (Step 2)
     @PostMapping("/mobileNumber/authenticate")
     public UserAuthenticationResponse mobileNumberAuthentication(@Valid @RequestBody VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
         return userAuthenticationService.verifyMobileNumberOTP(verifyMobileNumberOTPRequest);
@@ -48,26 +50,26 @@ public class UserAuthenticationController {
     // For testing only
     // Registration
     @PostMapping("/")
-    public UserAuthenticationResponse addUsernamePasswordAuthenticationRequest(@RequestBody UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest) {
+    public UserAuthenticationResponse addUsernamePasswordAuthenticationRequest(@Valid @RequestBody UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest) {
         return userAuthenticationService.addUsernamePasswordAuthenticationRequest(usernamePasswordUserAuthenticationRequest);
     }
 
     // NOT RELATED TO POCKETCHAT
     @PostMapping("/request/mobileNumber")
-    public OTPResponse requestToAuthenticateWithMobileNo(@RequestBody MobileNoUserAuthenticationRequest mobileNoUserAuthenticationRequest) {
+    public OTPResponse requestToAuthenticateWithMobileNo(@Valid @RequestBody MobileNoUserAuthenticationRequest mobileNoUserAuthenticationRequest) {
         return userAuthenticationService.requestToAuthenticateWithMobileNo(mobileNoUserAuthenticationRequest);
     }
 
     // NOT RELATED TO POCKETCHAT
     @PostMapping("/request/emailAddress")
-    public OTPResponse requestToAuthenticateWithEmailAddress(@RequestBody EmailAddressUserAuthenticationRequest emailAddressUserAuthenticationRequest) {
+    public OTPResponse requestToAuthenticateWithEmailAddress(@Valid @RequestBody EmailAddressUserAuthenticationRequest emailAddressUserAuthenticationRequest) {
         return userAuthenticationService.requestToAuthenticateWithEmailAddress(emailAddressUserAuthenticationRequest);
     }
 
     // For testing only
     // Login
     @PostMapping("/usernamePassword")
-    public UserAuthenticationResponse usernamePasswordAuthentication(@RequestBody UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest) {
+    public UserAuthenticationResponse usernamePasswordAuthentication(@Valid @RequestBody UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest) {
         return userAuthenticationService.authenticateUsingUsernamePassword(usernamePasswordUserAuthenticationRequest);
     }
 }

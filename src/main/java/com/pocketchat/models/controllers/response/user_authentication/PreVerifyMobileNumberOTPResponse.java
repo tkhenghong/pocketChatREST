@@ -1,9 +1,8 @@
 package com.pocketchat.models.controllers.response.user_authentication;
 
-import org.joda.time.DateTime;
-
+import java.time.LocalDateTime;
 public class PreVerifyMobileNumberOTPResponse {
-    private DateTime tokenExpiryTime;
+    private LocalDateTime tokenExpiryTime;
 
     private String mobileNumber;
 
@@ -11,7 +10,7 @@ public class PreVerifyMobileNumberOTPResponse {
 
     private String secureKeyword;
 
-    PreVerifyMobileNumberOTPResponse(DateTime tokenExpiryTime, String mobileNumber, String emailAddress, String secureKeyword) {
+    PreVerifyMobileNumberOTPResponse(LocalDateTime tokenExpiryTime, String mobileNumber, String emailAddress, String secureKeyword) {
         this.tokenExpiryTime = tokenExpiryTime;
         this.mobileNumber = mobileNumber;
         this.emailAddress = emailAddress;
@@ -23,7 +22,7 @@ public class PreVerifyMobileNumberOTPResponse {
     }
 
 
-    public DateTime getTokenExpiryTime() {
+    public LocalDateTime getTokenExpiryTime() {
         return this.tokenExpiryTime;
     }
 
@@ -39,7 +38,7 @@ public class PreVerifyMobileNumberOTPResponse {
         return this.secureKeyword;
     }
 
-    public void setTokenExpiryTime(DateTime tokenExpiryTime) {
+    public void setTokenExpiryTime(LocalDateTime tokenExpiryTime) {
         this.tokenExpiryTime = tokenExpiryTime;
     }
 
@@ -103,7 +102,7 @@ public class PreVerifyMobileNumberOTPResponse {
     }
 
     public static class PreVerifyMobileNumberOTPResponseBuilder {
-        private DateTime tokenExpiryTime;
+        private LocalDateTime tokenExpiryTime;
         private String mobileNumber;
         private String emailAddress;
         private String secureKeyword;
@@ -111,7 +110,7 @@ public class PreVerifyMobileNumberOTPResponse {
         PreVerifyMobileNumberOTPResponseBuilder() {
         }
 
-        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder tokenExpiryTime(DateTime tokenExpiryTime) {
+        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder tokenExpiryTime(LocalDateTime tokenExpiryTime) {
             this.tokenExpiryTime = tokenExpiryTime;
             return this;
         }

@@ -1,11 +1,10 @@
 package com.pocketchat.models.controllers.request.user_contact;
 
-import org.joda.time.DateTime;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CreateUserContactRequest {
@@ -30,13 +29,13 @@ public class CreateUserContactRequest {
     @NotBlank
     private String mobileNo;
 
-    private DateTime lastSeenDate;
+    private LocalDateTime lastSeenDate;
 
     private boolean block;
 
     private String multimediaId;
 
-    CreateUserContactRequest(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, DateTime lastSeenDate, boolean block, String multimediaId) {
+    CreateUserContactRequest(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, LocalDateTime lastSeenDate, boolean block, String multimediaId) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -81,7 +80,7 @@ public class CreateUserContactRequest {
         return this.mobileNo;
     }
 
-    public DateTime getLastSeenDate() {
+    public LocalDateTime getLastSeenDate() {
         return this.lastSeenDate;
     }
 
@@ -121,7 +120,7 @@ public class CreateUserContactRequest {
         this.mobileNo = mobileNo;
     }
 
-    public void setLastSeenDate(DateTime lastSeenDate) {
+    public void setLastSeenDate(LocalDateTime lastSeenDate) {
         this.lastSeenDate = lastSeenDate;
     }
 
@@ -214,7 +213,7 @@ public class CreateUserContactRequest {
         private @Valid @NotEmpty @Size(min = 1) List<String> userIds;
         private String userId;
         private @NotBlank String mobileNo;
-        private DateTime lastSeenDate;
+        private LocalDateTime lastSeenDate;
         private boolean block;
         private String multimediaId;
 
@@ -256,7 +255,7 @@ public class CreateUserContactRequest {
             return this;
         }
 
-        public CreateUserContactRequest.CreateUserContactRequestBuilder lastSeenDate(DateTime lastSeenDate) {
+        public CreateUserContactRequest.CreateUserContactRequestBuilder lastSeenDate(LocalDateTime lastSeenDate) {
             this.lastSeenDate = lastSeenDate;
             return this;
         }

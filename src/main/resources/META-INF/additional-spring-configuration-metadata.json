@@ -66,11 +66,6 @@
       "description": "Enable debug for the Email service."
     },
     {
-      "name": "server.otp.length",
-      "type": "java.lang.String",
-      "description": "Length of the OTP password of PocketChat in verification."
-    },
-    {
       "name": "server.otp.alive.minutes",
       "type": "java.lang.String",
       "description": "OTP alive minutes(The current generated ones)."

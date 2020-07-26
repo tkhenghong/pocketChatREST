@@ -15,12 +15,13 @@ import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundExceptio
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.user_contact.UserContactService;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,10 +54,10 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     public ConversationGroup addConversation(CreateConversationGroupRequest createConversationGroupRequest) {
         UserContact creatorUserContact = userContactService.getUserContact(createConversationGroupRequest.getCreatorUserId());
 
-        createConversationGroupRequest.setCreatedDate(new DateTime());
+        createConversationGroupRequest.setCreatedDate(LocalDateTime.now());
 
         ConversationGroup conversationGroup = createConversationGroupRequestToConversationGroupMapper(createConversationGroupRequest);
-        String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + " on " + createConversationGroupRequest.getCreatedDate().toString("dd/mm/yyyy HH:mm:ss");
+        String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + " on " + createConversationGroupRequest.getCreatedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         switch (conversationGroup.getConversationGroupType()) {
             case Group:
             case Broadcast:
@@ -143,10 +144,10 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         CreateChatMessageRequest createChatMessageRequest = CreateChatMessageRequest.builder()
                 .type("Text")
                 .conversationId(conversationGroup.getId())
-                .createdTime(new DateTime())
+                .createdTime(LocalDateTime.now())
                 .messageContent(message)
                 .status("Sent")
-                .sentTime(new DateTime())
+                .sentTime(LocalDateTime.now())
                 .build();
 
         ChatMessage chatMessage = chatMessageService.addChatMessage(createChatMessageRequest);
@@ -197,12 +198,12 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .id(conversationGroup.getId())
                 .adminMemberIds(conversationGroup.getAdminMemberIds())
                 .block(conversationGroup.isBlock())
-                .createdDate(conversationGroup.getCreatedDate().getMillis())
+                .createdDate(conversationGroup.getCreatedDate())
                 .creatorUserId(conversationGroup.getCreatorUserId())
                 .description(conversationGroup.getDescription())
                 .memberIds(conversationGroup.getMemberIds())
                 .name(conversationGroup.getName())
-                .notificationExpireDate(conversationGroup.getNotificationExpireDate().getMillis())
+                .notificationExpireDate(conversationGroup.getNotificationExpireDate())
                 .conversationGroupType(conversationGroup.getConversationGroupType())
                 .build();
     }

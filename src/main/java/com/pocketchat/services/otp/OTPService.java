@@ -6,10 +6,10 @@ import com.google.common.cache.LoadingCache;
 import com.pocketchat.models.otp.GenerateOTPRequest;
 import com.pocketchat.models.otp.OTP;
 import com.pocketchat.models.otp.VerifyOTPNumberResponse;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -40,13 +40,13 @@ public class OTPService {
 
     public OTP generateOtpNumber(GenerateOTPRequest generateOTPRequest) {
         Random random = new Random();
-        Integer otpNumber = generatePowerNumber(1, 10, generateOTPRequest.getOtpLength()) + random.nextInt(generatePowerNumber(9, 10, generateOTPRequest.getOtpLength()));
+        Integer otpNumber = random.nextInt((int) Math.pow(10, generateOTPRequest.getOtpLength()));
 
         return OTP.builder()
                 .userId(generateOTPRequest.getUserId())
                 .otp(otpNumber)
                 .keyword(generateRandomSecureKeyword())
-                .otpExpirationDateTime(new DateTime())
+                .otpExpirationDateTime(LocalDateTime.now().plusMinutes(maximumOTPAliveMinutes))
                 .verifyAttempt(0)
                 .length(generateOTPRequest.getOtpLength())
                 .build();
@@ -93,10 +93,6 @@ public class OTPService {
                     .limitRemaining(0)
                     .build();
         }
-    }
-
-    private Integer generatePowerNumber(Integer number, Integer baseNumber, Integer exponentNumber) {
-        return (int) (number * Math.pow(baseNumber, exponentNumber));
     }
 
     // https://www.baeldung.com/java-random-string#java8-alphabetic

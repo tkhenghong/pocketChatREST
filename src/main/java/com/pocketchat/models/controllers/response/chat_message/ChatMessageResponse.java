@@ -1,6 +1,6 @@
 package com.pocketchat.models.controllers.response.chat_message;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 
 public class ChatMessageResponse {
 
@@ -28,11 +28,11 @@ public class ChatMessageResponse {
 
     private String multimediaId;
 
-    private DateTime createdTime;
+    private LocalDateTime createdTime;
 
-    private DateTime sentTime;
+    private LocalDateTime sentTime;
 
-    ChatMessageResponse(String id, String conversationId, String senderId, String senderName, String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, String messageContent, String multimediaId, DateTime createdTime, DateTime sentTime) {
+    ChatMessageResponse(String id, String conversationId, String senderId, String senderName, String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, String messageContent, String multimediaId, LocalDateTime createdTime, LocalDateTime sentTime) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
@@ -49,8 +49,8 @@ public class ChatMessageResponse {
         this.sentTime = sentTime;
     }
 
-    public static MessageResponseBuilder builder() {
-        return new MessageResponseBuilder();
+    public static ChatMessageResponseBuilder builder() {
+        return new ChatMessageResponseBuilder();
     }
 
     public String getId() {
@@ -101,11 +101,11 @@ public class ChatMessageResponse {
         return this.multimediaId;
     }
 
-    public DateTime getCreatedTime() {
+    public LocalDateTime getCreatedTime() {
         return this.createdTime;
     }
 
-    public DateTime getSentTime() {
+    public LocalDateTime getSentTime() {
         return this.sentTime;
     }
 
@@ -157,11 +157,11 @@ public class ChatMessageResponse {
         this.multimediaId = multimediaId;
     }
 
-    public void setCreatedTime(DateTime createdTime) {
+    public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
 
-    public void setSentTime(DateTime sentTime) {
+    public void setSentTime(LocalDateTime sentTime) {
         this.sentTime = sentTime;
     }
 
@@ -263,10 +263,10 @@ public class ChatMessageResponse {
     }
 
     public String toString() {
-        return "MessageResponse(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", receiverId=" + this.getReceiverId() + ", receiverName=" + this.getReceiverName() + ", receiverMobileNo=" + this.getReceiverMobileNo() + ", type=" + this.getType() + ", status=" + this.getStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
+        return "ChatMessageResponse(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", receiverId=" + this.getReceiverId() + ", receiverName=" + this.getReceiverName() + ", receiverMobileNo=" + this.getReceiverMobileNo() + ", type=" + this.getType() + ", status=" + this.getStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
     }
 
-    public static class MessageResponseBuilder {
+    public static class ChatMessageResponseBuilder {
         private String id;
         private String conversationId;
         private String senderId;
@@ -279,78 +279,78 @@ public class ChatMessageResponse {
         private String status;
         private String messageContent;
         private String multimediaId;
-        private DateTime createdTime;
-        private DateTime sentTime;
+        private LocalDateTime createdTime;
+        private LocalDateTime sentTime;
 
-        MessageResponseBuilder() {
+        ChatMessageResponseBuilder() {
         }
 
-        public ChatMessageResponse.MessageResponseBuilder id(String id) {
+        public ChatMessageResponse.ChatMessageResponseBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder conversationId(String conversationId) {
+        public ChatMessageResponse.ChatMessageResponseBuilder conversationId(String conversationId) {
             this.conversationId = conversationId;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder senderId(String senderId) {
+        public ChatMessageResponse.ChatMessageResponseBuilder senderId(String senderId) {
             this.senderId = senderId;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder senderName(String senderName) {
+        public ChatMessageResponse.ChatMessageResponseBuilder senderName(String senderName) {
             this.senderName = senderName;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder senderMobileNo(String senderMobileNo) {
+        public ChatMessageResponse.ChatMessageResponseBuilder senderMobileNo(String senderMobileNo) {
             this.senderMobileNo = senderMobileNo;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder receiverId(String receiverId) {
+        public ChatMessageResponse.ChatMessageResponseBuilder receiverId(String receiverId) {
             this.receiverId = receiverId;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder receiverName(String receiverName) {
+        public ChatMessageResponse.ChatMessageResponseBuilder receiverName(String receiverName) {
             this.receiverName = receiverName;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder receiverMobileNo(String receiverMobileNo) {
+        public ChatMessageResponse.ChatMessageResponseBuilder receiverMobileNo(String receiverMobileNo) {
             this.receiverMobileNo = receiverMobileNo;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder type(String type) {
+        public ChatMessageResponse.ChatMessageResponseBuilder type(String type) {
             this.type = type;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder status(String status) {
+        public ChatMessageResponse.ChatMessageResponseBuilder status(String status) {
             this.status = status;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder messageContent(String messageContent) {
+        public ChatMessageResponse.ChatMessageResponseBuilder messageContent(String messageContent) {
             this.messageContent = messageContent;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder multimediaId(String multimediaId) {
+        public ChatMessageResponse.ChatMessageResponseBuilder multimediaId(String multimediaId) {
             this.multimediaId = multimediaId;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder createdTime(DateTime createdTime) {
+        public ChatMessageResponse.ChatMessageResponseBuilder createdTime(LocalDateTime createdTime) {
             this.createdTime = createdTime;
             return this;
         }
 
-        public ChatMessageResponse.MessageResponseBuilder sentTime(DateTime sentTime) {
+        public ChatMessageResponse.ChatMessageResponseBuilder sentTime(LocalDateTime sentTime) {
             this.sentTime = sentTime;
             return this;
         }
@@ -360,7 +360,7 @@ public class ChatMessageResponse {
         }
 
         public String toString() {
-            return "MessageResponse.MessageResponseBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", receiverId=" + this.receiverId + ", receiverName=" + this.receiverName + ", receiverMobileNo=" + this.receiverMobileNo + ", type=" + this.type + ", status=" + this.status + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
+            return "ChatMessageResponse.ChatMessageResponseBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", receiverId=" + this.receiverId + ", receiverName=" + this.receiverName + ", receiverMobileNo=" + this.receiverMobileNo + ", type=" + this.type + ", status=" + this.status + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
         }
     }
 }

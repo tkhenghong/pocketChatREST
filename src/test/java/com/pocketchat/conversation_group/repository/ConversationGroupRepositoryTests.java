@@ -5,19 +5,16 @@ import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoS
 import com.pocketchat.db.repositories.conversation_group.ConversationGroupRepository;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,10 +61,10 @@ public class ConversationGroupRepositoryTests {
                 .name(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(new DateTime())
+                .createdDate(LocalDateTime.now())
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
-                .notificationExpireDate(new DateTime())
+                .notificationExpireDate(LocalDateTime.now())
                 .block(false)
                 .build();
     }

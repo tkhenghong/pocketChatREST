@@ -1,11 +1,11 @@
 package com.pocketchat.models.controllers.response.user_authentication;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 
 public class OTPResponse {
-    private DateTime otpExpirationDateTime;
+    private LocalDateTime otpExpirationDateTime;
 
-    OTPResponse(DateTime otpExpirationDateTime) {
+    OTPResponse(LocalDateTime otpExpirationDateTime) {
         this.otpExpirationDateTime = otpExpirationDateTime;
     }
 
@@ -13,11 +13,11 @@ public class OTPResponse {
         return new OTPResponseBuilder();
     }
 
-    public DateTime getOtpExpirationDateTime() {
+    public LocalDateTime getOtpExpirationDateTime() {
         return this.otpExpirationDateTime;
     }
 
-    public void setOtpExpirationDateTime(DateTime otpExpirationDateTime) {
+    public void setOtpExpirationDateTime(LocalDateTime otpExpirationDateTime) {
         this.otpExpirationDateTime = otpExpirationDateTime;
     }
 
@@ -50,12 +50,12 @@ public class OTPResponse {
     }
 
     public static class OTPResponseBuilder {
-        private DateTime otpExpirationDateTime;
+        private LocalDateTime otpExpirationDateTime;
 
         OTPResponseBuilder() {
         }
 
-        public OTPResponse.OTPResponseBuilder otpExpirationDateTime(DateTime otpExpirationDateTime) {
+        public OTPResponse.OTPResponseBuilder otpExpirationDateTime(LocalDateTime otpExpirationDateTime) {
             this.otpExpirationDateTime = otpExpirationDateTime;
             return this;
         }

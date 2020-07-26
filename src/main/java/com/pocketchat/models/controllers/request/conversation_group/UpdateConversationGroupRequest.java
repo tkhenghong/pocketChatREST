@@ -1,12 +1,11 @@
 package com.pocketchat.models.controllers.request.conversation_group;
 
-import org.joda.time.DateTime;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class UpdateConversationGroupRequest {
@@ -16,7 +15,7 @@ public class UpdateConversationGroupRequest {
     private String creatorUserId;
 
     @NotNull
-    private DateTime createdDate;
+    private LocalDateTime createdDate;
 
     @NotBlank
     private String name;
@@ -38,9 +37,9 @@ public class UpdateConversationGroupRequest {
 
     private boolean block;
 
-    private DateTime notificationExpireDate;
+    private LocalDateTime notificationExpireDate;
 
-    UpdateConversationGroupRequest(String id, @NotBlank String creatorUserId, @NotNull DateTime createdDate, @NotBlank String name, @NotBlank String type, String description, @Valid @NotEmpty @Size(min = 1) List<String> memberIds, @Valid @NotEmpty @Size(min = 1) List<String> adminMemberIds, boolean block, DateTime notificationExpireDate) {
+    UpdateConversationGroupRequest(String id, @NotBlank String creatorUserId, @NotNull LocalDateTime createdDate, @NotBlank String name, @NotBlank String type, String description, @Valid @NotEmpty @Size(min = 1) List<String> memberIds, @Valid @NotEmpty @Size(min = 1) List<String> adminMemberIds, boolean block, LocalDateTime notificationExpireDate) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.createdDate = createdDate;
@@ -65,7 +64,7 @@ public class UpdateConversationGroupRequest {
         return this.creatorUserId;
     }
 
-    public @NotNull DateTime getCreatedDate() {
+    public @NotNull LocalDateTime getCreatedDate() {
         return this.createdDate;
     }
 
@@ -93,7 +92,7 @@ public class UpdateConversationGroupRequest {
         return this.block;
     }
 
-    public DateTime getNotificationExpireDate() {
+    public LocalDateTime getNotificationExpireDate() {
         return this.notificationExpireDate;
     }
 
@@ -105,7 +104,7 @@ public class UpdateConversationGroupRequest {
         this.creatorUserId = creatorUserId;
     }
 
-    public void setCreatedDate(@NotNull DateTime createdDate) {
+    public void setCreatedDate(@NotNull LocalDateTime createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -133,7 +132,7 @@ public class UpdateConversationGroupRequest {
         this.block = block;
     }
 
-    public void setNotificationExpireDate(DateTime notificationExpireDate) {
+    public void setNotificationExpireDate(LocalDateTime notificationExpireDate) {
         this.notificationExpireDate = notificationExpireDate;
     }
 
@@ -215,14 +214,14 @@ public class UpdateConversationGroupRequest {
     public static class UpdateConversationGroupRequestBuilder {
         private String id;
         private @NotBlank String creatorUserId;
-        private @NotNull DateTime createdDate;
+        private @NotNull LocalDateTime createdDate;
         private @NotBlank String name;
         private @NotBlank String type;
         private String description;
         private @Valid @NotEmpty @Size(min = 1) List<String> memberIds;
         private @Valid @NotEmpty @Size(min = 1) List<String> adminMemberIds;
         private boolean block;
-        private DateTime notificationExpireDate;
+        private LocalDateTime notificationExpireDate;
 
         UpdateConversationGroupRequestBuilder() {
         }
@@ -237,7 +236,7 @@ public class UpdateConversationGroupRequest {
             return this;
         }
 
-        public UpdateConversationGroupRequest.UpdateConversationGroupRequestBuilder createdDate(@NotNull DateTime createdDate) {
+        public UpdateConversationGroupRequest.UpdateConversationGroupRequestBuilder createdDate(@NotNull LocalDateTime createdDate) {
             this.createdDate = createdDate;
             return this;
         }
@@ -272,7 +271,7 @@ public class UpdateConversationGroupRequest {
             return this;
         }
 
-        public UpdateConversationGroupRequest.UpdateConversationGroupRequestBuilder notificationExpireDate(DateTime notificationExpireDate) {
+        public UpdateConversationGroupRequest.UpdateConversationGroupRequestBuilder notificationExpireDate(LocalDateTime notificationExpireDate) {
             this.notificationExpireDate = notificationExpireDate;
             return this;
         }
