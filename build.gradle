@@ -52,6 +52,7 @@ dependencies {
     implementation 'javax.validation:validation-api:2.0.1.Final' // Missing javax.validation in Spring Boot 2.3.0
     implementation 'com.twilio.sdk:twilio:7.50.0' // Send SMS, WhatsApp messages
     implementation 'org.apache.commons:commons-lang3' // For convert Exception's stack trace to string
+    implementation 'org.passay:passay:1.6.0' // Random secure password generator, validate changed passwords' strength
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

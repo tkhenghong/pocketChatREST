@@ -10,7 +10,7 @@ package com.pocketchat.services.kafka;
 //@Service
 //public class ConsumerImpl implements Consumer {
 //
-//    private final Logger logger = LoggerFactory.getLogger(Consumer.class);
+//    private final Logger logger = LoggerFactory.getLogger(this.class);
 //
 //    @Override
 //    @KafkaListener(topics = "test")

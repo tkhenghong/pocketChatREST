@@ -10,11 +10,13 @@ import com.pocketchat.models.otp.OTP;
 
 public interface UserAuthenticationService {
 
-    PreVerifyMobileNumberOTPResponse registerUsingMobileNumber(RegisterUsingMobileNumberRequest registerUsingMobileNumberRequest);
+    PreVerifyMobileNumberOTPResponse registerMobileNumber(RegisterUsingMobileNumberRequest registerUsingMobileNumberRequest);
 
-    PreVerifyMobileNumberOTPResponse preVerifyMobileNumber(PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest);
+    PreVerifyMobileNumberOTPResponse loginMobileNumber(PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest);
 
-    UserAuthenticationResponse verifyMobileNumberOTP(VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest);
+    UserAuthenticationResponse registerMobileNumberOTPVerification(VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest);
+
+    UserAuthenticationResponse loginMobileNumberOTPVerification(VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest);
 
     VerifyEmailAddressResponse requestVerifyEmailAddress(VerifyEmailAddressRequest verifyEmailADdressRequest);
 

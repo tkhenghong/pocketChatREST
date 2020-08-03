@@ -18,8 +18,7 @@ public class UserAuthentication {
     @NotBlank
     private String username;
 
-    @NotBlank
-    private String password;
+    private String password; // Can be null,
 
     private Collection<UserRole> userRoles;
 

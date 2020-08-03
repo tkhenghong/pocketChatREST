@@ -1,19 +1,20 @@
 package com.pocketchat.models.controllers.response.user_authentication;
 
 import java.time.LocalDateTime;
+
 public class PreVerifyMobileNumberOTPResponse {
     private LocalDateTime tokenExpiryTime;
 
-    private String mobileNumber;
+    private String maskedMobileNumber;
 
-    private String emailAddress;
+    private String maskedEmailAddress;
 
     private String secureKeyword;
 
-    PreVerifyMobileNumberOTPResponse(LocalDateTime tokenExpiryTime, String mobileNumber, String emailAddress, String secureKeyword) {
+    PreVerifyMobileNumberOTPResponse(LocalDateTime tokenExpiryTime, String maskedMobileNumber, String maskedEmailAddress, String secureKeyword) {
         this.tokenExpiryTime = tokenExpiryTime;
-        this.mobileNumber = mobileNumber;
-        this.emailAddress = emailAddress;
+        this.maskedMobileNumber = maskedMobileNumber;
+        this.maskedEmailAddress = maskedEmailAddress;
         this.secureKeyword = secureKeyword;
     }
 
@@ -21,17 +22,16 @@ public class PreVerifyMobileNumberOTPResponse {
         return new PreVerifyMobileNumberOTPResponseBuilder();
     }
 
-
     public LocalDateTime getTokenExpiryTime() {
         return this.tokenExpiryTime;
     }
 
-    public String getMobileNumber() {
-        return this.mobileNumber;
+    public String getMaskedMobileNumber() {
+        return this.maskedMobileNumber;
     }
 
-    public String getEmailAddress() {
-        return this.emailAddress;
+    public String getMaskedEmailAddress() {
+        return this.maskedEmailAddress;
     }
 
     public String getSecureKeyword() {
@@ -42,12 +42,12 @@ public class PreVerifyMobileNumberOTPResponse {
         this.tokenExpiryTime = tokenExpiryTime;
     }
 
-    public void setMobileNumber(String mobileNumber) {
-        this.mobileNumber = mobileNumber;
+    public void setMaskedMobileNumber(String maskedMobileNumber) {
+        this.maskedMobileNumber = maskedMobileNumber;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setMaskedEmailAddress(String maskedEmailAddress) {
+        this.maskedEmailAddress = maskedEmailAddress;
     }
 
     public void setSecureKeyword(String secureKeyword) {
@@ -64,13 +64,13 @@ public class PreVerifyMobileNumberOTPResponse {
         final Object other$tokenExpiryTime = other.getTokenExpiryTime();
         if (this$tokenExpiryTime == null ? other$tokenExpiryTime != null : !this$tokenExpiryTime.equals(other$tokenExpiryTime))
             return false;
-        final Object this$mobileNumber = this.getMobileNumber();
-        final Object other$mobileNumber = other.getMobileNumber();
-        if (this$mobileNumber == null ? other$mobileNumber != null : !this$mobileNumber.equals(other$mobileNumber))
+        final Object this$maskedMobileNumber = this.getMaskedMobileNumber();
+        final Object other$maskedMobileNumber = other.getMaskedMobileNumber();
+        if (this$maskedMobileNumber == null ? other$maskedMobileNumber != null : !this$maskedMobileNumber.equals(other$maskedMobileNumber))
             return false;
-        final Object this$emailAddress = this.getEmailAddress();
-        final Object other$emailAddress = other.getEmailAddress();
-        if (this$emailAddress == null ? other$emailAddress != null : !this$emailAddress.equals(other$emailAddress))
+        final Object this$maskedEmailAddress = this.getMaskedEmailAddress();
+        final Object other$maskedEmailAddress = other.getMaskedEmailAddress();
+        if (this$maskedEmailAddress == null ? other$maskedEmailAddress != null : !this$maskedEmailAddress.equals(other$maskedEmailAddress))
             return false;
         final Object this$secureKeyword = this.getSecureKeyword();
         final Object other$secureKeyword = other.getSecureKeyword();
@@ -88,23 +88,23 @@ public class PreVerifyMobileNumberOTPResponse {
         int result = 1;
         final Object $tokenExpiryTime = this.getTokenExpiryTime();
         result = result * PRIME + ($tokenExpiryTime == null ? 43 : $tokenExpiryTime.hashCode());
-        final Object $mobileNumber = this.getMobileNumber();
-        result = result * PRIME + ($mobileNumber == null ? 43 : $mobileNumber.hashCode());
-        final Object $emailAddress = this.getEmailAddress();
-        result = result * PRIME + ($emailAddress == null ? 43 : $emailAddress.hashCode());
+        final Object $maskedMobileNumber = this.getMaskedMobileNumber();
+        result = result * PRIME + ($maskedMobileNumber == null ? 43 : $maskedMobileNumber.hashCode());
+        final Object $maskedEmailAddress = this.getMaskedEmailAddress();
+        result = result * PRIME + ($maskedEmailAddress == null ? 43 : $maskedEmailAddress.hashCode());
         final Object $secureKeyword = this.getSecureKeyword();
         result = result * PRIME + ($secureKeyword == null ? 43 : $secureKeyword.hashCode());
         return result;
     }
 
     public String toString() {
-        return "PreVerifyMobileNumberOTPResponse(tokenExpiryTime=" + this.getTokenExpiryTime() + ", mobileNumber=" + this.getMobileNumber() + ", emailAddress=" + this.getEmailAddress() + ", secureKeyword=" + this.getSecureKeyword() + ")";
+        return "PreVerifyMobileNumberOTPResponse(tokenExpiryTime=" + this.getTokenExpiryTime() + ", maskedMobileNumber=" + this.getMaskedMobileNumber() + ", maskedEmailAddress=" + this.getMaskedEmailAddress() + ", secureKeyword=" + this.getSecureKeyword() + ")";
     }
 
     public static class PreVerifyMobileNumberOTPResponseBuilder {
         private LocalDateTime tokenExpiryTime;
-        private String mobileNumber;
-        private String emailAddress;
+        private String maskedMobileNumber;
+        private String maskedEmailAddress;
         private String secureKeyword;
 
         PreVerifyMobileNumberOTPResponseBuilder() {
@@ -115,13 +115,13 @@ public class PreVerifyMobileNumberOTPResponse {
             return this;
         }
 
-        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder mobileNumber(String mobileNumber) {
-            this.mobileNumber = mobileNumber;
+        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder maskedMobileNumber(String maskedMobileNumber) {
+            this.maskedMobileNumber = maskedMobileNumber;
             return this;
         }
 
-        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder emailAddress(String emailAddress) {
-            this.emailAddress = emailAddress;
+        public PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder maskedEmailAddress(String maskedEmailAddress) {
+            this.maskedEmailAddress = maskedEmailAddress;
             return this;
         }
 
@@ -131,11 +131,11 @@ public class PreVerifyMobileNumberOTPResponse {
         }
 
         public PreVerifyMobileNumberOTPResponse build() {
-            return new PreVerifyMobileNumberOTPResponse(tokenExpiryTime, mobileNumber, emailAddress, secureKeyword);
+            return new PreVerifyMobileNumberOTPResponse(tokenExpiryTime, maskedMobileNumber, maskedEmailAddress, secureKeyword);
         }
 
         public String toString() {
-            return "PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder(tokenExpiryTime=" + this.tokenExpiryTime + ", mobileNumber=" + this.mobileNumber + ", emailAddress=" + this.emailAddress + ", secureKeyword=" + this.secureKeyword + ")";
+            return "PreVerifyMobileNumberOTPResponse.PreVerifyMobileNumberOTPResponseBuilder(tokenExpiryTime=" + this.tokenExpiryTime + ", maskedMobileNumber=" + this.maskedMobileNumber + ", maskedEmailAddress=" + this.maskedEmailAddress + ", secureKeyword=" + this.secureKeyword + ")";
         }
     }
 }

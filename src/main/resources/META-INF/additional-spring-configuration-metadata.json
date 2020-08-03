@@ -71,7 +71,7 @@
       "description": "OTP alive minutes(The current generated ones)."
     },
     {
-      "name": "server.otp.maximum.alive.minutes",
+      "name": "server.otp.maximumAliveMinutes",
       "type": "java.lang.String",
       "description": "Maximum alive minutes that all OTPs in the server. (OTPs are stored temporarily using Google LoadingCache). It will never be stored in the DB of the application (Best practice)."
     },
@@ -86,7 +86,7 @@
       "description": "Password for accessing RabbitMQ client in your machine."
     },
     {
-      "name": "server.otp.maximum.retry.attempt",
+      "name": "server.otp.maximumRetryAttempt",
       "type": "java.lang.String",
       "description": "All OTPs maximum retry attempt. If maximum attempt reached, the OTP will be disabled and the frontend have to request a new OTP again."
     },
@@ -94,6 +94,46 @@
       "name": "server.otp.length",
       "type": "java.lang.String",
       "description": "Length of the One Time Password for verification."
+    },
+    {
+      "name": "password.lower.case.character.length",
+      "type": "java.lang.String",
+      "description": "Minimum number of lower case characters in the password."
+    },
+    {
+      "name": "password.upper.case.character.length",
+      "type": "java.lang.String",
+      "description": "Minimum number of upper case characters in the password."
+    },
+    {
+      "name": "password.digit.number.character.length",
+      "type": "java.lang.String",
+      "description": "Minimum number of digit number in the password."
+    },
+    {
+      "name": "password.special.character.length",
+      "type": "java.lang.String",
+      "description": "Minimum number of special characters in the password."
+    },
+    {
+      "name": "password.minimum.length",
+      "type": "java.lang.String",
+      "description": "Minimum number of characters in the password."
+    },
+    {
+      "name": "encryption.aes.cipher.algorithm.with.padding",
+      "type": "java.lang.String",
+      "description": "Algorithm for the cipher to be used for creating AES ."
+    },
+    {
+      "name": "encryption.rsa.cipher.algorithm.with.padding",
+      "type": "java.lang.String",
+      "description": "Description for encryption.rsa.cipher.algorithm.with.padding."
+    },
+    {
+      "name": "encryption.rsa.cipher.key.size",
+      "type": "java.lang.String",
+      "description": "Size of the key made for every RSA key pair. The longer it is, the more seucre it gets, but longer it gets computed."
     }
   ]
 }

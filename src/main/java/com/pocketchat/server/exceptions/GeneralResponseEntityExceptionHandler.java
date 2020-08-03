@@ -3,12 +3,14 @@ package com.pocketchat.server.exceptions;
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.country_code.CountryCodeNotFoundException;
+import com.pocketchat.server.exceptions.encryption.EncryptionErrorException;
 import com.pocketchat.server.exceptions.general.StringEmptyException;
 import com.pocketchat.server.exceptions.mobile_number.MobileNumberNotFoundException;
 import com.pocketchat.server.exceptions.multimedia.MultimediaNotFoundException;
 import com.pocketchat.server.exceptions.otp.MaximumOTPVerificationAttemptReachedException;
 import com.pocketchat.server.exceptions.otp.OTPNotFoundException;
 import com.pocketchat.server.exceptions.otp.WrongOTPException;
+import com.pocketchat.server.exceptions.password.PasswordPolicyNotMeetException;
 import com.pocketchat.server.exceptions.settings.SettingsNotFoundException;
 import com.pocketchat.server.exceptions.unread_message.UnreadMessageNotFoundException;
 import com.pocketchat.server.exceptions.user.UserGoogleAccountIsAlreadyRegisteredException;
@@ -87,6 +89,22 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
     })
     public ResponseEntity<ExceptionResponse> handleTooManyRequestsExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    // Handle Bad Request Exceptions
+    @ExceptionHandler({
+            PasswordPolicyNotMeetException.class
+    })
+    public ResponseEntity<ExceptionResponse> handleBadRequestsExceptions(Exception ex, WebRequest request) {
+        return generateResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
+    }
+
+    // Handle Bad Request Exceptions
+    @ExceptionHandler({
+            EncryptionErrorException.class
+    })
+    public ResponseEntity<ExceptionResponse> handleServerInternalErrorExceptions(Exception ex, WebRequest request) {
+        return generateResponseEntity(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     // Handle any MethodArgumentNotValidException, objects that have been labelled @NotNull, @NotBlank, @Valid etc...

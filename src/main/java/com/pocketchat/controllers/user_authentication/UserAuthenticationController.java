@@ -26,20 +26,23 @@ public class UserAuthenticationController {
     }
 
     @PostMapping("/register/mobileNumber")
-    public PreVerifyMobileNumberOTPResponse registerUsingMobileNumber(@Valid @RequestBody RegisterUsingMobileNumberRequest registerUsingMobileNumberRequest) {
-        return userAuthenticationService.registerUsingMobileNumber(registerUsingMobileNumberRequest);
+    public PreVerifyMobileNumberOTPResponse registerMobileNumber(@Valid @RequestBody RegisterUsingMobileNumberRequest registerUsingMobileNumberRequest) {
+        return userAuthenticationService.registerMobileNumber(registerUsingMobileNumberRequest);
     }
 
-    // Used for OTP on mobile phone (Step 1)
-    @PostMapping("/mobileNumber/preAuthenticate")
-    public PreVerifyMobileNumberOTPResponse preVerifyMobileNumber(@Valid @RequestBody PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest) {
-        return userAuthenticationService.preVerifyMobileNumber(preVerifyMobileNumberOTPRequest);
+    @PostMapping("/register/mobileNumber/authenticate")
+    public UserAuthenticationResponse registerMobileNumberOTPVerification(@Valid @RequestBody VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
+        return userAuthenticationService.registerMobileNumberOTPVerification(verifyMobileNumberOTPRequest);
     }
 
-    // Used for OTP on mobile phone (Step 2)
-    @PostMapping("/mobileNumber/authenticate")
-    public UserAuthenticationResponse mobileNumberAuthentication(@Valid @RequestBody VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
-        return userAuthenticationService.verifyMobileNumberOTP(verifyMobileNumberOTPRequest);
+    @PostMapping("/login/mobileNumber")
+    public PreVerifyMobileNumberOTPResponse loginMobileNumber(@Valid @RequestBody PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest) {
+        return userAuthenticationService.loginMobileNumber(preVerifyMobileNumberOTPRequest);
+    }
+
+    @PostMapping("/login/mobileNumber/authenticate")
+    public UserAuthenticationResponse loginMobileNumberOTPVerification(@Valid @RequestBody VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
+        return userAuthenticationService.loginMobileNumberOTPVerification(verifyMobileNumberOTPRequest);
     }
 
     @PostMapping("/emailAddress/preVerify")
