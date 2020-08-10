@@ -1,26 +1,41 @@
 package com.pocketchat.services.user;
 
 import com.pocketchat.db.models.user.User;
+import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.models.controllers.request.user.CreateUserRequest;
 import com.pocketchat.models.controllers.request.user.UpdateUserRequest;
 import com.pocketchat.models.controllers.response.user.UserResponse;
 import com.pocketchat.server.exceptions.user.UserGoogleAccountIsAlreadyRegisteredException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
+import com.pocketchat.services.user_authentication.UserAuthenticationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final UserRepoService userRepoService;
 
+    private final UserAuthenticationService userAuthenticationService;
+
     @Autowired
-    public UserServiceImpl(UserRepoService userRepoService) {
+    public UserServiceImpl(UserRepoService userRepoService, UserAuthenticationService userAuthenticationService) {
         this.userRepoService = userRepoService;
+        this.userAuthenticationService = userAuthenticationService;
     }
 
     @Override
@@ -30,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> userOptional = userRepoService.findByGoogleAccountId(user.getGoogleAccountId());
         if (userOptional.isPresent()) {
-            throw new UserGoogleAccountIsAlreadyRegisteredException("Google Account has already registered. Google Account ID: " + user.getGoogleAccountId());
+            throw new UserGoogleAccountIsAlreadyRegisteredException("Google Account has been already registered. Google Account ID: " + user.getGoogleAccountId());
         }
 
         return userRepoService.save(user); // userOptional.isPresent() ? userOptional.get() : userRepoService.save(user)
@@ -39,7 +54,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User editUser(UpdateUserRequest updateUserRequest) {
-        getUser(updateUserRequest.getId());
+        UserAuthentication userAuthentication = getUserAuthentication();
+        getUser(userAuthentication.getId());
         return userRepoService.save(updateUserRequestToUserMapper(updateUserRequest));
     }
 
@@ -52,10 +68,37 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUser(String userId) {
         Optional<User> userOptional = userRepoService.findById(userId);
-        if (!userOptional.isPresent()) {
-            throw new UserNotFoundException("User not found by using userId: " + userId);
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("Unable to find the User by using userId: " + userId);
         }
         return userOptional.get();
+    }
+
+    @Override
+    public User getOwnUser() {
+        UserAuthentication userAuthentication = getUserAuthentication();
+        return getUser(userAuthentication.getUserId());
+    }
+
+    private UserAuthentication getUserAuthentication() {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> authorities = (List<GrantedAuthority>) usernamePasswordAuthenticationToken.getAuthorities();
+
+        authorities.forEach(grantedAuthority -> {
+            SimpleGrantedAuthority simpleGrantedAuthority = (SimpleGrantedAuthority) grantedAuthority;
+            logger.info("simpleGrantedAuthority.getAuthority(): {}", simpleGrantedAuthority.getAuthority());
+        });
+
+        UserDetails userDetails = (UserDetails) usernamePasswordAuthenticationToken.getPrincipal();
+
+        logger.info("userDetails.getUsername(): {}", userDetails.getUsername());
+        logger.info("userDetails.getPassword(): {}", userDetails.getPassword());
+        logger.info("userDetails.isAccountNonExpired(): {}", userDetails.isAccountNonExpired());
+        logger.info("userDetails.isAccountNonLocked(): {}", userDetails.isAccountNonLocked());
+        logger.info("userDetails.isCredentialsNonExpired(): {}", userDetails.isCredentialsNonExpired());
+        logger.info("userDetails.isEnabled(): {}", userDetails.isEnabled());
+
+        return userAuthenticationService.findByUsername(userDetails.getUsername());
     }
 
     @Override
@@ -63,7 +106,7 @@ public class UserServiceImpl implements UserService {
         // NOTE: normally you wouldn't find multiple Users with same googleAccountId back from database,
         // But for safety, I have used findFirst in MongoRepository of User class.
         Optional<User> userOptional = userRepoService.findByGoogleAccountId(googleAccountId);
-        if (!userOptional.isPresent()) {
+        if (userOptional.isEmpty()) {
             throw new UserNotFoundException("User not found by using googleAccountId: " + googleAccountId);
         }
         return userOptional.get();
@@ -72,8 +115,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByMobileNo(String mobileNo) {
         Optional<User> userOptional = userRepoService.findByMobileNo(mobileNo);
-        if (!userOptional.isPresent()) {
-            throw new UserNotFoundException("User not found by using mobileNo: " + mobileNo);
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("Unable to find the User by using mobileNo: " + mobileNo);
+        }
+        return userOptional.get();
+    }
+
+    @Override
+    public User getUserByEmailAddress(String emailAddress) {
+        Optional<User> userOptional = userRepoService.findByEmailAddress(emailAddress);
+        if (userOptional.isEmpty()) {
+            throw new UserNotFoundException("Unable to find the User by using emailAddress: " + emailAddress);
         }
         return userOptional.get();
     }
@@ -91,7 +143,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUserRequestToUserMapper(UpdateUserRequest updateUserRequest) {
         return User.builder()
-                .id(updateUserRequest.getId())
                 .countryCode(updateUserRequest.getCountryCode())
                 .displayName(updateUserRequest.getDisplayName())
                 .realName(updateUserRequest.getRealName())

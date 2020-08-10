@@ -69,10 +69,6 @@ public class User {
         return this.mobileNo;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public void setDisplayName(@NotBlank String displayName) {
         this.displayName = displayName;
     }

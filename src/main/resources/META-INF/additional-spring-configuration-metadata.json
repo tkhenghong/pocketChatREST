@@ -32,7 +32,7 @@
     },
     {
       "name": "email.host.port",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "Port number for Email host provider."
     },
     {
@@ -57,22 +57,22 @@
     },
     {
       "name": "email.smtp.starttls.enable",
-      "type": "java.lang.String",
+      "type": "java.lang.Boolean",
       "description": "Enable STMP Start TLS for the Email host provider."
     },
     {
       "name": "email.debug",
-      "type": "java.lang.String",
+      "type": "java.lang.Boolean",
       "description": "Enable debug for the Email service."
     },
     {
       "name": "server.otp.alive.minutes",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "OTP alive minutes(The current generated ones)."
     },
     {
       "name": "server.otp.maximumAliveMinutes",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "Maximum alive minutes that all OTPs in the server. (OTPs are stored temporarily using Google LoadingCache). It will never be stored in the DB of the application (Best practice)."
     },
     {
@@ -87,22 +87,22 @@
     },
     {
       "name": "server.otp.maximumRetryAttempt",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "All OTPs maximum retry attempt. If maximum attempt reached, the OTP will be disabled and the frontend have to request a new OTP again."
     },
     {
       "name": "server.otp.length",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "Length of the One Time Password for verification."
     },
     {
       "name": "password.lower.case.character.length",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "Minimum number of lower case characters in the password."
     },
     {
       "name": "password.upper.case.character.length",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "Minimum number of upper case characters in the password."
     },
     {
@@ -112,12 +112,12 @@
     },
     {
       "name": "password.special.character.length",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "Minimum number of special characters in the password."
     },
     {
       "name": "password.minimum.length",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "Minimum number of characters in the password."
     },
     {
@@ -132,8 +132,33 @@
     },
     {
       "name": "encryption.rsa.cipher.key.size",
-      "type": "java.lang.String",
+      "type": "java.lang.Integer",
       "description": "Size of the key made for every RSA key pair. The longer it is, the more seucre it gets, but longer it gets computed."
+    },
+    {
+      "name": "server.startup.send.email.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable this to send an email when the application is started."
+    },
+    {
+      "name": "server.startup.send.sms.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable this to send an SMS when the application is started."
+    },
+    {
+      "name": "encryption.rsa.public.key.directory",
+      "type": "java.lang.String",
+      "description": "Directory for RSA Public key. Used for general RSA Encryption."
+    },
+    {
+      "name": "encryption.rsa.private.key.directory",
+      "type": "java.lang.String",
+      "description": "Directory for RSA Private key. Used for general RSA Encryption."
+    },
+    {
+      "name": "encryption.aes.private.key.directory",
+      "type": "java.lang.String",
+      "description": "Directory for AES Private key. Used for general AES Encryption."
     }
   ]
 }

@@ -14,9 +14,13 @@ public interface UserService {
 
     User getUser(String userId);
 
+    User getOwnUser();
+
     User getUserByGoogleAccountId(String googleAccountId);
 
     User getUserByMobileNo(String mobileNo);
+
+    User getUserByEmailAddress(String emailAddress);
 
     User createUserRequestToUserMapper(CreateUserRequest createUserRequest);
 

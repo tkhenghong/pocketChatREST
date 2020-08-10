@@ -3,7 +3,6 @@ package com.pocketchat.services.user_authentication;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.models.user_role.UserRole;
-import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.db.repo_services.user_authentication.UserAuthenticationRepoService;
 import com.pocketchat.db.repo_services.user_role.UserRoleRepoService;
 import com.pocketchat.models.controllers.request.user.CreateUserRequest;
@@ -34,6 +33,7 @@ import com.pocketchat.utils.password.PasswordUtil;
 import com.pocketchat.utils.phone.PhoneUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,8 +53,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     private final UserAuthenticationRepoService userAuthenticationRepoService;
 
     private final UserRoleRepoService userRoleRepoService;
-
-    private final UserRepoService userRepoService;
 
     private final UserService userService;
 
@@ -89,8 +87,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     UserAuthenticationServiceImpl(
             UserAuthenticationRepoService userAuthenticationRepoService,
             UserRoleRepoService userRoleRepoService,
-            UserRepoService userRepoService,
-            UserService userService,
+            @Lazy UserService userService,
             SMSService smsService,
             EmailService emailService,
             AuthenticationManager authenticationManager,
@@ -103,7 +100,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             PasswordUtil passwordUtil) {
         this.userAuthenticationRepoService = userAuthenticationRepoService;
         this.userRoleRepoService = userRoleRepoService;
-        this.userRepoService = userRepoService;
         this.userService = userService;
         this.smsService = smsService;
         this.emailService = emailService;
@@ -140,12 +136,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     @Override
     public PreVerifyMobileNumberOTPResponse loginMobileNumber(PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest) {
 
-        Optional<User> userOptional = userRepoService.findByMobileNo(preVerifyMobileNumberOTPRequest.getMobileNumber());
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("Unable to find User using mobile number: " + preVerifyMobileNumberOTPRequest.getMobileNumber());
-        }
-
-        User user = userOptional.get();
+        User user = userService.getUserByMobileNo(preVerifyMobileNumberOTPRequest.getMobileNumber());
 
         OTP otp = generateOTP(user.getId());
 
@@ -166,17 +157,13 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     // TODO: Encrypt secureKeyword and OTP number from frontend
     @Override
     public UserAuthenticationResponse registerMobileNumberOTPVerification(VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
-        Optional<User> userOptional = userRepoService.findByMobileNo(verifyMobileNumberOTPRequest.getMobileNo());
+        User user = userService.getUserByMobileNo(verifyMobileNumberOTPRequest.getMobileNo());
 
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("Unable to find the user during verifyMobileNumberOTP. Mobile Number: " + verifyMobileNumberOTPRequest.getMobileNo());
-        }
-
-        checkOTP(userOptional.get().getId(), verifyMobileNumberOTPRequest.getMobileNo(), verifyMobileNumberOTPRequest.getOtpNumber(), verifyMobileNumberOTPRequest.getSecureKeyword());
+        checkOTP(user.getId(), verifyMobileNumberOTPRequest.getMobileNo(), verifyMobileNumberOTPRequest.getOtpNumber(), verifyMobileNumberOTPRequest.getSecureKeyword());
 
         String securePassword = passwordUtil.generateRandomSecurePassword();
 
-        UserAuthentication userAuthentication = registerUserAuthentication("ROLE_USER", userOptional.get().getId(), verifyMobileNumberOTPRequest.getMobileNo(), securePassword);
+        UserAuthentication userAuthentication = registerUserAuthentication("ROLE_USER", user.getId(), verifyMobileNumberOTPRequest.getMobileNo(), securePassword);
 
         return allowAuthentication(userAuthentication.getUsername());
     }
@@ -184,18 +171,14 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     // TODO: Encrypt secureKeyword and OTP number from frontend
     @Override
     public UserAuthenticationResponse loginMobileNumberOTPVerification(VerifyMobileNumberOTPRequest verifyMobileNumberOTPRequest) {
-        Optional<User> userOptional = userRepoService.findByMobileNo(verifyMobileNumberOTPRequest.getMobileNo());
+        User user = userService.getUserByMobileNo(verifyMobileNumberOTPRequest.getMobileNo());
 
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("Unable to find the user during verifyMobileNumberOTP. Mobile Number: " + verifyMobileNumberOTPRequest.getMobileNo());
-        }
+        checkOTP(user.getId(), verifyMobileNumberOTPRequest.getMobileNo(), verifyMobileNumberOTPRequest.getOtpNumber(), verifyMobileNumberOTPRequest.getSecureKeyword());
 
-        checkOTP(userOptional.get().getId(), verifyMobileNumberOTPRequest.getMobileNo(), verifyMobileNumberOTPRequest.getOtpNumber(), verifyMobileNumberOTPRequest.getSecureKeyword());
-
-        Optional<UserAuthentication> userAuthenticationOptional = userAuthenticationRepoService.findByUserId(userOptional.get().getId());
+        Optional<UserAuthentication> userAuthenticationOptional = userAuthenticationRepoService.findByUserId(user.getId());
 
         if (userAuthenticationOptional.isEmpty()) {
-            throw new UsernameNotFoundException("Unable to find the User's Authentication using userId: " + userOptional.get().getId());
+            throw new UsernameNotFoundException("Unable to find the User's Authentication using userId: " + user.getId());
         }
 
         return allowAuthentication(userAuthenticationOptional.get().getUsername());
@@ -210,19 +193,15 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     // 5. Send Email.
     @Override
     public OTPResponse requestToAuthenticateWithMobileNo(MobileNoUserAuthenticationRequest mobileNoUserAuthenticationRequest) {
-        Optional<User> user = userRepoService.findByMobileNo(mobileNoUserAuthenticationRequest.getMobileNo());
+        User user = userService.getUserByMobileNo(mobileNoUserAuthenticationRequest.getMobileNo());
 
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("User is not found by using mobile number: " + mobileNoUserAuthenticationRequest.getMobileNo());
-        }
-
-        OTP otp = generateOTP(user.get().getId());
+        OTP otp = generateOTP(user.getId());
 
         String messageTitle = "PocketChat Verification Code: " + otp.getOtp();
 
         String messageContent = generateOTPMessageContent(otp);
 
-        sendSMSAndEmail(messageTitle, messageContent, user.get().getMobileNo(), user.get().getEmailAddress());
+        sendSMSAndEmail(messageTitle, messageContent, user.getMobileNo(), user.getEmailAddress());
 
         return otpResponseMapper(otp);
     }
@@ -236,19 +215,15 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     // 5. Send SMS.
     @Override
     public OTPResponse requestToAuthenticateWithEmailAddress(EmailAddressUserAuthenticationRequest mobileNoAuthenticationRequest) {
-        Optional<User> user = userRepoService.findByEmailAddress(mobileNoAuthenticationRequest.getEmailAddress());
+        User user = userService.getUserByEmailAddress(mobileNoAuthenticationRequest.getEmailAddress());
 
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("User is not found by using Email address: " + mobileNoAuthenticationRequest.getEmailAddress());
-        }
-
-        OTP otp = generateOTP(user.get().getId());
+        OTP otp = generateOTP(user.getId());
 
         String messageTitle = "PocketChat Verification Code: " + otp.getOtp();
 
         String messageContent = generateOTPMessageContent(otp);
 
-        sendSMSAndEmail(messageTitle, messageContent, user.get().getMobileNo(), user.get().getEmailAddress());
+        sendSMSAndEmail(messageTitle, messageContent, user.getMobileNo(), user.getEmailAddress());
 
         return otpResponseMapper(otp);
     }
@@ -297,6 +272,17 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         return null;
     }
 
+    @Override
+    public UserAuthentication findByUsername(String username) {
+        Optional<UserAuthentication> authenticationOptional = userAuthenticationRepoService.findFirstByUsername(username);
+
+        if (authenticationOptional.isEmpty()) {
+            throw new UsernameNotFoundException("Unable to find the User's Authentication using username: " + username);
+        }
+
+        return authenticationOptional.get();
+    }
+
     private User initializeUser(String mobileNo, String countryCode) {
         try {
             return userService.getUserByMobileNo(mobileNo);
@@ -316,7 +302,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         return userAuthenticationRepoService.save(UserAuthentication.builder()
                 .username(username)
                 .password(password)
-                .userRoles(Arrays.asList(assignUserRole(userRole)))
+                .userRoles(Collections.singletonList(assignUserRole(userRole)))
                 .userId(userId)
                 .build());
     }

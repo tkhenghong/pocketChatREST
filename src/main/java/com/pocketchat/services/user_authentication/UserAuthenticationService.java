@@ -1,5 +1,6 @@
 package com.pocketchat.services.user_authentication;
 
+import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.models.controllers.request.user_authentication.*;
 import com.pocketchat.models.controllers.response.user_authentication.OTPResponse;
 import com.pocketchat.models.controllers.response.user_authentication.PreVerifyMobileNumberOTPResponse;
@@ -34,6 +35,7 @@ public interface UserAuthenticationService {
     @Deprecated
     UserAuthenticationResponse authenticateUsingUsernamePassword(UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest);
 
+    UserAuthentication findByUsername(String username);
 
     OTPResponse otpResponseMapper(OTP otp);
 }

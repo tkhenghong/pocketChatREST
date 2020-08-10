@@ -23,36 +23,41 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("")
-    public ResponseEntity<Object> addUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        UserResponse savedUser = userService.userResponseMapper(userService.addUser(createUserRequest));
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
-    }
+//    @PostMapping("")
+//    public ResponseEntity<Object> addUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
+//        UserResponse savedUser = userService.userResponseMapper(userService.addUser(createUserRequest));
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId())
+//                .toUri();
+//        return ResponseEntity.created(location).build();
+//    }
 
     @PutMapping("")
     public UserResponse editUser(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
         return userService.userResponseMapper(userService.editUser(updateUserRequest));
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable String userId) {
-        userService.deleteUser(userId);
+//    @DeleteMapping("/{userId}")
+//    public void deleteUser(@PathVariable String userId) {
+//        userService.deleteUser(userId);
+//    }
+
+//    @GetMapping("/{userId}")
+//    public UserResponse getUser(@PathVariable String userId) {
+//        return userService.userResponseMapper(userService.getUser(userId));
+//    }
+
+        @GetMapping("/")
+    public UserResponse getOwnUser() {
+        return userService.userResponseMapper(userService.getOwnUser());
     }
 
-    @GetMapping("/{userId}")
-    public UserResponse getUser(@PathVariable String userId) {
-        return userService.userResponseMapper(userService.getUser(userId));
-    }
+//    @GetMapping("/googleAccountId/{googleAccountId}")
+//    public UserResponse getUserByGoogleAccountId(@PathVariable String googleAccountId) {
+//        return userService.userResponseMapper(userService.getUserByGoogleAccountId(googleAccountId));
+//    }
 
-    @GetMapping("/googleAccountId/{googleAccountId}")
-    public UserResponse getUserByGoogleAccountId(@PathVariable String googleAccountId) {
-        return userService.userResponseMapper(userService.getUserByGoogleAccountId(googleAccountId));
-    }
-
-    @GetMapping("/mobileNo/{mobileNo}")
-    public UserResponse getUserByMobileNo(@PathVariable String mobileNo) {
-        return userService.userResponseMapper(userService.getUserByMobileNo(mobileNo));
-    }
+//    @GetMapping("/mobileNo/{mobileNo}")
+//    public UserResponse getUserByMobileNo(@PathVariable String mobileNo) {
+//        return userService.userResponseMapper(userService.getUserByMobileNo(mobileNo));
+//    }
 }

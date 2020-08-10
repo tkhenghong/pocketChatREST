@@ -5,6 +5,7 @@ import com.pocketchat.models.sms.SendSMSRequest;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.services.sms.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,12 @@ public class InitRunner implements CommandLineRunner {
 
     private final EmailService emailService;
 
+    @Value("${server.startup.send.email.enabled}")
+    private boolean startupSendEmailEnabled;
+
+    @Value("${server.startup.send.sms.enabled}")
+    private boolean startupSendSmsEnabled;
+
     @Autowired
     InitRunner(SMSService smsService, EmailService emailService) {
         this.smsService = smsService;
@@ -35,15 +42,19 @@ public class InitRunner implements CommandLineRunner {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         String content = "PocketChat REST API Spring Boot application started successfully at " + timestamp.toString() + ".";
-        this.smsService.sendSMS(SendSMSRequest.builder().mobileNumber("+60182262663").message(content).build());
+        if (startupSendSmsEnabled) {
+            this.smsService.sendSMS(SendSMSRequest.builder().mobileNumber("+60182262663").message(content).build());
+        }
 
         List<String> receiverEmailAddresses = new ArrayList<>();
         receiverEmailAddresses.add("tkhenghong@gmail.com");
 
-        this.emailService.sendEmail(SendEmailRequest.builder()
-                .receiverList(receiverEmailAddresses)
-                .emailSubject("PocketChat REST Started Successfully")
-                .emailContent(content).build()
-        );
+        if (startupSendEmailEnabled) {
+            this.emailService.sendEmail(SendEmailRequest.builder()
+                    .receiverList(receiverEmailAddresses)
+                    .emailSubject("PocketChat REST Started Successfully")
+                    .emailContent(content).build()
+            );
+        }
     }
 }
