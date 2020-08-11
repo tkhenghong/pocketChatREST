@@ -31,6 +31,8 @@ import com.pocketchat.utils.email.EmailUtil;
 import com.pocketchat.utils.jwt.JwtUtil;
 import com.pocketchat.utils.password.PasswordUtil;
 import com.pocketchat.utils.phone.PhoneUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -49,6 +51,8 @@ import java.util.*;
 
 @Service
 public class UserAuthenticationServiceImpl implements UserAuthenticationService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final UserAuthenticationRepoService userAuthenticationRepoService;
 
