@@ -48,6 +48,6 @@ public class SettingsController {
 
     @GetMapping("/user/{userId}")
     public SettingsResponse getSettingsOfAUser(@PathVariable String userId) {
-        return settingsService.getSettingsOfAUser(userId);
+        return settingsService.getOwnUserSettings(userId);
     }
 }

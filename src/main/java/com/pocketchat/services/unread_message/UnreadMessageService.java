@@ -16,7 +16,7 @@ public interface UnreadMessageService {
 
     UnreadMessage getSingleUnreadMessage(String unreadMessageId);
 
-    List<UnreadMessageResponse> getUnreadMessagesOfAUser(String userId);
+    List<UnreadMessageResponse> getUserOwnUnreadMessages();
 
     UnreadMessage createUnreadMessageRequestToUnreadMessageMapper(CreateUnreadMessageRequest createUnreadMessageRequest);
 

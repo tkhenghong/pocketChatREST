@@ -14,7 +14,7 @@ public interface SettingsService {
 
     Settings getSingleSettings(String settingsId);
 
-    SettingsResponse getSettingsOfAUser(String userId);
+    SettingsResponse getOwnUserSettings(String userId);
 
     Settings createSettingsRequestToSettingsMapper(CreateSettingsRequest createSettingsRequest);
 

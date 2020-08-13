@@ -12,15 +12,9 @@ import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -54,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User editUser(UpdateUserRequest updateUserRequest) {
-        UserAuthentication userAuthentication = getUserAuthentication();
+        UserAuthentication userAuthentication = userAuthenticationService.getOwnUserAuthentication();
         getUser(userAuthentication.getId());
         return userRepoService.save(updateUserRequestToUserMapper(updateUserRequest));
     }
@@ -63,6 +57,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(String userId) {
         userRepoService.delete(getUser(userId));
+    }
+
+    @Override
+    public boolean existById(String userId) {
+        return userRepoService.existById(userId);
     }
 
     @Override
@@ -76,29 +75,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getOwnUser() {
-        UserAuthentication userAuthentication = getUserAuthentication();
+        UserAuthentication userAuthentication = userAuthenticationService.getOwnUserAuthentication();
         return getUser(userAuthentication.getUserId());
-    }
-
-    private UserAuthentication getUserAuthentication() {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        List<GrantedAuthority> authorities = (List<GrantedAuthority>) usernamePasswordAuthenticationToken.getAuthorities();
-
-        authorities.forEach(grantedAuthority -> {
-            SimpleGrantedAuthority simpleGrantedAuthority = (SimpleGrantedAuthority) grantedAuthority;
-            logger.info("simpleGrantedAuthority.getAuthority(): {}", simpleGrantedAuthority.getAuthority());
-        });
-
-        UserDetails userDetails = (UserDetails) usernamePasswordAuthenticationToken.getPrincipal();
-
-        logger.info("userDetails.getUsername(): {}", userDetails.getUsername());
-        logger.info("userDetails.getPassword(): {}", userDetails.getPassword());
-        logger.info("userDetails.isAccountNonExpired(): {}", userDetails.isAccountNonExpired());
-        logger.info("userDetails.isAccountNonLocked(): {}", userDetails.isAccountNonLocked());
-        logger.info("userDetails.isCredentialsNonExpired(): {}", userDetails.isCredentialsNonExpired());
-        logger.info("userDetails.isEnabled(): {}", userDetails.isEnabled());
-
-        return userAuthenticationService.findByUsername(userDetails.getUsername());
     }
 
     @Override

@@ -18,7 +18,9 @@ public interface UserContactService {
 
     UserContact getUserContactByMobileNo(String mobileNo);
 
-    List<UserContactResponse> getUserContactsByUserId(String userId);
+    UserContact getOwnUserContact();
+
+    List<UserContact> getUserContactsByUserId(String userId);
 
     UserContact createUserContactRequestToUserContactMapper(CreateUserContactRequest createUserContactRequest);
 

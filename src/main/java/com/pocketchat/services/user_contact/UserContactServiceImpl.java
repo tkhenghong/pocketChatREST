@@ -1,12 +1,14 @@
 package com.pocketchat.services.user_contact;
 
+import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.models.user_contact.UserContact;
-import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
 import com.pocketchat.models.controllers.request.user_contact.CreateUserContactRequest;
 import com.pocketchat.models.controllers.request.user_contact.UpdateUserContactRequest;
 import com.pocketchat.models.controllers.response.user_contact.UserContactResponse;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
+import com.pocketchat.services.user.UserService;
+import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,19 +17,23 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserContactServiceImpl implements UserContactService {
 
     private final UserContactRepoService userContactRepoService;
 
-    private final UserRepoService userRepoService;
+    private final UserAuthenticationService userAuthenticationService;
+
+    private final UserService userService;
 
     @Autowired
-    public UserContactServiceImpl(UserContactRepoService userContactRepoService, UserRepoService userRepoService) {
+    public UserContactServiceImpl(UserContactRepoService userContactRepoService,
+                                  UserAuthenticationService userAuthenticationService,
+                                  UserService userService) {
         this.userContactRepoService = userContactRepoService;
-        this.userRepoService = userRepoService;
+        this.userAuthenticationService = userAuthenticationService;
+        this.userService = userService;
     }
 
     @Override
@@ -72,7 +78,7 @@ public class UserContactServiceImpl implements UserContactService {
 
         // Check the newcomer UserContact has UserId or not. If have check existence. If yes, add it into existingUserContact object.
         if (!userContactUserIdIsEmpty && existingUserContactUserIdIsEmpty) {
-            boolean userExist = userRepoService.existById(userContact.getUserId());
+            boolean userExist = userService.existById(userContact.getUserId());
             if (userExist) {
                 existingUserContact.setUserId(userContact.getUserId());
             }
@@ -113,13 +119,29 @@ public class UserContactServiceImpl implements UserContactService {
     @Override
     public UserContact getUserContactByMobileNo(String mobileNo) {
         String filteredMobileNo = mobileNo.replaceAll("[-.^:,\\s+]", "");
-        return userContactRepoService.findByMobileNo(filteredMobileNo);
+
+        UserContact userContact = userContactRepoService.findByMobileNo(filteredMobileNo);
+        if (ObjectUtils.isEmpty(userContact)) {
+            throw new UserContactNotFoundException("UserContact not found: " + mobileNo);
+        }
+        return userContact;
     }
 
     @Override
-    public List<UserContactResponse> getUserContactsByUserId(String userId) {
-        List<UserContact> userContactList = userContactRepoService.findByUserIds(userId);
-        return userContactList.stream().map(this::userContactResponseMapper).collect(Collectors.toList());
+    public UserContact getOwnUserContact() {
+        UserAuthentication userAuthentication = userAuthenticationService.getOwnUserAuthentication();
+        Optional<UserContact> userContactOptional = userContactRepoService.findByUserId(userAuthentication.getUserId());
+
+        if (userContactOptional.isEmpty()) {
+            throw new UserContactNotFoundException("Unable to find own UserContact. userId: " + userAuthentication.getUserId());
+        }
+
+        return userContactOptional.get();
+    }
+
+    @Override
+    public List<UserContact> getUserContactsByUserId(String userId) {
+        return userContactRepoService.findByUserIds(userId);
     }
 
     @Override

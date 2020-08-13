@@ -16,15 +16,17 @@ public interface MultimediaService {
 
     Multimedia getSingleMultimedia(String multimediaId);
 
-    MultimediaResponse getMultimediaOfAUser(String userId);
+    Multimedia getMultimediaOfAUser(String userId);
 
-    MultimediaResponse getMultimediaOfAUserContact(String userContactId);
+    Multimedia getUserOwnProfilePictureMultimedia();
 
-    MultimediaResponse getConversationGroupMultimedia(String conversationGroupId);
+    Multimedia getMultimediaOfAUserContact(String userContactId);
 
-    MultimediaResponse getMessageMultimedia(String conversationGroupId, String messageId);
+    Multimedia getConversationGroupMultimedia(String conversationGroupId);
 
-    List<MultimediaResponse> getMultimediaOfAConversation(String conversationGroupId);
+    Multimedia getMessageMultimedia(String conversationGroupId, String messageId);
+
+    List<Multimedia> getMultimediaOfAConversation(String conversationGroupId);
 
     Multimedia createMultimediaRequestToMultimediaMapper(CreateMultimediaRequest createMultimediaRequest);
 

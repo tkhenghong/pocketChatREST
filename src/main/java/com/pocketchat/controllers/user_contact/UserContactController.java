@@ -1,5 +1,6 @@
 package com.pocketchat.controllers.user_contact;
 
+import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.models.controllers.request.user_contact.CreateUserContactRequest;
 import com.pocketchat.models.controllers.request.user_contact.UpdateUserContactRequest;
 import com.pocketchat.models.controllers.response.user_contact.UserContactResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/userContact")
@@ -61,8 +63,14 @@ public class UserContactController {
         return userContactService.userContactResponseMapper(userContactService.getUserContactByMobileNo(mobileNo));
     }
 
+    @GetMapping("/")
+    public UserContactResponse getOwnUserContact() {
+        return userContactService.userContactResponseMapper(userContactService.getOwnUserContact());
+    }
+
     @GetMapping("/user/{userId}")
     public List<UserContactResponse> getUserContactsByUserId(@PathVariable String userId) {
-        return userContactService.getUserContactsByUserId(userId);
+        List<UserContact> userContactList = userContactService.getUserContactsByUserId(userId);
+        return userContactList.stream().map(userContactService::userContactResponseMapper).collect(Collectors.toList());
     }
 }

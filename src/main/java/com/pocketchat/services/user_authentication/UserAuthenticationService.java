@@ -25,6 +25,8 @@ public interface UserAuthenticationService {
 
     OTPResponse requestToAuthenticateWithEmailAddress(EmailAddressUserAuthenticationRequest mobileNoAuthenticationRequest);
 
+    UserAuthentication getOwnUserAuthentication();
+
     // For testing only
     // Registration
     @Deprecated

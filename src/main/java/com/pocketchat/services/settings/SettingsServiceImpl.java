@@ -1,14 +1,13 @@
 package com.pocketchat.services.settings;
 
 import com.pocketchat.db.models.settings.Settings;
-import com.pocketchat.db.models.user.User;
+import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.repo_services.settings.SettingsRepoService;
-import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.models.controllers.request.settings.CreateSettingsRequest;
 import com.pocketchat.models.controllers.request.settings.UpdateSettingsRequest;
 import com.pocketchat.models.controllers.response.settings.SettingsResponse;
 import com.pocketchat.server.exceptions.settings.SettingsNotFoundException;
-import com.pocketchat.server.exceptions.user.UserNotFoundException;
+import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +19,13 @@ public class SettingsServiceImpl implements SettingsService {
 
     private final SettingsRepoService settingsRepoService;
 
-    private final UserRepoService userRepoService;
+    private final UserAuthenticationService userAuthenticationService;
 
     @Autowired
-    public SettingsServiceImpl(SettingsRepoService settingsRepoService, UserRepoService userRepoService) {
+    public SettingsServiceImpl(SettingsRepoService settingsRepoService,
+                               UserAuthenticationService userAuthenticationService) {
         this.settingsRepoService = settingsRepoService;
-        this.userRepoService = userRepoService;
+        this.userAuthenticationService = userAuthenticationService;
     }
 
     @Override
@@ -53,22 +53,19 @@ public class SettingsServiceImpl implements SettingsService {
     @Override
     public Settings getSingleSettings(String settingsId) {
         Optional<Settings> settingsOptional = settingsRepoService.findById(settingsId);
-        if (!settingsOptional.isPresent()) {
+        if (settingsOptional.isEmpty()) {
             throw new SettingsNotFoundException("Settings not found, id:-" + settingsId);
         }
         return settingsOptional.get();
     }
 
     @Override
-    public SettingsResponse getSettingsOfAUser(String userId) {
-        Optional<User> userOptional = userRepoService.findById(userId);
-        if (!userOptional.isPresent()) {
-            throw new UserNotFoundException("User not found, userId:-" + userId);
-        }
+    public SettingsResponse getOwnUserSettings(String userId) {
+        UserAuthentication userAuthentication = userAuthenticationService.getOwnUserAuthentication();
 
-        Optional<Settings> settingsOptional = settingsRepoService.findByUserId(userOptional.get().getId());
+        Optional<Settings> settingsOptional = settingsRepoService.findByUserId(userAuthentication.getUserId());
 
-        if (!settingsOptional.isPresent()) {
+        if (settingsOptional.isEmpty()) {
             throw new SettingsNotFoundException("userId not found in getSettingsOfAUser, userId:-" + userId);
         }
         return settingsResponseMapper(settingsOptional.get());

@@ -30,6 +30,10 @@ public class UserContactRepoService {
         return userContactRepository.findById(userContactId);
     }
 
+    public Optional<UserContact> findByUserId(String userId) {
+        return userContactRepository.findFirstByUserId(userId);
+    }
+
     public List<UserContact> findByUserIdIn(List<String> userIds) {
         Criteria criteria = new Criteria();
         criteria = criteria.andOperator(

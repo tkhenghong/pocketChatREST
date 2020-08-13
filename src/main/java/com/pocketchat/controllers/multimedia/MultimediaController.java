@@ -1,5 +1,6 @@
 package com.pocketchat.controllers.multimedia;
 
+import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.models.controllers.request.multimedia.CreateMultimediaRequest;
 import com.pocketchat.models.controllers.request.multimedia.UpdateMultimediaRequest;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/multimedia")
@@ -49,30 +51,36 @@ public class MultimediaController {
 
     @GetMapping("/user/{userId}")
     public MultimediaResponse getMultimediaOfAUser(@PathVariable String userId) {
-        return multimediaService.getMultimediaOfAUser(userId);
+        return multimediaService.multimediaResponseMapper(multimediaService.getMultimediaOfAUser(userId));
+    }
+
+    @GetMapping("/user")
+    public MultimediaResponse getUserOwnProfilePictureMultimedia() {
+        return multimediaService.multimediaResponseMapper(multimediaService.getUserOwnProfilePictureMultimedia());
     }
 
     // Get multimedia of the UserContact (One at the time)
     @GetMapping("/userContact/{userContactId}")
     public MultimediaResponse getMultimediaOfAUserContact(@PathVariable String userContactId) {
-        return multimediaService.getMultimediaOfAUserContact(userContactId);
+        return multimediaService.multimediaResponseMapper(multimediaService.getMultimediaOfAUserContact(userContactId));
     }
 
     // Get the multimedia of the Group Photo (One at the time)
     @GetMapping("/conversationGroup/photo/{conversationGroupId}")
     public MultimediaResponse getConversationGroupPhotoMultimedia(@PathVariable String conversationGroupId) {
-        return multimediaService.getConversationGroupMultimedia(conversationGroupId);
+        return multimediaService.multimediaResponseMapper(multimediaService.getConversationGroupMultimedia(conversationGroupId));
     }
 
     // Retrieve the multimedia of the message if frontend user doesn't have it
     @GetMapping("/message/{conversationGroupId}/{messageId}")
     public MultimediaResponse getMessageMultimedia(@PathVariable String conversationGroupId, @PathVariable String messageId) {
-        return multimediaService.getMessageMultimedia(conversationGroupId, messageId);
+        return multimediaService.multimediaResponseMapper(multimediaService.getMessageMultimedia(conversationGroupId, messageId));
     }
 
     // Retrieve multiple Multimedia objects of a conversationGroup (Not including the group profile photo)
     @GetMapping("/conversationGroup/{conversationGroupId}")
     public List<MultimediaResponse> getMultimediaOfAConversation(@PathVariable String conversationGroupId) {
-        return multimediaService.getMultimediaOfAConversation(conversationGroupId);
+        List<Multimedia> multimediaList = multimediaService.getMultimediaOfAConversation(conversationGroupId);
+        return multimediaList.stream().map(multimediaService::multimediaResponseMapper).collect(Collectors.toList());
     }
 }

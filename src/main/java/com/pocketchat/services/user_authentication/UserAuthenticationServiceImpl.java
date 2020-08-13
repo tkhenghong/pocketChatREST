@@ -39,6 +39,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -186,6 +189,28 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         }
 
         return allowAuthentication(userAuthenticationOptional.get().getUsername());
+    }
+
+    @Override
+    public UserAuthentication getOwnUserAuthentication() {
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> authorities = (List<GrantedAuthority>) usernamePasswordAuthenticationToken.getAuthorities();
+
+        authorities.forEach(grantedAuthority -> {
+            SimpleGrantedAuthority simpleGrantedAuthority = (SimpleGrantedAuthority) grantedAuthority;
+            logger.info("simpleGrantedAuthority.getAuthority(): {}", simpleGrantedAuthority.getAuthority());
+        });
+
+        UserDetails userDetails = (UserDetails) usernamePasswordAuthenticationToken.getPrincipal();
+
+        logger.info("userDetails.getUsername(): {}", userDetails.getUsername());
+        logger.info("userDetails.getPassword(): {}", userDetails.getPassword());
+        logger.info("userDetails.isAccountNonExpired(): {}", userDetails.isAccountNonExpired());
+        logger.info("userDetails.isAccountNonLocked(): {}", userDetails.isAccountNonLocked());
+        logger.info("userDetails.isCredentialsNonExpired(): {}", userDetails.isCredentialsNonExpired());
+        logger.info("userDetails.isEnabled(): {}", userDetails.isEnabled());
+
+        return findByUsername(userDetails.getUsername());
     }
 
     // NOT RELATED TO POCKETCHAT

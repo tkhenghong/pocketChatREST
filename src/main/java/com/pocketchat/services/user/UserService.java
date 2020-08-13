@@ -14,6 +14,8 @@ public interface UserService {
 
     User getUser(String userId);
 
+    boolean existById(String userId);
+
     User getOwnUser();
 
     User getUserByGoogleAccountId(String googleAccountId);

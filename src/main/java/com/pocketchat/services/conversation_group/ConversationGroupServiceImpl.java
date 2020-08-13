@@ -18,7 +18,6 @@ import com.pocketchat.services.user_contact.UserContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -110,10 +109,6 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     public List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo) {
         // Retrieve conversations for the user
         UserContact userContact = userContactService.getUserContactByMobileNo(mobileNo);
-
-        if (ObjectUtils.isEmpty(userContact)) {
-            throw new UserContactNotFoundException("UserContact not found: " + mobileNo);
-        }
         return conversationGroupRepoService.findAllByMemberIds(userContact.getId());
     }
 

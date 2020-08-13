@@ -46,7 +46,7 @@ public class UnreadMessageController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<UnreadMessageResponse> getUnreadMessagesOfAUser(@PathVariable String userId) {
-        return unreadMessageService.getUnreadMessagesOfAUser(userId);
+    public List<UnreadMessageResponse> getUnreadMessagesOfAUser() {
+        return unreadMessageService.getUserOwnUnreadMessages();
     }
 }
