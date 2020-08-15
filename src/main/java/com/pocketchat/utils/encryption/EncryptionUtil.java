@@ -136,7 +136,7 @@ public class EncryptionUtil {
     }
 
     /**
-     * Decrypt a encoded Base64, RSA encrypted text with PublicKey object from external
+     * Decrypt a encoded Base64, RSA encrypted text with PrivateKey object from external
      * */
     public String decryptWithRSABase64Encoded(String base64EncodedEncryptedString, PrivateKey privateKey) {
         String plainText = null;

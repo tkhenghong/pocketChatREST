@@ -19,7 +19,6 @@ public class ConversationGroupRepoService {
         this.conversationGroupRepository = conversationGroupRepository;
     }
 
-
     public List<ConversationGroup> findAllConversationGroupsByIds(List<String> ids) {
         Iterable<ConversationGroup> conversationGroupIterable = conversationGroupRepository.findAllById(ids);
 
