@@ -100,15 +100,14 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     public ConversationGroup getSingleConversation(String conversationGroupId) {
         Optional<ConversationGroup> conversationGroupOptional = conversationGroupRepoService.findById(conversationGroupId);
         if (conversationGroupOptional.isEmpty()) {
-            throw new ConversationGroupNotFoundException("conversationGroupId-" + conversationGroupId);
+            throw new ConversationGroupNotFoundException("Unable to find the conversation group using conversationGroupId: " + conversationGroupId);
         }
         return conversationGroupOptional.get();
     }
 
     @Override
-    public List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo) {
-        // Retrieve conversations for the user
-        UserContact userContact = userContactService.getUserContactByMobileNo(mobileNo);
+    public List<ConversationGroup> getUserOwnConversationGroups() {
+        UserContact userContact = userContactService.getOwnUserContact();
         return conversationGroupRepoService.findAllByMemberIds(userContact.getId());
     }
 
@@ -119,41 +118,6 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             throw new UserContactNotFoundException("UserContactId not found: " + userContactId);
         }
         return conversationGroupList;
-    }
-
-    private void checkUserContactsExist(List<String> userContactIds) {
-        userContactIds.forEach(userContactService::getUserContact);
-    }
-
-    ConversationGroup createAndSendMessage(ConversationGroup conversationGroup, String message) {
-        checkUserContactsExist(conversationGroup.getMemberIds());
-        checkUserContactsExist(conversationGroup.getAdminMemberIds());
-        ConversationGroup newConversationGroup = conversationGroupRepoService.save(conversationGroup);
-        sendWelcomeMessage(newConversationGroup, message);
-
-        return newConversationGroup;
-    }
-
-    private void sendWelcomeMessage(ConversationGroup conversationGroup, String message) {
-
-        CreateChatMessageRequest createChatMessageRequest = CreateChatMessageRequest.builder()
-                .type("Text")
-                .conversationId(conversationGroup.getId())
-                .createdTime(LocalDateTime.now())
-                .messageContent(message)
-                .status("Sent")
-                .sentTime(LocalDateTime.now())
-                .build();
-
-        ChatMessage chatMessage = chatMessageService.addChatMessage(createChatMessageRequest);
-
-        WebSocketMessage webSocketMessage = WebSocketMessage.builder()
-                .chatMessage(chatMessage)
-                .build();
-
-        conversationGroup.getMemberIds().forEach(memberId ->
-                this.rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(),
-                        conversationGroup.getId(), webSocketMessage.toString()));
     }
 
     @Override
@@ -201,5 +165,40 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .notificationExpireDate(conversationGroup.getNotificationExpireDate())
                 .conversationGroupType(conversationGroup.getConversationGroupType())
                 .build();
+    }
+
+    private void checkUserContactsExist(List<String> userContactIds) {
+        userContactIds.forEach(userContactService::getUserContact);
+    }
+
+    ConversationGroup createAndSendMessage(ConversationGroup conversationGroup, String message) {
+        checkUserContactsExist(conversationGroup.getMemberIds());
+        checkUserContactsExist(conversationGroup.getAdminMemberIds());
+        ConversationGroup newConversationGroup = conversationGroupRepoService.save(conversationGroup);
+        sendWelcomeMessage(newConversationGroup, message);
+
+        return newConversationGroup;
+    }
+
+    private void sendWelcomeMessage(ConversationGroup conversationGroup, String message) {
+
+        CreateChatMessageRequest createChatMessageRequest = CreateChatMessageRequest.builder()
+                .type("Text")
+                .conversationId(conversationGroup.getId())
+                .createdTime(LocalDateTime.now())
+                .messageContent(message)
+                .status("Sent")
+                .sentTime(LocalDateTime.now())
+                .build();
+
+        ChatMessage chatMessage = chatMessageService.addChatMessage(createChatMessageRequest);
+
+        WebSocketMessage webSocketMessage = WebSocketMessage.builder()
+                .chatMessage(chatMessage)
+                .build();
+
+        conversationGroup.getMemberIds().forEach(memberId ->
+                this.rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(),
+                        conversationGroup.getId(), webSocketMessage.toString()));
     }
 }

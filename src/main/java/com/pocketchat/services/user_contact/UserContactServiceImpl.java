@@ -140,8 +140,9 @@ public class UserContactServiceImpl implements UserContactService {
     }
 
     @Override
-    public List<UserContact> getUserContactsByUserId(String userId) {
-        return userContactRepoService.findByUserIds(userId);
+    public List<UserContact> getUserContactsByUserId() {
+        UserAuthentication userAuthentication = userAuthenticationService.getOwnUserAuthentication();
+        return userContactRepoService.findByUserIds(userAuthentication.getUserId());
     }
 
     @Override

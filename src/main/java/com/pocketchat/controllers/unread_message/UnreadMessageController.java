@@ -22,23 +22,23 @@ public class UnreadMessageController {
         this.unreadMessageService = unreadMessageService;
     }
 
-    @PostMapping("")
-    public ResponseEntity<Object> addUnreadMessage(@Valid @RequestBody CreateUnreadMessageRequest unreadMessage) {
-        UnreadMessageResponse savedUnreadMessage = unreadMessageService.addUnreadMessage(unreadMessage);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUnreadMessage.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
-    }
+//    @PostMapping("")
+//    public ResponseEntity<Object> addUnreadMessage(@Valid @RequestBody CreateUnreadMessageRequest unreadMessage) {
+//        UnreadMessageResponse savedUnreadMessage = unreadMessageService.addUnreadMessage(unreadMessage);
+//        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUnreadMessage.getId())
+//                .toUri();
+//        return ResponseEntity.created(location).build();
+//    }
 
     @PutMapping("")
     public UnreadMessageResponse editUnreadMessage(@Valid @RequestBody UpdateUnreadMessageRequest unreadMessage) {
         return unreadMessageService.editUnreadMessage(unreadMessage);
     }
 
-    @DeleteMapping("/{unreadMessageId}")
-    public void deleteUnreadMessage(@PathVariable String unreadMessageId) {
-        unreadMessageService.deleteUnreadMessage(unreadMessageId);
-    }
+//    @DeleteMapping("/{unreadMessageId}")
+//    public void deleteUnreadMessage(@PathVariable String unreadMessageId) {
+//        unreadMessageService.deleteUnreadMessage(unreadMessageId);
+//    }
 
     @GetMapping("/{unreadMessageId}")
     public UnreadMessageResponse getSingleUnreadMessage(@PathVariable String unreadMessageId) {

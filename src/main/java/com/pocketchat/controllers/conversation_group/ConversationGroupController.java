@@ -28,7 +28,7 @@ public class ConversationGroupController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> addConversation(@Valid @RequestBody CreateConversationGroupRequest conversationGroup) {
+    public ResponseEntity<Object> addConversationGroup(@Valid @RequestBody CreateConversationGroupRequest conversationGroup) {
         ConversationGroup savedConversationGroup = conversationGroupService.addConversation(conversationGroup);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedConversationGroup.getId())
                 .toUri();
@@ -36,7 +36,7 @@ public class ConversationGroupController {
     }
 
     @PutMapping("")
-    public ConversationGroupResponse editConversation(@Valid @RequestBody UpdateConversationGroupRequest updateConversationGroupRequest) {
+    public ConversationGroupResponse editConversationGroup(@Valid @RequestBody UpdateConversationGroupRequest updateConversationGroupRequest) {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.editConversation(updateConversationGroupRequest));
     }
 
@@ -50,9 +50,9 @@ public class ConversationGroupController {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.getSingleConversation(conversationGroupId));
     }
 
-    @GetMapping("/user/mobileNo/{mobileNo}")
-    public List<ConversationGroupResponse> getConversationsForUserByMobileNo(@PathVariable String mobileNo) {
-        List<ConversationGroup> conversationGroupList = conversationGroupService.getConversationsForUserByMobileNo(mobileNo);
+    @GetMapping("/user")
+    public List<ConversationGroupResponse> getUserOwnConversationGroups() {
+        List<ConversationGroup> conversationGroupList = conversationGroupService.getUserOwnConversationGroups();
         return conversationGroupList.stream().map(conversationGroupService::conversationGroupResponseMapper).collect(Collectors.toList());
     }
 }

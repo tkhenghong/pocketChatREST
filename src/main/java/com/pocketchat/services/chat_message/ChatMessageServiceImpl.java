@@ -84,7 +84,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     public List<ChatMessage> getChatMessagesOfAConversation(String conversationGroupId) {
         conversationGroupService.getSingleConversation(conversationGroupId);
         List<ChatMessage> chatMessageList = chatMessageRepoService.findAllMessagesByConversationId(conversationGroupId);
-//        rabbitMQService.listenMessagesFromQueue();
+        // rabbitMQService.listenMessagesFromQueue();
         return chatMessageList;
     }
 
@@ -96,9 +96,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .createdTime(createChatMessageRequest.getCreatedTime())
                 .messageContent(createChatMessageRequest.getMessageContent())
                 .multimediaId(createChatMessageRequest.getMultimediaId())
-                .receiverId(createChatMessageRequest.getReceiverId())
-                .receiverMobileNo(createChatMessageRequest.getReceiverMobileNo())
-                .receiverName(createChatMessageRequest.getReceiverName())
                 .senderId(createChatMessageRequest.getConversationId())
                 .senderMobileNo(createChatMessageRequest.getSenderMobileNo())
                 .senderName(createChatMessageRequest.getSenderName())
@@ -116,9 +113,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .createdTime(updateMessageRequest.getCreatedTime())
                 .messageContent(updateMessageRequest.getMessageContent())
                 .multimediaId(updateMessageRequest.getMultimediaId())
-                .receiverId(updateMessageRequest.getReceiverId())
-                .receiverMobileNo(updateMessageRequest.getReceiverMobileNo())
-                .receiverName(updateMessageRequest.getReceiverName())
                 .senderId(updateMessageRequest.getConversationId())
                 .senderMobileNo(updateMessageRequest.getSenderMobileNo())
                 .senderName(updateMessageRequest.getSenderName())

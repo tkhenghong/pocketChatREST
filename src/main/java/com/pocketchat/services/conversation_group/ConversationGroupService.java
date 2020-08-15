@@ -16,7 +16,7 @@ public interface ConversationGroupService {
 
     ConversationGroup getSingleConversation(String conversationId);
 
-    List<ConversationGroup> getConversationsForUserByMobileNo(String mobileNo);
+    List<ConversationGroup> getUserOwnConversationGroups();
 
     List<ConversationGroup> findAllByMemberIds(String userContactId);
 

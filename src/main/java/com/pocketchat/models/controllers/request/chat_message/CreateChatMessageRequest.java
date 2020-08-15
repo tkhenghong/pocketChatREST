@@ -11,7 +11,7 @@ public class CreateChatMessageRequest {
     @NotBlank
     private String conversationId;
 
-    // Sender
+    // Sender START TODO: Create these fields in the system. Not sent from the frontend.
     @NotBlank
     private String senderId;
 
@@ -20,13 +20,7 @@ public class CreateChatMessageRequest {
 
     @NotBlank
     private String senderMobileNo;
-
-    // Receiver
-    private String receiverId;
-
-    private String receiverName;
-
-    private String receiverMobileNo;
+    // Sender END
 
     private String type;
 
@@ -42,15 +36,12 @@ public class CreateChatMessageRequest {
 
     private LocalDateTime sentTime;
 
-    CreateChatMessageRequest(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, @NotBlank String messageContent, String multimediaId, @NotNull LocalDateTime createdTime, LocalDateTime sentTime) {
+    CreateChatMessageRequest(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, String type, String status, @NotBlank String messageContent, String multimediaId, @NotNull LocalDateTime createdTime, LocalDateTime sentTime) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.senderMobileNo = senderMobileNo;
-        this.receiverId = receiverId;
-        this.receiverName = receiverName;
-        this.receiverMobileNo = receiverMobileNo;
         this.type = type;
         this.status = status;
         this.messageContent = messageContent;
@@ -62,6 +53,7 @@ public class CreateChatMessageRequest {
     public static CreateChatMessageRequestBuilder builder() {
         return new CreateChatMessageRequestBuilder();
     }
+
 
     public String getId() {
         return this.id;
@@ -81,18 +73,6 @@ public class CreateChatMessageRequest {
 
     public @NotBlank String getSenderMobileNo() {
         return this.senderMobileNo;
-    }
-
-    public String getReceiverId() {
-        return this.receiverId;
-    }
-
-    public String getReceiverName() {
-        return this.receiverName;
-    }
-
-    public String getReceiverMobileNo() {
-        return this.receiverMobileNo;
     }
 
     public String getType() {
@@ -137,18 +117,6 @@ public class CreateChatMessageRequest {
 
     public void setSenderMobileNo(@NotBlank String senderMobileNo) {
         this.senderMobileNo = senderMobileNo;
-    }
-
-    public void setReceiverId(String receiverId) {
-        this.receiverId = receiverId;
-    }
-
-    public void setReceiverName(String receiverName) {
-        this.receiverName = receiverName;
-    }
-
-    public void setReceiverMobileNo(String receiverMobileNo) {
-        this.receiverMobileNo = receiverMobileNo;
     }
 
     public void setType(String type) {
@@ -199,18 +167,6 @@ public class CreateChatMessageRequest {
         final Object other$senderMobileNo = other.getSenderMobileNo();
         if (this$senderMobileNo == null ? other$senderMobileNo != null : !this$senderMobileNo.equals(other$senderMobileNo))
             return false;
-        final Object this$receiverId = this.getReceiverId();
-        final Object other$receiverId = other.getReceiverId();
-        if (this$receiverId == null ? other$receiverId != null : !this$receiverId.equals(other$receiverId))
-            return false;
-        final Object this$receiverName = this.getReceiverName();
-        final Object other$receiverName = other.getReceiverName();
-        if (this$receiverName == null ? other$receiverName != null : !this$receiverName.equals(other$receiverName))
-            return false;
-        final Object this$receiverMobileNo = this.getReceiverMobileNo();
-        final Object other$receiverMobileNo = other.getReceiverMobileNo();
-        if (this$receiverMobileNo == null ? other$receiverMobileNo != null : !this$receiverMobileNo.equals(other$receiverMobileNo))
-            return false;
         final Object this$type = this.getType();
         final Object other$type = other.getType();
         if (this$type == null ? other$type != null : !this$type.equals(other$type)) return false;
@@ -252,12 +208,6 @@ public class CreateChatMessageRequest {
         result = result * PRIME + ($senderName == null ? 43 : $senderName.hashCode());
         final Object $senderMobileNo = this.getSenderMobileNo();
         result = result * PRIME + ($senderMobileNo == null ? 43 : $senderMobileNo.hashCode());
-        final Object $receiverId = this.getReceiverId();
-        result = result * PRIME + ($receiverId == null ? 43 : $receiverId.hashCode());
-        final Object $receiverName = this.getReceiverName();
-        result = result * PRIME + ($receiverName == null ? 43 : $receiverName.hashCode());
-        final Object $receiverMobileNo = this.getReceiverMobileNo();
-        result = result * PRIME + ($receiverMobileNo == null ? 43 : $receiverMobileNo.hashCode());
         final Object $type = this.getType();
         result = result * PRIME + ($type == null ? 43 : $type.hashCode());
         final Object $status = this.getStatus();
@@ -274,7 +224,7 @@ public class CreateChatMessageRequest {
     }
 
     public String toString() {
-        return "CreateChatMessageRequest(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", receiverId=" + this.getReceiverId() + ", receiverName=" + this.getReceiverName() + ", receiverMobileNo=" + this.getReceiverMobileNo() + ", type=" + this.getType() + ", status=" + this.getStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
+        return "CreateChatMessageRequest(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", type=" + this.getType() + ", status=" + this.getStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
     }
 
     public static class CreateChatMessageRequestBuilder {
@@ -283,9 +233,6 @@ public class CreateChatMessageRequest {
         private @NotBlank String senderId;
         private @NotBlank String senderName;
         private @NotBlank String senderMobileNo;
-        private String receiverId;
-        private String receiverName;
-        private String receiverMobileNo;
         private String type;
         private String status;
         private @NotBlank String messageContent;
@@ -321,21 +268,6 @@ public class CreateChatMessageRequest {
             return this;
         }
 
-        public CreateChatMessageRequest.CreateChatMessageRequestBuilder receiverId(String receiverId) {
-            this.receiverId = receiverId;
-            return this;
-        }
-
-        public CreateChatMessageRequest.CreateChatMessageRequestBuilder receiverName(String receiverName) {
-            this.receiverName = receiverName;
-            return this;
-        }
-
-        public CreateChatMessageRequest.CreateChatMessageRequestBuilder receiverMobileNo(String receiverMobileNo) {
-            this.receiverMobileNo = receiverMobileNo;
-            return this;
-        }
-
         public CreateChatMessageRequest.CreateChatMessageRequestBuilder type(String type) {
             this.type = type;
             return this;
@@ -367,11 +299,11 @@ public class CreateChatMessageRequest {
         }
 
         public CreateChatMessageRequest build() {
-            return new CreateChatMessageRequest(id, conversationId, senderId, senderName, senderMobileNo, receiverId, receiverName, receiverMobileNo, type, status, messageContent, multimediaId, createdTime, sentTime);
+            return new CreateChatMessageRequest(id, conversationId, senderId, senderName, senderMobileNo, type, status, messageContent, multimediaId, createdTime, sentTime);
         }
 
         public String toString() {
-            return "CreateChatMessageRequest.CreateChatMessageRequestBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", receiverId=" + this.receiverId + ", receiverName=" + this.receiverName + ", receiverMobileNo=" + this.receiverMobileNo + ", type=" + this.type + ", status=" + this.status + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
+            return "CreateChatMessageRequest.CreateChatMessageRequestBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", type=" + this.type + ", status=" + this.status + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
         }
     }
 }

@@ -63,14 +63,10 @@ public class UserContactController {
         return userContactService.userContactResponseMapper(userContactService.getUserContactByMobileNo(mobileNo));
     }
 
-    @GetMapping("/")
-    public UserContactResponse getOwnUserContact() {
-        return userContactService.userContactResponseMapper(userContactService.getOwnUserContact());
-    }
-
-    @GetMapping("/user/{userId}")
-    public List<UserContactResponse> getUserContactsByUserId(@PathVariable String userId) {
-        List<UserContact> userContactList = userContactService.getUserContactsByUserId(userId);
+    // Get all UserContacts of the signed in user, including yourself.
+    @GetMapping("/user")
+    public List<UserContactResponse> getUserContactsByUserId() {
+        List<UserContact> userContactList = userContactService.getUserContactsByUserId();
         return userContactList.stream().map(userContactService::userContactResponseMapper).collect(Collectors.toList());
     }
 }
