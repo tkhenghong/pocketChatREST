@@ -8,9 +8,9 @@ import com.pocketchat.models.controllers.response.user_contact.UserContactRespon
 import java.util.List;
 
 public interface UserContactService {
-    UserContactResponse addUserContact(CreateUserContactRequest userContact);
+    UserContact addUserContact(CreateUserContactRequest userContact);
 
-    UserContactResponse editUserContact(UpdateUserContactRequest userContact);
+    UserContact editUserContact(UpdateUserContactRequest userContact);
 
     void deleteUserContact(String userContactId);
 

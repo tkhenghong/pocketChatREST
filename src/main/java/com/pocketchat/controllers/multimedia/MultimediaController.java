@@ -28,7 +28,7 @@ public class MultimediaController {
 
     @PostMapping("")
     public ResponseEntity<Object> addMultimedia(@Valid @RequestBody CreateMultimediaRequest multimedia) {
-        MultimediaResponse savedMultimedia = multimediaService.addMultimedia(multimedia);
+        Multimedia savedMultimedia = multimediaService.addMultimedia(multimedia);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedMultimedia.getId())
                 .toUri();
         return ResponseEntity.created(location).build();
@@ -36,7 +36,7 @@ public class MultimediaController {
 
     @PutMapping("")
     public MultimediaResponse editMultimedia(@Valid @RequestBody UpdateMultimediaRequest multimedia) {
-        return multimediaService.editMultimedia(multimedia);
+        return multimediaService.multimediaResponseMapper(multimediaService.editMultimedia(multimedia));
     }
 
     @DeleteMapping("/{multimediaId}")

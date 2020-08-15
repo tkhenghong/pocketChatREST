@@ -44,7 +44,7 @@ public class MultimediaServiceImpl implements MultimediaService {
 
     @Override
     @Transactional
-    public MultimediaResponse addMultimedia(CreateMultimediaRequest createMultimediaRequest) {
+    public Multimedia addMultimedia(CreateMultimediaRequest createMultimediaRequest) {
         Multimedia multimedia = createMultimediaRequestToMultimediaMapper(createMultimediaRequest);
         Optional<Multimedia> multimediaOptional = Optional.empty();
 
@@ -58,15 +58,15 @@ public class MultimediaServiceImpl implements MultimediaService {
             multimediaOptional = multimediaRepoService.findMessageMultimedia(multimedia.getConversationId(), multimedia.getMessageId());
         }
 
-        return multimediaResponseMapper(multimediaOptional.orElseGet(() -> multimediaRepoService.save(multimedia)));
+        return multimediaOptional.orElseGet(() -> multimediaRepoService.save(multimedia));
     }
 
     @Override
     @Transactional
-    public MultimediaResponse editMultimedia(UpdateMultimediaRequest updateMultimediaRequest) {
+    public Multimedia editMultimedia(UpdateMultimediaRequest updateMultimediaRequest) {
         Multimedia multimedia = updateMultimediaRequestToMultimediaMapper(updateMultimediaRequest);
         getSingleMultimedia(multimedia.getId());
-        return multimediaResponseMapper(multimediaRepoService.save(multimedia)); // Straight save
+        return multimediaRepoService.save(multimedia); // Straight save
     }
 
     @Override

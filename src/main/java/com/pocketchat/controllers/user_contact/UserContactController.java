@@ -28,13 +28,10 @@ public class UserContactController {
 
     @PostMapping("")
     public ResponseEntity<Object> addUserContact(@Valid @RequestBody CreateUserContactRequest userContact) {
-        UserContactResponse savedUserContact = userContactService.addUserContact(userContact);
-
+        UserContact savedUserContact = userContactService.addUserContact(userContact);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUserContact.getId())
                 .toUri();
-
         return ResponseEntity.created(location).build();
-
     }
 
     // Add a bunch of UserContacts
@@ -44,8 +41,8 @@ public class UserContactController {
     //    }
 
     @PutMapping("")
-    public void editUserContact(@Valid @RequestBody UpdateUserContactRequest userContact) {
-        userContactService.editUserContact(userContact);
+    public UserContactResponse editUserContact(@Valid @RequestBody UpdateUserContactRequest userContact) {
+        return userContactService.userContactResponseMapper(userContactService.editUserContact(userContact));
     }
 
     @DeleteMapping("/{userContactId}")

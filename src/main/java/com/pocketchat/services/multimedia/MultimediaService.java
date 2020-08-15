@@ -8,9 +8,9 @@ import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import java.util.List;
 
 public interface MultimediaService {
-    MultimediaResponse addMultimedia(CreateMultimediaRequest multimedia);
+    Multimedia addMultimedia(CreateMultimediaRequest multimedia);
 
-    MultimediaResponse editMultimedia(UpdateMultimediaRequest multimedia);
+    Multimedia editMultimedia(UpdateMultimediaRequest multimedia);
 
     void deleteMultimedia(String multimediaId);
 

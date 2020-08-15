@@ -6,19 +6,15 @@ import com.pocketchat.models.controllers.request.settings.UpdateSettingsRequest;
 import com.pocketchat.models.controllers.response.settings.SettingsResponse;
 
 public interface SettingsService {
-    SettingsResponse addSettings(CreateSettingsRequest settings);
+    Settings addSettings(CreateSettingsRequest settings);
 
-    SettingsResponse editSettings(UpdateSettingsRequest settings);
+    Settings editSettings(UpdateSettingsRequest settings);
 
     void deleteSettings(String settingsId);
 
     Settings getSingleSettings(String settingsId);
 
-    SettingsResponse getOwnUserSettings(String userId);
-
-    Settings createSettingsRequestToSettingsMapper(CreateSettingsRequest createSettingsRequest);
-
-    Settings updateSettingsRequestToSettingsMapper(UpdateSettingsRequest updateSettingsRequest);
+    Settings getUserOwnSettings();
 
     SettingsResponse settingsResponseMapper(Settings settings);
 }

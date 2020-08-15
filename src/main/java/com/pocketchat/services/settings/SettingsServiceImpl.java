@@ -30,18 +30,18 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     @Transactional
-    public SettingsResponse addSettings(CreateSettingsRequest createSettingsRequest) {
+    public Settings addSettings(CreateSettingsRequest createSettingsRequest) {
         Settings settings = createSettingsRequestToSettingsMapper(createSettingsRequest);
         Optional<Settings> settingsOptional = settingsRepoService.findByUserId(settings.getUserId());
-        return settingsResponseMapper(settingsOptional.orElseGet(() -> settingsRepoService.save(settings)));
+        return settingsOptional.orElseGet(() -> settingsRepoService.save(settings));
     }
 
     @Override
     @Transactional
-    public SettingsResponse editSettings(UpdateSettingsRequest updateSettingsRequest) {
+    public Settings editSettings(UpdateSettingsRequest updateSettingsRequest) {
         Settings settings = updateSettingsRequestToSettingsMapper(updateSettingsRequest);
         getSingleSettings(settings.getId());
-        return settingsResponseMapper(settingsRepoService.save(settings));
+        return settingsRepoService.save(settings);
     }
 
     @Override
@@ -60,19 +60,18 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public SettingsResponse getOwnUserSettings(String userId) {
+    public Settings getUserOwnSettings() {
         UserAuthentication userAuthentication = userAuthenticationService.getOwnUserAuthentication();
 
         Optional<Settings> settingsOptional = settingsRepoService.findByUserId(userAuthentication.getUserId());
 
         if (settingsOptional.isEmpty()) {
-            throw new SettingsNotFoundException("userId not found in getSettingsOfAUser, userId:-" + userId);
+            throw new SettingsNotFoundException("userId not found in getSettingsOfAUser, userId:-" + userAuthentication.getUserId());
         }
-        return settingsResponseMapper(settingsOptional.get());
+        return settingsOptional.get();
     }
 
-    @Override
-    public Settings createSettingsRequestToSettingsMapper(CreateSettingsRequest createSettingsRequest) {
+    private Settings createSettingsRequestToSettingsMapper(CreateSettingsRequest createSettingsRequest) {
         return Settings.builder()
                 .id(createSettingsRequest.getId())
                 .allowNotifications(createSettingsRequest.isAllowNotifications())
@@ -80,8 +79,7 @@ public class SettingsServiceImpl implements SettingsService {
                 .build();
     }
 
-    @Override
-    public Settings updateSettingsRequestToSettingsMapper(UpdateSettingsRequest updateSettingsRequest) {
+    private Settings updateSettingsRequestToSettingsMapper(UpdateSettingsRequest updateSettingsRequest) {
         return Settings.builder()
                 .id(updateSettingsRequest.getId())
                 .allowNotifications(updateSettingsRequest.isAllowNotifications())

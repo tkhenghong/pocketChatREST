@@ -38,7 +38,7 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     @Transactional
-    public UserContactResponse addUserContact(CreateUserContactRequest createUserContactRequest) {
+    public UserContact addUserContact(CreateUserContactRequest createUserContactRequest) {
         UserContact userContact = createUserContactRequestToUserContactMapper(createUserContactRequest);
 
         // Reason to put it here:
@@ -50,7 +50,7 @@ public class UserContactServiceImpl implements UserContactService {
         // Check existing UserContact before add new unique UserContact
         UserContact existingUserContact = userContactRepoService.findByMobileNo(filteredMobileNo);
         if (ObjectUtils.isEmpty(existingUserContact)) {
-            return userContactResponseMapper(userContactRepoService.save(userContact));
+            return userContactRepoService.save(userContact);
         } else {
             // Merge UserContact by putting that user ID into the existing UserContact
             List<String> currentUserIds = existingUserContact.getUserIds();
@@ -63,10 +63,10 @@ public class UserContactServiceImpl implements UserContactService {
                 currentUserIds.add(userContact.getUserIds().get(0));
                 existingUserContact.setUserIds(currentUserIds);
 
-                return userContactResponseMapper(userContactRepoService.save(existingUserContact));
+                return userContactRepoService.save(existingUserContact);
             }
 
-            return userContactResponseMapper(existingUserContact);
+            return existingUserContact;
         }
     }
 
@@ -96,9 +96,9 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     @Transactional
-    public UserContactResponse editUserContact(UpdateUserContactRequest updateUserContactRequest) {
+    public UserContact editUserContact(UpdateUserContactRequest updateUserContactRequest) {
         getUserContact(updateUserContactRequest.getId());
-        return userContactResponseMapper(userContactRepoService.save(updateUserContactRequestToUserContactMapper(updateUserContactRequest)));
+        return userContactRepoService.save(updateUserContactRequestToUserContactMapper(updateUserContactRequest));
     }
 
     @Override

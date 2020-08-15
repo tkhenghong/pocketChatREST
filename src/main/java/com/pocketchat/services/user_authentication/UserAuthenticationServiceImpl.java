@@ -1,12 +1,18 @@
 package com.pocketchat.services.user_authentication;
 
+import com.pocketchat.db.models.multimedia.Multimedia;
+import com.pocketchat.db.models.settings.Settings;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_authentication.UserAuthentication;
+import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.models.user_role.UserRole;
 import com.pocketchat.db.repo_services.user_authentication.UserAuthenticationRepoService;
 import com.pocketchat.db.repo_services.user_role.UserRoleRepoService;
+import com.pocketchat.models.controllers.request.multimedia.CreateMultimediaRequest;
+import com.pocketchat.models.controllers.request.settings.CreateSettingsRequest;
 import com.pocketchat.models.controllers.request.user.CreateUserRequest;
 import com.pocketchat.models.controllers.request.user_authentication.*;
+import com.pocketchat.models.controllers.request.user_contact.CreateUserContactRequest;
 import com.pocketchat.models.controllers.response.user_authentication.OTPResponse;
 import com.pocketchat.models.controllers.response.user_authentication.PreVerifyMobileNumberOTPResponse;
 import com.pocketchat.models.controllers.response.user_authentication.UserAuthenticationResponse;
@@ -23,9 +29,12 @@ import com.pocketchat.server.exceptions.otp.WrongOTPException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import com.pocketchat.server.exceptions.user_role.UserRoleNotFoundException;
 import com.pocketchat.services.email.EmailService;
+import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.otp.OTPService;
+import com.pocketchat.services.settings.SettingsService;
 import com.pocketchat.services.sms.SMSService;
 import com.pocketchat.services.user.UserService;
+import com.pocketchat.services.user_contact.UserContactService;
 import com.pocketchat.utils.country_code.CountryCodeUtil;
 import com.pocketchat.utils.email.EmailUtil;
 import com.pocketchat.utils.jwt.JwtUtil;
@@ -48,6 +57,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -62,6 +72,12 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     private final UserRoleRepoService userRoleRepoService;
 
     private final UserService userService;
+
+    private final UserContactService userContactService;
+
+    private final MultimediaService multimediaService;
+
+    private final SettingsService settingsService;
 
     private final SMSService smsService;
 
@@ -95,6 +111,9 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             UserAuthenticationRepoService userAuthenticationRepoService,
             UserRoleRepoService userRoleRepoService,
             @Lazy UserService userService,
+            UserContactService userContactService,
+            MultimediaService multimediaService,
+            SettingsService settingsService,
             SMSService smsService,
             EmailService emailService,
             AuthenticationManager authenticationManager,
@@ -108,6 +127,9 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         this.userAuthenticationRepoService = userAuthenticationRepoService;
         this.userRoleRepoService = userRoleRepoService;
         this.userService = userService;
+        this.userContactService = userContactService;
+        this.multimediaService = multimediaService;
+        this.settingsService = settingsService;
         this.smsService = smsService;
         this.emailService = emailService;
         this.authenticationManager = authenticationManager;
@@ -172,6 +194,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
         UserAuthentication userAuthentication = registerUserAuthentication("ROLE_USER", user.getId(), verifyMobileNumberOTPRequest.getMobileNo(), securePassword);
 
+        createUserDetails(user);
         return allowAuthentication(userAuthentication.getUsername());
     }
 
@@ -333,6 +356,29 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                 .password(password)
                 .userRoles(Collections.singletonList(assignUserRole(userRole)))
                 .userId(userId)
+                .build());
+    }
+
+    // Create Settings, Multimedia(Profile Picture) and UserContact
+    private void createUserDetails(User user) {
+        UserContact userContact = userContactService.addUserContact(CreateUserContactRequest.builder()
+                .displayName(user.getDisplayName())
+                .realName(user.getRealName())
+                .block(false)
+                .mobileNo(user.getMobileNo())
+                .userId(user.getId())
+                .lastSeenDate(LocalDateTime.now())
+                .userIds(Collections.emptyList())
+                .build());
+
+        multimediaService.addMultimedia(CreateMultimediaRequest.builder()
+                .userId(user.getId())
+                .userContactId(userContact.getId())
+                .build());
+
+        settingsService.addSettings(CreateSettingsRequest.builder()
+                .userId(user.getId())
+                .allowNotifications(true)
                 .build());
     }
 

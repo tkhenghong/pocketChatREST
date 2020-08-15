@@ -1,16 +1,12 @@
 package com.pocketchat.controllers.settings;
 
-import com.pocketchat.models.controllers.request.settings.CreateSettingsRequest;
 import com.pocketchat.models.controllers.request.settings.UpdateSettingsRequest;
 import com.pocketchat.models.controllers.response.settings.SettingsResponse;
 import com.pocketchat.services.settings.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
 
 @RestController
 @RequestMapping("/settings")
@@ -33,7 +29,7 @@ public class SettingsController {
 
     @PutMapping(value = "")
     public SettingsResponse editSettings(@Valid @RequestBody UpdateSettingsRequest settings) {
-        return settingsService.editSettings(settings);
+        return settingsService.settingsResponseMapper(settingsService.editSettings(settings));
     }
 
 //    @DeleteMapping("/{settingsId}")
@@ -47,7 +43,7 @@ public class SettingsController {
 //    }
 
     @GetMapping("/user/{userId}")
-    public SettingsResponse getSettingsOfAUser(@PathVariable String userId) {
-        return settingsService.getOwnUserSettings(userId);
+    public SettingsResponse getUserOwnSettings() {
+        return settingsService.settingsResponseMapper(settingsService.getUserOwnSettings());
     }
 }
