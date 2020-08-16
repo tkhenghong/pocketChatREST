@@ -368,7 +368,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                 .mobileNo(user.getMobileNo())
                 .userId(user.getId())
                 .lastSeenDate(LocalDateTime.now())
-                .userIds(Collections.emptyList())
+                .userIds(Collections.singletonList(user.getId()))
                 .build());
 
         multimediaService.addMultimedia(CreateMultimediaRequest.builder()

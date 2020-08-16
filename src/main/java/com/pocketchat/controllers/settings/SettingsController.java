@@ -42,7 +42,7 @@ public class SettingsController {
 //        return settingsService.settingsResponseMapper(settingsService.getSingleSettings(settingsId));
 //    }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     public SettingsResponse getUserOwnSettings() {
         return settingsService.settingsResponseMapper(settingsService.getUserOwnSettings());
     }

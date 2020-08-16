@@ -62,8 +62,8 @@ public class UserContactController {
 
     // Get all UserContacts of the signed in user, including yourself.
     @GetMapping("/user")
-    public List<UserContactResponse> getUserContactsByUserId() {
-        List<UserContact> userContactList = userContactService.getUserContactsByUserId();
+    public List<UserContactResponse> getUserContactsOfAUser() {
+        List<UserContact> userContactList = userContactService.getUserContactsOfAUser();
         return userContactList.stream().map(userContactService::userContactResponseMapper).collect(Collectors.toList());
     }
 }

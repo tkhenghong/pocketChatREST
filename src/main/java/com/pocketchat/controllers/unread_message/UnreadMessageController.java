@@ -1,16 +1,13 @@
 package com.pocketchat.controllers.unread_message;
 
-import com.pocketchat.models.controllers.request.unread_message.CreateUnreadMessageRequest;
 import com.pocketchat.models.controllers.request.unread_message.UpdateUnreadMessageRequest;
 import com.pocketchat.models.controllers.response.unread_message.UnreadMessageResponse;
 import com.pocketchat.services.unread_message.UnreadMessageService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/unreadMessage")
@@ -24,7 +21,7 @@ public class UnreadMessageController {
 
 //    @PostMapping("")
 //    public ResponseEntity<Object> addUnreadMessage(@Valid @RequestBody CreateUnreadMessageRequest unreadMessage) {
-//        UnreadMessageResponse savedUnreadMessage = unreadMessageService.addUnreadMessage(unreadMessage);
+//        UnreadMessage savedUnreadMessage = unreadMessageService.addUnreadMessage(unreadMessage);
 //        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUnreadMessage.getId())
 //                .toUri();
 //        return ResponseEntity.created(location).build();
@@ -32,7 +29,7 @@ public class UnreadMessageController {
 
     @PutMapping("")
     public UnreadMessageResponse editUnreadMessage(@Valid @RequestBody UpdateUnreadMessageRequest unreadMessage) {
-        return unreadMessageService.editUnreadMessage(unreadMessage);
+        return unreadMessageService.unreadMessageResponseMapper(unreadMessageService.editUnreadMessage(unreadMessage));
     }
 
 //    @DeleteMapping("/{unreadMessageId}")
@@ -45,8 +42,9 @@ public class UnreadMessageController {
         return unreadMessageService.unreadMessageResponseMapper(unreadMessageService.getSingleUnreadMessage(unreadMessageId));
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     public List<UnreadMessageResponse> getUnreadMessagesOfAUser() {
-        return unreadMessageService.getUserOwnUnreadMessages();
+        return unreadMessageService.getUserOwnUnreadMessages().stream()
+                .map(unreadMessageService::unreadMessageResponseMapper).collect(Collectors.toList());
     }
 }

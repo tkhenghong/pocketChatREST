@@ -140,7 +140,7 @@ public class UserContactServiceImpl implements UserContactService {
     }
 
     @Override
-    public List<UserContact> getUserContactsByUserId() {
+    public List<UserContact> getUserContactsOfAUser() {
         UserAuthentication userAuthentication = userAuthenticationService.getOwnUserAuthentication();
         return userContactRepoService.findByUserIds(userAuthentication.getUserId());
     }

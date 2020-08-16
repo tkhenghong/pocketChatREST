@@ -111,13 +111,10 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         return conversationGroupRepoService.findAllByMemberIds(userContact.getId());
     }
 
+    // Not throwing exception if no conversation groups were found
     @Override
     public List<ConversationGroup> findAllByMemberIds(String userContactId) {
-        List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(userContactId);
-        if (conversationGroupList.isEmpty()) {
-            throw new UserContactNotFoundException("UserContactId not found: " + userContactId);
-        }
-        return conversationGroupList;
+        return conversationGroupRepoService.findAllByMemberIds(userContactId);
     }
 
     @Override

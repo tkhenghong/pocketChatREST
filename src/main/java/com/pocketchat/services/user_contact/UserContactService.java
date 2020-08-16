@@ -20,7 +20,7 @@ public interface UserContactService {
 
     UserContact getOwnUserContact();
 
-    List<UserContact> getUserContactsByUserId();
+    List<UserContact> getUserContactsOfAUser();
 
     UserContact createUserContactRequestToUserContactMapper(CreateUserContactRequest createUserContactRequest);
 

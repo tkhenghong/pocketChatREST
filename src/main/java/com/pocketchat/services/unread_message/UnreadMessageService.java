@@ -8,15 +8,15 @@ import com.pocketchat.models.controllers.response.unread_message.UnreadMessageRe
 import java.util.List;
 
 public interface UnreadMessageService {
-    UnreadMessageResponse addUnreadMessage(CreateUnreadMessageRequest unreadMessage);
+    UnreadMessage addUnreadMessage(CreateUnreadMessageRequest unreadMessage);
 
-    UnreadMessageResponse editUnreadMessage(UpdateUnreadMessageRequest unreadMessage);
+    UnreadMessage editUnreadMessage(UpdateUnreadMessageRequest unreadMessage);
 
     void deleteUnreadMessage(String unreadMessageId);
 
     UnreadMessage getSingleUnreadMessage(String unreadMessageId);
 
-    List<UnreadMessageResponse> getUserOwnUnreadMessages();
+    List<UnreadMessage> getUserOwnUnreadMessages();
 
     UnreadMessage createUnreadMessageRequestToUnreadMessageMapper(CreateUnreadMessageRequest createUnreadMessageRequest);
 

@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Collection;
 
-@Document(collection = "role")
+@Document(collection = "user_role")
 public class UserRole {
     @Id
     private String id;
