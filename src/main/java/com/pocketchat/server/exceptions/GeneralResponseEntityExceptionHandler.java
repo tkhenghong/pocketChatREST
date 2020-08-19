@@ -99,7 +99,7 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
         return generateResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
     }
 
-    // Handle Bad Request Exceptions
+    // Handle Server Internal Error Exceptions
     @ExceptionHandler({
             EncryptionErrorException.class
     })
