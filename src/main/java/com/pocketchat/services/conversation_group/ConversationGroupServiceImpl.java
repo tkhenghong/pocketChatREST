@@ -14,6 +14,7 @@ import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotF
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
+import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import com.pocketchat.services.user_contact.UserContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,12 +52,12 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     @Override
     @Transactional
     public ConversationGroup addConversation(CreateConversationGroupRequest createConversationGroupRequest) {
-        UserContact creatorUserContact = userContactService.getUserContact(createConversationGroupRequest.getCreatorUserId());
-
-        createConversationGroupRequest.setCreatedDate(LocalDateTime.now());
-
         ConversationGroup conversationGroup = createConversationGroupRequestToConversationGroupMapper(createConversationGroupRequest);
-        String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + " on " + createConversationGroupRequest.getCreatedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
+        UserContact creatorUserContact = userContactService.getOwnUserContact();
+
+        String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + " on " + conversationGroup.getCreatedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
         switch (conversationGroup.getConversationGroupType()) {
             case Group:
             case Broadcast:
@@ -119,15 +120,16 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     @Override
     public ConversationGroup createConversationGroupRequestToConversationGroupMapper(CreateConversationGroupRequest createConversationGroupRequest) {
+
         return ConversationGroup.builder()
                 .conversationGroupType(createConversationGroupRequest.getConversationGroupType())
-                .notificationExpireDate(createConversationGroupRequest.getNotificationExpireDate())
+                .notificationExpireDate(null)
                 .name(createConversationGroupRequest.getName())
-                .creatorUserId(createConversationGroupRequest.getCreatorUserId())
+                .creatorUserId(null)
                 .memberIds(createConversationGroupRequest.getMemberIds())
                 .description(createConversationGroupRequest.getDescription())
-                .createdDate(createConversationGroupRequest.getCreatedDate())
-                .block(createConversationGroupRequest.isBlock())
+                .createdDate(LocalDateTime.now())
+                .block(false)
                 .adminMemberIds(createConversationGroupRequest.getAdminMemberIds())
                 .build();
     }
