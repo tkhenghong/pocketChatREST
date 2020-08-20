@@ -2,21 +2,22 @@ package com.pocketchat.services.chat_message;
 
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
+import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.chat_message.ChatMessageRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
-import com.pocketchat.models.controllers.request.chat_message.UpdateChatMessageRequest;
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
-import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
+import com.pocketchat.services.user_contact.UserContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,15 +28,19 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final ConversationGroupService conversationGroupService;
 
+    private final UserContactService userContactService;
+
     private final RabbitMQService rabbitMQService;
 
     // @Lazy to prevent circular dependencies in Spring Boot. https://www.baeldung.com/circular-dependencies-in-spring
     @Autowired
     public ChatMessageServiceImpl(ChatMessageRepoService chatMessageRepoService,
-                                  @Lazy  ConversationGroupService conversationGroupService,
+                                  @Lazy ConversationGroupService conversationGroupService,
+                                  UserContactService userContactService,
                                   RabbitMQService rabbitMQService) {
         this.chatMessageRepoService = chatMessageRepoService;
         this.conversationGroupService = conversationGroupService;
+        this.userContactService = userContactService;
         this.rabbitMQService = rabbitMQService;
     }
 
@@ -46,23 +51,19 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
         ChatMessage chatMessage = createChatMessageToChatMessage(createChatMessageRequest);
 
+        // *Attach sender details*
+        UserContact senderUserContact = userContactService.getOwnUserContact();
+        chatMessage.setSenderId(senderUserContact.getId());
+        chatMessage.setSenderMobileNo(senderUserContact.getMobileNo());
+        chatMessage.setSenderName(senderUserContact.getDisplayName());
+
+        chatMessage.setChatMessageStatus(ChatMessageStatus.Sending); // Only this program determine the chat messages' status
+
         ChatMessage newChatMessage = chatMessageRepoService.save(chatMessage);
 
         sendMessageToRabbitMQ(conversationGroup, newChatMessage);
 
         return newChatMessage;
-    }
-
-    @Override
-    @Transactional
-    public ChatMessage editChatMessage(UpdateChatMessageRequest updateMessageRequest) {
-        conversationGroupService.getSingleConversation(updateMessageRequest.getConversationId());
-
-        getSingleChatMessage(updateMessageRequest.getId());
-
-        ChatMessage chatMessage = updateChatMessageToChatMessage(updateMessageRequest);
-
-        return chatMessageRepoService.save(chatMessage);
     }
 
     @Override
@@ -91,34 +92,11 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public ChatMessage createChatMessageToChatMessage(CreateChatMessageRequest createChatMessageRequest) {
         return ChatMessage.builder()
-                .id(createChatMessageRequest.getId())
+                .chatMessageType(createChatMessageRequest.getChatMessageType())
                 .conversationId(createChatMessageRequest.getConversationId())
-                .createdTime(createChatMessageRequest.getCreatedTime())
                 .messageContent(createChatMessageRequest.getMessageContent())
                 .multimediaId(createChatMessageRequest.getMultimediaId())
-                .senderId(createChatMessageRequest.getConversationId())
-                .senderMobileNo(createChatMessageRequest.getSenderMobileNo())
-                .senderName(createChatMessageRequest.getSenderName())
-                .sentTime(createChatMessageRequest.getSentTime())
-                .status(ChatMessageStatus.valueOf(createChatMessageRequest.getStatus()))
-                .type(ChatMessageType.valueOf(createChatMessageRequest.getType()))
-                .build();
-    }
-
-    @Override
-    public ChatMessage updateChatMessageToChatMessage(UpdateChatMessageRequest updateMessageRequest) {
-        return ChatMessage.builder()
-                .id(updateMessageRequest.getId())
-                .conversationId(updateMessageRequest.getConversationId())
-                .createdTime(updateMessageRequest.getCreatedTime())
-                .messageContent(updateMessageRequest.getMessageContent())
-                .multimediaId(updateMessageRequest.getMultimediaId())
-                .senderId(updateMessageRequest.getConversationId())
-                .senderMobileNo(updateMessageRequest.getSenderMobileNo())
-                .senderName(updateMessageRequest.getSenderName())
-                .sentTime(updateMessageRequest.getSentTime())
-                .status(ChatMessageStatus.valueOf(updateMessageRequest.getStatus()))
-                .type(ChatMessageType.valueOf(updateMessageRequest.getType()))
+                .createdTime(LocalDateTime.now())
                 .build();
     }
 
@@ -126,16 +104,16 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     public ChatMessageResponse chatMessageResponseMapper(ChatMessage chatMessage) {
         return ChatMessageResponse.builder()
                 .id(chatMessage.getId())
+                .chatMessageType(chatMessage.getChatMessageType())
+                .chatMessageStatus(chatMessage.getChatMessageStatus())
                 .conversationId(chatMessage.getConversationId())
-                .createdTime(chatMessage.getCreatedTime())
                 .messageContent(chatMessage.getMessageContent())
                 .multimediaId(chatMessage.getMultimediaId())
                 .senderId(chatMessage.getConversationId())
-                .senderMobileNo(chatMessage.getSenderMobileNo())
                 .senderName(chatMessage.getSenderName())
+                .senderMobileNo(chatMessage.getSenderMobileNo())
+                .createdTime(chatMessage.getCreatedTime())
                 .sentTime(chatMessage.getSentTime())
-                .status(chatMessage.getStatus().getChatMessageStatus())
-                .type(chatMessage.getType().getChatMessageType())
                 .build();
     }
 

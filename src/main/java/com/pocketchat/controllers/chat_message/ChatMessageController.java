@@ -2,7 +2,6 @@ package com.pocketchat.controllers.chat_message;
 
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
-import com.pocketchat.models.controllers.request.chat_message.UpdateChatMessageRequest;
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
 import com.pocketchat.services.chat_message.ChatMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +31,6 @@ public class ChatMessageController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedChatMessage.getId())
                 .toUri();
         return ResponseEntity.created(location).build();
-    }
-
-    @PutMapping("")
-    public ChatMessageResponse editMessage(@Valid @RequestBody UpdateChatMessageRequest chatMessage) {
-        return chatMessageService.chatMessageResponseMapper(chatMessageService.editChatMessage(chatMessage));
     }
 
     @DeleteMapping("/{messageId}")

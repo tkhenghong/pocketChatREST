@@ -1,5 +1,8 @@
 package com.pocketchat.models.controllers.response.chat_message;
 
+import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
+import com.pocketchat.models.enums.chat_message.ChatMessageType;
+
 import java.time.LocalDateTime;
 
 public class ChatMessageResponse {
@@ -14,15 +17,9 @@ public class ChatMessageResponse {
 
     private String senderMobileNo;
 
-    private String receiverId;
+    private ChatMessageType chatMessageType;
 
-    private String receiverName;
-
-    private String receiverMobileNo;
-
-    private String type;
-
-    private String status;
+    private ChatMessageStatus chatMessageStatus;
 
     private String messageContent;
 
@@ -32,17 +29,14 @@ public class ChatMessageResponse {
 
     private LocalDateTime sentTime;
 
-    ChatMessageResponse(String id, String conversationId, String senderId, String senderName, String senderMobileNo, String receiverId, String receiverName, String receiverMobileNo, String type, String status, String messageContent, String multimediaId, LocalDateTime createdTime, LocalDateTime sentTime) {
+    ChatMessageResponse(String id, String conversationId, String senderId, String senderName, String senderMobileNo, ChatMessageType chatMessageType, ChatMessageStatus chatMessageStatus, String messageContent, String multimediaId, LocalDateTime createdTime, LocalDateTime sentTime) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.senderMobileNo = senderMobileNo;
-        this.receiverId = receiverId;
-        this.receiverName = receiverName;
-        this.receiverMobileNo = receiverMobileNo;
-        this.type = type;
-        this.status = status;
+        this.chatMessageType = chatMessageType;
+        this.chatMessageStatus = chatMessageStatus;
         this.messageContent = messageContent;
         this.multimediaId = multimediaId;
         this.createdTime = createdTime;
@@ -73,24 +67,12 @@ public class ChatMessageResponse {
         return this.senderMobileNo;
     }
 
-    public String getReceiverId() {
-        return this.receiverId;
+    public ChatMessageType getChatMessageType() {
+        return this.chatMessageType;
     }
 
-    public String getReceiverName() {
-        return this.receiverName;
-    }
-
-    public String getReceiverMobileNo() {
-        return this.receiverMobileNo;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-
-    public String getStatus() {
-        return this.status;
+    public ChatMessageStatus getChatMessageStatus() {
+        return this.chatMessageStatus;
     }
 
     public String getMessageContent() {
@@ -129,24 +111,12 @@ public class ChatMessageResponse {
         this.senderMobileNo = senderMobileNo;
     }
 
-    public void setReceiverId(String receiverId) {
-        this.receiverId = receiverId;
+    public void setChatMessageType(ChatMessageType chatMessageType) {
+        this.chatMessageType = chatMessageType;
     }
 
-    public void setReceiverName(String receiverName) {
-        this.receiverName = receiverName;
-    }
-
-    public void setReceiverMobileNo(String receiverMobileNo) {
-        this.receiverMobileNo = receiverMobileNo;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setChatMessageStatus(ChatMessageStatus chatMessageStatus) {
+        this.chatMessageStatus = chatMessageStatus;
     }
 
     public void setMessageContent(String messageContent) {
@@ -188,24 +158,14 @@ public class ChatMessageResponse {
         final Object other$senderMobileNo = other.getSenderMobileNo();
         if (this$senderMobileNo == null ? other$senderMobileNo != null : !this$senderMobileNo.equals(other$senderMobileNo))
             return false;
-        final Object this$receiverId = this.getReceiverId();
-        final Object other$receiverId = other.getReceiverId();
-        if (this$receiverId == null ? other$receiverId != null : !this$receiverId.equals(other$receiverId))
+        final Object this$chatMessageType = this.getChatMessageType();
+        final Object other$chatMessageType = other.getChatMessageType();
+        if (this$chatMessageType == null ? other$chatMessageType != null : !this$chatMessageType.equals(other$chatMessageType))
             return false;
-        final Object this$receiverName = this.getReceiverName();
-        final Object other$receiverName = other.getReceiverName();
-        if (this$receiverName == null ? other$receiverName != null : !this$receiverName.equals(other$receiverName))
+        final Object this$chatMessageStatus = this.getChatMessageStatus();
+        final Object other$chatMessageStatus = other.getChatMessageStatus();
+        if (this$chatMessageStatus == null ? other$chatMessageStatus != null : !this$chatMessageStatus.equals(other$chatMessageStatus))
             return false;
-        final Object this$receiverMobileNo = this.getReceiverMobileNo();
-        final Object other$receiverMobileNo = other.getReceiverMobileNo();
-        if (this$receiverMobileNo == null ? other$receiverMobileNo != null : !this$receiverMobileNo.equals(other$receiverMobileNo))
-            return false;
-        final Object this$type = this.getType();
-        final Object other$type = other.getType();
-        if (this$type == null ? other$type != null : !this$type.equals(other$type)) return false;
-        final Object this$status = this.getStatus();
-        final Object other$status = other.getStatus();
-        if (this$status == null ? other$status != null : !this$status.equals(other$status)) return false;
         final Object this$messageContent = this.getMessageContent();
         final Object other$messageContent = other.getMessageContent();
         if (this$messageContent == null ? other$messageContent != null : !this$messageContent.equals(other$messageContent))
@@ -241,16 +201,10 @@ public class ChatMessageResponse {
         result = result * PRIME + ($senderName == null ? 43 : $senderName.hashCode());
         final Object $senderMobileNo = this.getSenderMobileNo();
         result = result * PRIME + ($senderMobileNo == null ? 43 : $senderMobileNo.hashCode());
-        final Object $receiverId = this.getReceiverId();
-        result = result * PRIME + ($receiverId == null ? 43 : $receiverId.hashCode());
-        final Object $receiverName = this.getReceiverName();
-        result = result * PRIME + ($receiverName == null ? 43 : $receiverName.hashCode());
-        final Object $receiverMobileNo = this.getReceiverMobileNo();
-        result = result * PRIME + ($receiverMobileNo == null ? 43 : $receiverMobileNo.hashCode());
-        final Object $type = this.getType();
-        result = result * PRIME + ($type == null ? 43 : $type.hashCode());
-        final Object $status = this.getStatus();
-        result = result * PRIME + ($status == null ? 43 : $status.hashCode());
+        final Object $chatMessageType = this.getChatMessageType();
+        result = result * PRIME + ($chatMessageType == null ? 43 : $chatMessageType.hashCode());
+        final Object $chatMessageStatus = this.getChatMessageStatus();
+        result = result * PRIME + ($chatMessageStatus == null ? 43 : $chatMessageStatus.hashCode());
         final Object $messageContent = this.getMessageContent();
         result = result * PRIME + ($messageContent == null ? 43 : $messageContent.hashCode());
         final Object $multimediaId = this.getMultimediaId();
@@ -263,7 +217,7 @@ public class ChatMessageResponse {
     }
 
     public String toString() {
-        return "ChatMessageResponse(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", receiverId=" + this.getReceiverId() + ", receiverName=" + this.getReceiverName() + ", receiverMobileNo=" + this.getReceiverMobileNo() + ", type=" + this.getType() + ", status=" + this.getStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
+        return "ChatMessageResponse(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", chatMessageType=" + this.getChatMessageType() + ", chatMessageStatus=" + this.getChatMessageStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
     }
 
     public static class ChatMessageResponseBuilder {
@@ -272,11 +226,8 @@ public class ChatMessageResponse {
         private String senderId;
         private String senderName;
         private String senderMobileNo;
-        private String receiverId;
-        private String receiverName;
-        private String receiverMobileNo;
-        private String type;
-        private String status;
+        private ChatMessageType chatMessageType;
+        private ChatMessageStatus chatMessageStatus;
         private String messageContent;
         private String multimediaId;
         private LocalDateTime createdTime;
@@ -310,28 +261,13 @@ public class ChatMessageResponse {
             return this;
         }
 
-        public ChatMessageResponse.ChatMessageResponseBuilder receiverId(String receiverId) {
-            this.receiverId = receiverId;
+        public ChatMessageResponse.ChatMessageResponseBuilder chatMessageType(ChatMessageType chatMessageType) {
+            this.chatMessageType = chatMessageType;
             return this;
         }
 
-        public ChatMessageResponse.ChatMessageResponseBuilder receiverName(String receiverName) {
-            this.receiverName = receiverName;
-            return this;
-        }
-
-        public ChatMessageResponse.ChatMessageResponseBuilder receiverMobileNo(String receiverMobileNo) {
-            this.receiverMobileNo = receiverMobileNo;
-            return this;
-        }
-
-        public ChatMessageResponse.ChatMessageResponseBuilder type(String type) {
-            this.type = type;
-            return this;
-        }
-
-        public ChatMessageResponse.ChatMessageResponseBuilder status(String status) {
-            this.status = status;
+        public ChatMessageResponse.ChatMessageResponseBuilder chatMessageStatus(ChatMessageStatus chatMessageStatus) {
+            this.chatMessageStatus = chatMessageStatus;
             return this;
         }
 
@@ -356,11 +292,11 @@ public class ChatMessageResponse {
         }
 
         public ChatMessageResponse build() {
-            return new ChatMessageResponse(id, conversationId, senderId, senderName, senderMobileNo, receiverId, receiverName, receiverMobileNo, type, status, messageContent, multimediaId, createdTime, sentTime);
+            return new ChatMessageResponse(id, conversationId, senderId, senderName, senderMobileNo, chatMessageType, chatMessageStatus, messageContent, multimediaId, createdTime, sentTime);
         }
 
         public String toString() {
-            return "ChatMessageResponse.ChatMessageResponseBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", receiverId=" + this.receiverId + ", receiverName=" + this.receiverName + ", receiverMobileNo=" + this.receiverMobileNo + ", type=" + this.type + ", status=" + this.status + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
+            return "ChatMessageResponse.ChatMessageResponseBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", chatMessageType=" + this.chatMessageType + ", chatMessageStatus=" + this.chatMessageStatus + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
         }
     }
 }

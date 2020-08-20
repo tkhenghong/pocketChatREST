@@ -8,14 +8,16 @@ import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageR
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
+import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.models.websocket.WebSocketMessage;
+import com.pocketchat.server.exceptions.conversation_group.ConversationGroupAdminNotInMemberIdListException;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
-import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
-import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import com.pocketchat.services.user_contact.UserContactService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ConversationGroupServiceImpl implements ConversationGroupService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ConversationGroupRepoService conversationGroupRepoService;
 
@@ -125,12 +129,12 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .conversationGroupType(createConversationGroupRequest.getConversationGroupType())
                 .notificationExpireDate(null)
                 .name(createConversationGroupRequest.getName())
-                .creatorUserId(null)
                 .memberIds(createConversationGroupRequest.getMemberIds())
+                .adminMemberIds(createConversationGroupRequest.getAdminMemberIds())
                 .description(createConversationGroupRequest.getDescription())
                 .createdDate(LocalDateTime.now())
+                .creatorUserId(null)
                 .block(false)
-                .adminMemberIds(createConversationGroupRequest.getAdminMemberIds())
                 .build();
     }
 
@@ -173,6 +177,13 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     ConversationGroup createAndSendMessage(ConversationGroup conversationGroup, String message) {
         checkUserContactsExist(conversationGroup.getMemberIds());
         checkUserContactsExist(conversationGroup.getAdminMemberIds());
+
+        boolean memberIdsHasAllAdminIds = conversationGroup.getMemberIds().containsAll(conversationGroup.getAdminMemberIds());
+
+        if (!memberIdsHasAllAdminIds) {
+            throw new ConversationGroupAdminNotInMemberIdListException("Error while creating a conversation group, admin ID is not included in memberId list!");
+        }
+
         ConversationGroup newConversationGroup = conversationGroupRepoService.save(conversationGroup);
         sendWelcomeMessage(newConversationGroup, message);
 
@@ -180,14 +191,11 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     }
 
     private void sendWelcomeMessage(ConversationGroup conversationGroup, String message) {
-
         CreateChatMessageRequest createChatMessageRequest = CreateChatMessageRequest.builder()
-                .type("Text")
+                .chatMessageType(ChatMessageType.Text)
                 .conversationId(conversationGroup.getId())
-                .createdTime(LocalDateTime.now())
                 .messageContent(message)
-                .status("Sent")
-                .sentTime(LocalDateTime.now())
+                .multimediaId(null)
                 .build();
 
         ChatMessage chatMessage = chatMessageService.addChatMessage(createChatMessageRequest);

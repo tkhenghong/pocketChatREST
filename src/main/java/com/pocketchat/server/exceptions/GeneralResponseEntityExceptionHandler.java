@@ -1,6 +1,7 @@
 package com.pocketchat.server.exceptions;
 
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
+import com.pocketchat.server.exceptions.conversation_group.ConversationGroupAdminNotInMemberIdListException;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.country_code.CountryCodeNotFoundException;
 import com.pocketchat.server.exceptions.encryption.EncryptionErrorException;
@@ -58,7 +59,8 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
             UserNotFoundException.class,
             UsernameNotFoundException.class,
             UserPrivilegeNotFoundException.class,
-            UserRoleNotFoundException.class
+            UserRoleNotFoundException.class,
+            ConversationGroupAdminNotInMemberIdListException.class
     })
     public ResponseEntity<ExceptionResponse> handleNotFoundExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.NOT_FOUND);
