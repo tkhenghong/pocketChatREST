@@ -6,6 +6,7 @@ import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoS
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupAdminNotInMemberIdListException;
+import com.pocketchat.server.exceptions.conversation_group.CreatorIsNotConversationGroupMemberException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
@@ -129,7 +131,7 @@ public class ConversationGroupServiceTests {
     }
 
     @Test
-    public void testCreateConversationGroupButAdminIdsNotWithinMemberIds() {
+    public void testCreateConversationGroupButAdminIsNotWithinMembersAndAdmins() {
         int numberOfGroupMembers = 20;
         UserContact creatorUserContact = generateUserContactObject();
         ConversationGroup conversationGroup = generateConversationGroupObject();
@@ -150,6 +152,48 @@ public class ConversationGroupServiceTests {
 
         try {
             Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
+            conversationGroupService.addConversation(createConversationGroupRequest);
+            failBecauseExceptionWasNotThrown(Exception.class);
+        } catch (Exception exception) {
+            Mockito.verify(userContactService).getOwnUserContact();
+            Mockito.verify(userContactService, times(0)).getUserContact(any());
+            Mockito.verify(conversationGroupRepoService, times(0)).save(any());
+
+            assertThat(exception).isInstanceOf(CreatorIsNotConversationGroupMemberException.class);
+        }
+    }
+
+    @Test
+    public void testCreateConversationGroupButSomeAdminIdsNotWithinMemberIds() {
+        int numberOfGroupMembers = 20;
+        UserContact creatorUserContact = generateUserContactObject();
+        ConversationGroup conversationGroup = generateConversationGroupObject();
+        UserContact unknownUserContact = generateUserContactObject();
+
+        List<UserContact> userContacts = new ArrayList<>();
+
+        for (int i = 0; i < numberOfGroupMembers; i++) {
+            userContacts.add(generateUserContactObject());
+        }
+
+        List<String> memberUserContactStrings = userContacts.stream().map(UserContact::getId).collect(Collectors.toList());
+        userContacts.add(creatorUserContact);
+        memberUserContactStrings.add(creatorUserContact.getId()); // Add creatorUserContact ID to member list, but not admin member list.
+
+        // Merge 2 lists: https://stackoverflow.com/questions/189559/how-do-i-join-two-lists-in-java
+        List<String> userContactStringsWithForeignUserContact = Stream.concat(memberUserContactStrings.stream(),
+                Stream.of(unknownUserContact.getId())).collect(Collectors.toList());
+        userContacts.add(unknownUserContact);
+
+        CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
+        createConversationGroupRequest.setMemberIds(memberUserContactStrings);
+        createConversationGroupRequest.setAdminMemberIds(userContactStringsWithForeignUserContact);
+
+        conversationGroup.setMemberIds(memberUserContactStrings);
+        conversationGroup.setAdminMemberIds(userContactStringsWithForeignUserContact);
+
+        try {
+            Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
             Mockito.when(userContactService.getUserContact(argThat(t ->
                     createConversationGroupRequest.getMemberIds().contains(t)))).thenAnswer(i ->
                     // In .thenAnswer(), you can get the arguments inside the Mockito.when(the method that you are mocking in mockBean.mockMethodName)
@@ -159,11 +203,13 @@ public class ConversationGroupServiceTests {
                             userContact.getId().equals(Arrays.asList(i.getArguments()).get(0)))
                             .findAny().orElseThrow(NullPointerException::new)
             );
+
             conversationGroupService.addConversation(createConversationGroupRequest);
             failBecauseExceptionWasNotThrown(Exception.class);
         } catch (Exception exception) {
             Mockito.verify(userContactService).getOwnUserContact();
-            int totalNumberOfUserContacts = createConversationGroupRequest.getAdminMemberIds().size() + createConversationGroupRequest.getMemberIds().size();
+            int totalNumberOfUserContacts = createConversationGroupRequest.getAdminMemberIds().size() +
+                    createConversationGroupRequest.getMemberIds().size();
             Mockito.verify(userContactService, times(totalNumberOfUserContacts)).getUserContact(any());
             Mockito.verify(conversationGroupRepoService, times(0)).save(any());
 
