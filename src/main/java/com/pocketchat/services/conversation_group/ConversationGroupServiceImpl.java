@@ -13,6 +13,7 @@ import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupAdminNotInMemberIdListException;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
+import com.pocketchat.server.exceptions.conversation_group.CreatorIsNotConversationGroupMemberException;
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.user_contact.UserContactService;
@@ -56,9 +57,18 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     @Override
     @Transactional
     public ConversationGroup addConversation(CreateConversationGroupRequest createConversationGroupRequest) {
+        UserContact creatorUserContact = userContactService.getOwnUserContact();
+
+        boolean creatorIsInCreateConversationGroupRequest =
+                createConversationGroupRequest.getAdminMemberIds().contains(creatorUserContact.getId()) &&
+                createConversationGroupRequest.getMemberIds().contains(creatorUserContact.getId());
+
+        if (!creatorIsInCreateConversationGroupRequest) {
+            throw new CreatorIsNotConversationGroupMemberException("The creator must be in both member and admins.");
+        }
+
         ConversationGroup conversationGroup = createConversationGroupRequestToConversationGroupMapper(createConversationGroupRequest);
 
-        UserContact creatorUserContact = userContactService.getOwnUserContact();
 
         String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + " on " + conversationGroup.getCreatedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
