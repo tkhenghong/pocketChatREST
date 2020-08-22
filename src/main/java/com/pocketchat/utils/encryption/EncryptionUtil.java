@@ -12,6 +12,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -164,8 +165,10 @@ public class EncryptionUtil {
     }
 
     private void setupRSAPrivateKey() throws IOException, InvalidKeySpecException {
-        File file = new ClassPathResource(rsaPrivateKeyDirectory).getFile();
-        String privateKeyString = new String(Files.readAllBytes(file.toPath()));
+        // DO NOT use new ClassPathResource(**DIRECTORY**).getFile(); anymore, especially if you're using Docker.
+        // https://stackoverflow.com/questions/14876836/file-inside-jar-is-not-visible-for-spring
+        InputStream fileInputStream = new ClassPathResource(rsaPrivateKeyDirectory).getInputStream();
+        String privateKeyString = new String(fileInputStream.readAllBytes());
 
         String filteredPrivateKey = privateKeyString
                 .replaceAll("\\n", "")
@@ -184,8 +187,10 @@ public class EncryptionUtil {
     }
 
     private void setupRSAPublicKey() throws IOException, InvalidKeySpecException {
-        File file = new ClassPathResource(rsaPublicKeyDirectory).getFile();
-        String publicKeyString = new String(Files.readAllBytes(file.toPath()));
+        // DO NOT use new ClassPathResource(**DIRECTORY**).getFile(); anymore, especially if you're using Docker.
+        // https://stackoverflow.com/questions/14876836/file-inside-jar-is-not-visible-for-spring
+        InputStream fileInputStream = new ClassPathResource(rsaPublicKeyDirectory).getInputStream();
+        String publicKeyString = new String(fileInputStream.readAllBytes());
 
         String filterPublicKey = publicKeyString
                 .replaceAll("\\n", "")
