@@ -62,3 +62,6 @@ EXPOSE 8888
 
 # Remove all unused Docker images:
 # docker system prune -a
+
+# Remove all current Docker images, containers and volumes
+# sudo docker rm -f $(sudo docker ps -aq)
