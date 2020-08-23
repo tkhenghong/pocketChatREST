@@ -1,14 +1,54 @@
+# Main resources:
+# https://dzone.com/articles/applying-cicd-to-java-apps-using-spring-boot
+
+# Travis CI is a CI/CD solution to help you test, build and deploy your app to somewhere else.
+
+# This file is to tell Travis CI what should it do to build your app correctly.
+# You can
+# Think of
+
+# language: java tells Travis
 language: java
 install: true
+
+# If you don't mention os: something, it will choose linux as default.
+
+# You can tell Travis CI to use which os (operating system), arch (CPU architecture)
+# and distribution of the OS to run the whole CI/CD process.
+# https://docs.travis-ci.com/user/reference/overview/
+
+# Automatically below uses Linux OS, amd64 (armv8) CPU architecture and use bionic distribution.
 dist: bionic
 
+# You can write one JDK to compile your project with that JDK. You can write multiple JDKs to test out
+# whether your project can run those version of JDKs.
 jdk:
   - oraclejdk14
   - openjdk14
 
+# Login into Docker before start performing scripts
+# Already added $DOCKER_PASSWORD and $DOCKER_USERNAME variables in Travis CI website before write the command here.
+# https://dzone.com/articles/applying-cicd-to-java-apps-using-spring-boot
+# Remember link your Github to Docker to automate build on each git push.
+before_install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker pull openjdk:latest
 
+# Executing scripts that you want to run here.
 script:
   - ./gradlew clean check
   - ./gradlew build
   - docker build -t tkhenghong/pocketchat .
-  - sudo docker push tkhenghong/pocketchat:latest
+  - docker push tkhenghong/pocketchat:latest
+
+# Reuse Gradle wrapper and caches for faster build:
+# https://guides.gradle.org/executing-gradle-builds-on-travisci/#enable_caching_of_downloaded_artifacts
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+# Tells Travis CI which directory to save Gradle wrapper and it's cache.
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
