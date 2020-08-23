@@ -9,3 +9,6 @@ jdk:
 
 script:
   - ./gradlew clean check
+  - ./gradlew build
+  - docker build -t tkhenghong/pocketchat .
+  - sudo docker push tkhenghong/pocketchat:latest
