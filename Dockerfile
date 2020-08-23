@@ -4,11 +4,18 @@
 # https://www.baeldung.com/dockerizing-spring-boot-application
 
 
-# VOLUME /tmp is important for you if your application need to create a file in the filesystem in the container(File upload/download)
+# This is important to build the whole project first using Gradle first when you're running in Docker Hub.
+# http://paulbakker.io/java/docker-gradle-multistage/
+FROM gradle:jdk14 as builder
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle build
+
 FROM openjdk:latest
 
 MAINTAINER tkhenghong@gmail.com
 
+# VOLUME /tmp is important for you if your application need to create a file in the filesystem in the container(File upload/download)
 VOLUME /tmp
 ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar app.jar
 
