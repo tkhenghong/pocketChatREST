@@ -27,7 +27,7 @@ COPY src/main/resources $HOME/src/main/resources
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 
 # Tell Docker to let the app use port number 8888 within the Docker container. (Not outside)
-EXPOSE 8888
+EXPOSE 8888 27107 5672 15672
 
 # Build this Spring Boot project:
 # gradle build
