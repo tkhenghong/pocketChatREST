@@ -66,6 +66,7 @@ services:
       - ${DATA_PATH_HOST}/rabbitmq/etc/:/etc/rabbitmq/
       - ${DATA_PATH_HOST}/rabbitmq/data/:/var/lib/rabbitmq/
       - ${DATA_PATH_HOST}/rabbitmq/logs/:/var/log/rabbitmq/
+# Some problem happened in RabbitMQ, https://github.com/laradock/laradock/issues/2048
 #      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
 #      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
 #      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
