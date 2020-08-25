@@ -31,6 +31,10 @@ services:
     ports:
       - 27017:27017
     restart: always
+#    command: --smallfiles # No more smallfiles option in latest mongo container. https://github.com/jsbroks/coco-annotator/issues/244
+# TODO: Investigate why chown: changing ownership of '/data/db': Operation not permitted when running Mongo Docker, need to retain the data
+# TODO: no matter how many instances it is running.
+# https://stackoverflow.com/questions/35400740/how-to-set-docker-mongo-data-volume
     volumes:
 #      - ./data/db:/data/db
       - /Users/tkhenghong/data/pocketChatMongoData:/data/db
