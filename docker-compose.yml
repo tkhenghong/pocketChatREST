@@ -13,14 +13,17 @@ services:
       - app-tier
     ports:
       - 8888:8888
-      - 27017:27017
-      - 5672:5672
-      - 15672:15672
+#      - 27017:27017
+#      - 5672:5672
+#      - 15672:15672
     depends_on:
       - mongo
 #      - mongo-express
       - rabbitmq
       - zookeeper
+    links:
+      - mongo
+      - rabbitmq
   mongo:
     image: mongo
     container_name: mongodb
@@ -60,9 +63,12 @@ services:
     container_name: rabbitmq
     hostname: rabbitmq
     volumes:
-      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
-      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
-      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+      - ${DATA_PATH_HOST}/rabbitmq/etc/:/etc/rabbitmq/
+      - ${DATA_PATH_HOST}/rabbitmq/data/:/var/lib/rabbitmq/
+      - ${DATA_PATH_HOST}/rabbitmq/logs/:/var/log/rabbitmq/
+#      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+#      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+#      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
