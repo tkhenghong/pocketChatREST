@@ -4,10 +4,15 @@
 # Travis CI is a CI/CD solution to help you test, build and deploy your app to somewhere else.
 
 # This file is to tell Travis CI what should it do to build your app correctly.
-# You can
-# Think of
+# Think of it as an OS when you're running Travis CI environment. Travis CI has to give you an OS to run all your stuffs.
+# You need to tell it what to install to run your project successfully.
 
-# language: java tells Travis
+# General guides & problems:
+
+# Executing Gradle builds on Travis CI:
+# https://guides.gradle.org/executing-gradle-builds-on-travisci/#enable_caching_of_downloaded_artifacts
+
+# language: java tells Travis this project uses Java to run.
 language: java
 install: true
 
