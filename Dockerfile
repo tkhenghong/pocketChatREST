@@ -11,12 +11,17 @@ COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle build
 
+RUN ls
+
 FROM openjdk:latest
 
 MAINTAINER tkhenghong@gmail.com
 
 # VOLUME /tmp is important for you if your application need to create a file in the filesystem in the container(File upload/download)
-VOLUME /tmp
+#VOLUME /tmp
+
+RUN ls
+
 ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar app.jar
 
 COPY src/main/resources $HOME/src/main/resources
