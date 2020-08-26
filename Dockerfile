@@ -6,19 +6,19 @@
 
 # This is important to build the whole project first using Gradle first when you're running in Docker Hub.
 # http://paulbakker.io/java/docker-gradle-multistage/
-FROM gradle:jdk14 as builder
-COPY --chown=gradle:gradle . /home/gradle/src
-WORKDIR /home/gradle/src
-RUN gradle build
+#FROM gradle:jdk14 as builder
+#COPY --chown=gradle:gradle . /home/gradle/src
+#WORKDIR /home/gradle/src
+#RUN gradle build
 
-RUN ls
+#RUN ls
 
 FROM openjdk:latest
 
 MAINTAINER tkhenghong@gmail.com
-
+RUN ls
 # VOLUME /tmp is important for you if your application need to create a file in the filesystem in the container(File upload/download)
-#VOLUME /tmp
+VOLUME /tmp
 
 RUN ls
 
