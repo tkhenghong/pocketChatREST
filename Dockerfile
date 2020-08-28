@@ -33,8 +33,9 @@ MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 #VOLUME /app
 
 #RUN ls
+RUN mkdir -p /app/
 
-ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar app.jar
+ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar /app/app.jar
 #ADD /tmp/pocketchat-0.0.1-SNAPSHOT.jar pocketchat.jar
 
 COPY src/main/resources $HOME/src/main/resources
@@ -50,7 +51,7 @@ COPY src/main/resources $HOME/src/main/resources
 # What exactly does “-Djava.security.egd=file:/dev/./urandom” do when containerizing a Spring Boot application:
 # https://stackoverflow.com/questions/58853372/what-exactly-does-djava-security-egd-file-dev-urandom-do-when-containerizi
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]
 #ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/pocketchat.jar"]
 
 # Tell Docker to let the app use port number 8888 within the Docker container. (Not outside)
