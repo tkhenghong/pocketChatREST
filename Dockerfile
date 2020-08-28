@@ -17,11 +17,11 @@ MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 
 RUN echo $HOME
 
-#COPY --from=builder /home/gradle/src/build/libs/pocketchat-0.0.1-SNAPSHOT.jar /tmp/
+COPY --from=builder /home/gradle/src/build/libs/pocketchat-0.0.1-SNAPSHOT.jar $HOME
 
 #RUN ls
 # VOLUME /tmp is important for you if your application need to create a file in the filesystem in the container(File upload/download)
-VOLUME /tmp
+#VOLUME /tmp
 
 ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar /app.jar
 #ADD /tmp/pocketchat-0.0.1-SNAPSHOT.jar pocketchat.jar
