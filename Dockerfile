@@ -11,47 +11,27 @@ COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle build
 
-#CMD echo "Command 2: Built JAR file should be below:"
-#CMD ls /home/gradle/src/build/libs
-#CMD echo "Command 2 END"
-
 FROM openjdk:latest
 
 MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 
-#COPY --from=builder /home/gradle/src/build/libs/pocketchat-0.0.1-SNAPSHOT.jar /tmp/
+RUN echo $HOME
 
-#CMD echo "Command 3: Copied JAR file should be below:"
-#CMD ls /tmp/
-#CMD echo "Command 3 END"
+#COPY --from=builder /home/gradle/src/build/libs/pocketchat-0.0.1-SNAPSHOT.jar /tmp/
 
 #RUN ls
 # VOLUME /tmp is important for you if your application need to create a file in the filesystem in the container(File upload/download)
-#VOLUME /tmp
-#WORKDIR /tmp
+VOLUME /tmp
 
-#VOLUME /app
-WORKDIR /home/gradle/src
-#RUN ls
-RUN mkdir -p /app/
-
-ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar /app/app.jar
+ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar /app.jar
 #ADD /tmp/pocketchat-0.0.1-SNAPSHOT.jar pocketchat.jar
 
 COPY src/main/resources $HOME/src/main/resources
 
-#RUN echo "Command 4: Items in /home/gradle/src/main/resources directory:"
-#RUN ls /home/gradle/src/main/resources
-#RUN echo "Command 4 END"
-
-#RUN echo "Command 5: Items in $HOME/src/main/resources directory:"
-#RUN ls $HOME/src/main/resources
-#RUN echo "Command 5 END"
-
 # What exactly does “-Djava.security.egd=file:/dev/./urandom” do when containerizing a Spring Boot application:
 # https://stackoverflow.com/questions/58853372/what-exactly-does-djava-security-egd-file-dev-urandom-do-when-containerizi
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 #ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/pocketchat.jar"]
 
 # Tell Docker to let the app use port number 8888 within the Docker container. (Not outside)
