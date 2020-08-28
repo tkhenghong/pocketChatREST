@@ -27,7 +27,7 @@ MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 
 #RUN ls
 # VOLUME /tmp is important for you if your application need to create a file in the filesystem in the container(File upload/download)
-VOLUME /tmp
+#VOLUME /tmp
 #WORKDIR /tmp
 
 #VOLUME /app
