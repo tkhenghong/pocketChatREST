@@ -15,6 +15,8 @@ FROM openjdk:latest
 
 MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 
+RUN ls
+
 RUN echo $HOME
 
 COPY --from=builder /home/gradle/src/build/libs/pocketchat-0.0.1-SNAPSHOT.jar $HOME
