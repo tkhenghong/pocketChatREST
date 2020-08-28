@@ -31,7 +31,7 @@ MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 #WORKDIR /tmp
 
 #VOLUME /app
-
+WORKDIR /home/gradle/src
 #RUN ls
 RUN mkdir -p /app/
 
