@@ -8,27 +8,26 @@
 # http://paulbakker.io/java/docker-gradle-multistage/
 FROM gradle:jdk14 as builder
 COPY --chown=gradle:gradle . /home/gradle/src
-WORKDIR /home/gradle/src
+#WORKDIR /home/gradle/src
 RUN gradle build
 
 FROM openjdk:latest
 
 MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 
-RUN ls
+ARG JAR_FILE=build/libs/*.jar
 
-RUN echo $HOME
-
-COPY --from=builder /home/gradle/src/build/libs/pocketchat-0.0.1-SNAPSHOT.jar $HOME
+#COPY --from=builder /home/gradle/src/build/libs/pocketchat-0.0.1-SNAPSHOT.jar $HOME
+COPY ${JAR_FILE} app.jar
 
 #RUN ls
 # VOLUME /tmp is important for you if your application need to create a file in the filesystem in the container(File upload/download)
 #VOLUME /tmp
 
-ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar /app.jar
+#ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar /app.jar
 #ADD /tmp/pocketchat-0.0.1-SNAPSHOT.jar pocketchat.jar
 
-COPY src/main/resources $HOME/src/main/resources
+#COPY src/main/resources $HOME/src/main/resources
 
 # What exactly does “-Djava.security.egd=file:/dev/./urandom” do when containerizing a Spring Boot application:
 # https://stackoverflow.com/questions/58853372/what-exactly-does-djava-security-egd-file-dev-urandom-do-when-containerizi
