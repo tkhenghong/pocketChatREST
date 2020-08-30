@@ -104,12 +104,12 @@ services:
     container_name: rabbitmq
     hostname: rabbitmq
     volumes:
-      - ${DATA_PATH_HOST}/rabbitmq/etc/:/etc/rabbitmq/
-      - ${DATA_PATH_HOST}/rabbitmq/data/:/var/lib/rabbitmq/
-      - ${DATA_PATH_HOST}/rabbitmq/logs/:/var/log/rabbitmq/
-    # - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
-    # - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
-    # - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+#      - ${DATA_PATH_HOST}/rabbitmq/etc/:/etc/rabbitmq/
+#      - ${DATA_PATH_HOST}/rabbitmq/data/:/var/lib/rabbitmq/
+#      - ${DATA_PATH_HOST}/rabbitmq/logs/:/var/log/rabbitmq/
+     - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+     - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+     - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
