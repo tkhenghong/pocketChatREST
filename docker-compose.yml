@@ -41,11 +41,16 @@
 # Dockerize your Java Application:
 # https://runnable.com/docker/java/dockerize-your-java-application
 
+# NOTE: You must go through:
+# https://hub.docker.com/r/bitnami/kafka/
+# to install new certificates for the server for secure Kafka authentication (SASL).
+
 version: "3"
 
 networks:
   app-tier:
     driver: bridge
+
 services:
   pocketChat:
     image: tkhenghong/pocketchat:latest
@@ -75,30 +80,30 @@ services:
     # command: --smallfiles
     volumes:
       # - ./data/db:/data/db
-      - /Users/tkhenghong/data/pocketChatMongoData:/data/db
-    environment:
+      - /tmp/pocketChatMongoData:/data/db
+#    environment:
       # MONGODB_URI: mongodb://mongodb
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: password
     networks:
       - app-tier
-  #  mongo-express:
-  #    image: mongo-express
-  #    restart: always
-  #    ports:
-  #      - 8081:8081
-  #    environment:
-  #      ME_CONFIG_MONGODB_SERVER: mongo
-  #      ME_CONFIG_MONGODB_PORT: 27017
-  #      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
-  #      ME_CONFIG_MONGODB_AUTH_USERNAME: root
-  #      ME_CONFIG_MONGODB_AUTH_PASSWORD: password
-  #    depends_on:
-  #      - mongo
-  #    links:
-  #      - mongo
-  #    networks:
-  #      - app-tier
+  mongo-express:
+      image: mongo-express
+      restart: always
+      ports:
+        - 8081:8081
+#      environment:
+#        ME_CONFIG_MONGODB_SERVER: mongo
+#        ME_CONFIG_MONGODB_PORT: 27017
+#        ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+#        ME_CONFIG_MONGODB_AUTH_USERNAME: root
+#        ME_CONFIG_MONGODB_AUTH_PASSWORD: password
+      depends_on:
+        - mongo
+      links:
+        - mongo
+      networks:
+        - app-tier
   rabbitmq:
     image: rabbitmq
     container_name: rabbitmq
@@ -107,30 +112,48 @@ services:
 #      - ${DATA_PATH_HOST}/rabbitmq/etc/:/etc/rabbitmq/
 #      - ${DATA_PATH_HOST}/rabbitmq/data/:/var/lib/rabbitmq/
 #      - ${DATA_PATH_HOST}/rabbitmq/logs/:/var/log/rabbitmq/
-     - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
-     - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
-     - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+     - /tmp/rabbitmq/etc/:/etc/rabbitmq/
+     - /tmp/rabbitmq/data/:/var/lib/rabbitmq/
+     - /tmp/rabbitmq/logs/:/var/log/rabbitmq/
+#    environment:
+#      RABBITMQ_DEFAULT_USER: guest
+#      RABBITMQ_DEFAULT_PASS: guest
     ports:
       - 5672:5672
       - 15672:15672
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     ports:
-      - 2181:2181
+      - '2181:2181'
+#    environment:
+#      - ZOO_ENABLE_AUTH=yes
+#      - ZOO_SERVER_USERS=kafka
+#      - ZOO_SERVER_PASSWORDS=kafka_password
+#      - ALLOW_ANONYMOUS_LOGIN=no
+    volumes:
+    - /tmp/zookeeper/data:/bitnami/zookeeper
     networks:
       - app-tier
   kafka:
     image: 'bitnami/kafka:latest'
+    hostname: tkhenghong.com
     ports:
-      - 9092:9092
-    environment:
-      KAFKA_ADVERTISED_HOST_NAME: 192.168.0.195
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_PORT: 9092
-      KAFKA_ADVERTISED_PORT: 9092
+      - '9092'
+#    environment:
+#      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+#      - KAFKA_CFG_LISTENERS=SASL_SSL://:9092
+#      - KAFKA_CFG_ADVERTISED_LISTENERS=SASL_SSL://:9092
+#      - KAFKA_ZOOKEEPER_USER=kafka
+#      - KAFKA_ZOOKEEPER_PASSWORD=kafka_password
+#      - KAFKA_CLIENT_USER=user
+#      - KAFKA_CLIENT_PASSWORD=password
+#      - KAFKA_CERTIFICATE_PASSWORD=certificatePassword123
+    volumes:
+      - /tmp/kafka/data:/bitnami/kafka
+      - './kafka.keystore.jks:/opt/bitnami/kafka/conf/certs/kafka.keystore.jks:ro'
+      - './kafka.truststore.jks:/opt/bitnami/kafka/conf/certs/kafka.truststore.jks:ro'
+    links:
+      - zookeeper
     depends_on:
       - zookeeper
     networks:
