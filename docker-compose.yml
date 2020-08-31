@@ -60,7 +60,7 @@ services:
     ports:
       - 8888:8888
     volumes:
-    - /tmp/pocketChat/logs:logs/
+    - /tmp/pocketChat/logs:/logs
     depends_on:
       - mongo
       # - mongo-express
