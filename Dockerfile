@@ -6,37 +6,47 @@
 
 # This is important to build the whole project first using Gradle first when you're running in Docker Hub.
 # http://paulbakker.io/java/docker-gradle-multistage/
-FROM gradle:jdk14 as builder
-COPY --chown=gradle:gradle . /home/gradle/src
-#WORKDIR /home/gradle/src
-RUN gradle build
 
+
+# Using the solution of this StackOverflow:
+# https://stackoverflow.com/questions/61108021/gradle-and-docker-how-to-run-a-gradle-build-within-docker-container
+
+# temp container to build using gradle
+FROM gradle:jdk14 as TEMP_BUILD_IMAGE
+ENV APP_HOME=/usr/app/
+WORKDIR $APP_HOME
+COPY build.gradle settings.gradle $APP_HOME
+
+COPY gradle $APP_HOME/gradle
+COPY --chown=gradle:gradle . /home/gradle/src
+USER root
+RUN chown -R gradle /home/gradle/src
+
+RUN gradle build || return 0
+COPY . .
+RUN gradle clean build
+
+# actual container
 FROM openjdk:latest
 
 MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 
-ARG JAR_FILE=build/libs/*.jar
+ENV ARTIFACT_NAME=pocketchat-0.0.1-SNAPSHOT.jar
+ENV APP_HOME=/usr/app/
 
-#COPY --from=builder /home/gradle/src/build/libs/pocketchat-0.0.1-SNAPSHOT.jar $HOME
-COPY ${JAR_FILE} app.jar
+WORKDIR $APP_HOME
+COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
 
-#RUN ls
-# VOLUME /tmp is important for you if your application need to create a file in the filesystem in the container(File upload/download)
-#VOLUME /tmp
-
-#ADD build/libs/pocketchat-0.0.1-SNAPSHOT.jar /app.jar
-#ADD /tmp/pocketchat-0.0.1-SNAPSHOT.jar pocketchat.jar
-
-#COPY src/main/resources $HOME/src/main/resources
+WORKDIR /app
 
 # What exactly does “-Djava.security.egd=file:/dev/./urandom” do when containerizing a Spring Boot application:
 # https://stackoverflow.com/questions/58853372/what-exactly-does-djava-security-egd-file-dev-urandom-do-when-containerizi
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
-#ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/pocketchat.jar"]
-
 # Tell Docker to let the app use port number 8888 within the Docker container. (Not outside)
 EXPOSE 8888 27107 5672 15672
+
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar", "$ARTIFACT_NAME"]
+
 
 # Build this Spring Boot project:
 # gradle build
