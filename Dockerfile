@@ -10,10 +10,15 @@
 
 # Using the solution of this StackOverflow:
 # https://stackoverflow.com/questions/61108021/gradle-and-docker-how-to-run-a-gradle-build-within-docker-container
+# https://docs.docker.com/develop/develop-images/multistage-build/
+
+# Issues when trying to build and run the Docker image:
+# Gradle build failed: Main class name has not been configured and it could not be resolved:
+# https://stackoverflow.com/questions/56861256/gradle-build-failed-main-class-name-has-not-been-configured-and-it-could-not-be/56882464
 
 # temp container to build using gradle
 FROM gradle:jdk14 as TEMP_BUILD_IMAGE
-ENV APP_HOME=/usr/app/
+ENV APP_HOME=/tmp/app/
 WORKDIR $APP_HOME
 COPY build.gradle settings.gradle $APP_HOME
 
@@ -22,9 +27,9 @@ COPY --chown=gradle:gradle . /home/gradle/src
 USER root
 RUN chown -R gradle /home/gradle/src
 
-RUN gradle build || return 0
+RUN gradle clean build --stacktrace || return 0
 COPY . .
-RUN gradle clean build
+RUN gradle clean build --stacktrace
 
 # actual container
 FROM openjdk:latest
@@ -32,20 +37,20 @@ FROM openjdk:latest
 MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 
 ENV ARTIFACT_NAME=pocketchat-0.0.1-SNAPSHOT.jar
-ENV APP_HOME=/usr/app/
+ENV APP_HOME=/tmp/app/
 
+USER root
 WORKDIR $APP_HOME
 COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
-
-WORKDIR /app
 
 # What exactly does “-Djava.security.egd=file:/dev/./urandom” do when containerizing a Spring Boot application:
 # https://stackoverflow.com/questions/58853372/what-exactly-does-djava-security-egd-file-dev-urandom-do-when-containerizi
 
 # Tell Docker to let the app use port number 8888 within the Docker container. (Not outside)
-EXPOSE 8888 27107 5672 15672
+EXPOSE 8888
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar", "$ARTIFACT_NAME"]
+ENTRYPOINT exec java "-Djava.security.egd=file:/dev/./urandom" -jar $ARTIFACT_NAME
+#ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar", "pocketchat-0.0.1-SNAPSHOT.jar"]
 
 
 # Build this Spring Boot project:
