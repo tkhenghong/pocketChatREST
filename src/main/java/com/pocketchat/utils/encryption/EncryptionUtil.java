@@ -169,6 +169,7 @@ public class EncryptionUtil {
         // https://stackoverflow.com/questions/14876836/file-inside-jar-is-not-visible-for-spring
         InputStream fileInputStream = new ClassPathResource(rsaPrivateKeyDirectory).getInputStream();
         String privateKeyString = new String(fileInputStream.readAllBytes());
+        fileInputStream.close();
 
         String filteredPrivateKey = privateKeyString
                 .replaceAll("\\n", "")
@@ -191,6 +192,7 @@ public class EncryptionUtil {
         // https://stackoverflow.com/questions/14876836/file-inside-jar-is-not-visible-for-spring
         InputStream fileInputStream = new ClassPathResource(rsaPublicKeyDirectory).getInputStream();
         String publicKeyString = new String(fileInputStream.readAllBytes());
+        fileInputStream.close();
 
         String filterPublicKey = publicKeyString
                 .replaceAll("\\n", "")
