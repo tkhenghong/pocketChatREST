@@ -54,7 +54,7 @@ services:
   pocketChat:
     image: tkhenghong/pocketchat:latest
     container_name: pocketChat
-    restart: always
+#    restart: always
     ports:
       - 8888:8888
     volumes:
@@ -70,7 +70,7 @@ services:
     container_name: hk-mongodb
     ports:
       - 27017:27017
-    restart: always
+#    restart: always
     # command: --smallfiles
     volumes:
       # - ./data/db:/data/db
@@ -81,7 +81,7 @@ services:
 #      MONGO_INITDB_ROOT_PASSWORD: password
   mongo-express:
       image: mongo-express
-      restart: always
+#      restart: always
       ports:
         - 8081:8081
 #      environment:
