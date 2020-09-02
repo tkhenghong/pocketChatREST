@@ -89,3 +89,9 @@ ENTRYPOINT exec java "-Djava.security.egd=file:/dev/./urandom" -jar $ARTIFACT_NA
 
 # Remove all current Docker images, containers and volumes
 # sudo docker rm -f $(sudo docker ps -aq)
+
+# Enter the CLI/terminal of any container (with name)
+# docker exec -it *CONTAINER_NAME* bash
+
+# docker exec -it mongodb bash
+# docker exec -it pocketChat bash

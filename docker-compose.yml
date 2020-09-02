@@ -31,7 +31,10 @@
 # Mount MongoDB data Volume:
 # https://stackoverflow.com/questions/35400740/how-to-set-docker-mongo-data-volume
 
-# RabbitMQ related issues:
+# RabbitMQ related guide & issues:
+
+#  Get Started with RabbitMQ on Docker
+# https://codeburst.io/get-started-with-rabbitmq-on-docker-4428d7f6e46b
 
 # https://zgadzaj.com/development/docker/docker-compose/containers/rabbitmq
 # https://github.com/laradock/laradock/issues/2048
@@ -54,9 +57,8 @@ networks:
 services:
   pocketChat:
     image: tkhenghong/pocketchat:latest
+    container_name: pocketChat
     restart: always
-    networks:
-      - app-tier
     ports:
       - 8888:8888
     volumes:
@@ -69,6 +71,8 @@ services:
     links:
       - mongo
       - rabbitmq
+    networks:
+      - app-tier
   mongo:
     image: mongo
     container_name: mongodb
@@ -104,16 +108,13 @@ services:
       networks:
         - app-tier
   rabbitmq:
-    image: rabbitmq
-    container_name: rabbitmq
-    hostname: rabbitmq
+    image: rabbitmq:3-management
+    hostname: my-rabbit
     volumes:
-#      - ${DATA_PATH_HOST}/rabbitmq/etc/:/etc/rabbitmq/
-#      - ${DATA_PATH_HOST}/rabbitmq/data/:/var/lib/rabbitmq/
-#      - ${DATA_PATH_HOST}/rabbitmq/logs/:/var/log/rabbitmq/
-     - /tmp/rabbitmq/etc/:/etc/rabbitmq/
-     - /tmp/rabbitmq/data/:/var/lib/rabbitmq/
-     - /tmp/rabbitmq/logs/:/var/log/rabbitmq/
+      - /tmp/rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+      - /tmp/rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - /tmp/rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+      - /tmp/rabbitmq/logs:/var/log/rabbitmq/log
 #    environment:
 #      RABBITMQ_DEFAULT_USER: guest
 #      RABBITMQ_DEFAULT_PASS: guest
