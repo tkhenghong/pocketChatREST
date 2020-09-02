@@ -159,6 +159,11 @@
       "name": "encryption.aes.private.key.directory",
       "type": "java.lang.String",
       "description": "Directory for AES Private key. Used for general AES Encryption."
+    },
+    {
+      "name": "encryption.rsa.cipher.algorithm.provider",
+      "type": "java.lang.String",
+      "description": "Provider of the RSA cipher algorithm. There are some required open source providers for some algorithms."
     }
   ]
 }

@@ -53,6 +53,7 @@ dependencies {
     implementation 'com.twilio.sdk:twilio:7.50.0' // Send SMS, WhatsApp messages
     implementation 'org.apache.commons:commons-lang3' // For convert Exception's stack trace to string
     implementation 'org.passay:passay:1.6.0' // Random secure password generator, validate changed passwords' strength
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.66' // Used BouncyCastle APIs(libraries) to provide RSA with PKCS8 algorithm provider
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

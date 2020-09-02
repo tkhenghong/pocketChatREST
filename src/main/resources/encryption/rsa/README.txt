@@ -9,14 +9,29 @@ https://crypto.stackexchange.com/questions/47991/aes-vs-rsa-which-is-stronger-gi
 Symmetric vs. Asymmetric Encryption
 https://www.ssl2buy.com/wiki/symmetric-vs-asymmetric-encryption-what-are-differences#:~:text=Difference%20Between%20Symmetric%20and%20Asymmetric,and%20decrypt%20messages%20when%20communicating.
 
+NOTE: TEMPORARY DO NOT USE THIS METHOD TO GENERATE RSA KEY PAIRS, because the key are not readable by Java in Windows
 
-Encrypt with OpenSSL, Decrypt with Java, Using OpenSSL RSA Public Private Keys (Main)
+TODO: May need to encrypt/decrypt texts with RSA encryption by researching following link:
+https://stackoverflow.com/questions/32161720/breaking-down-rsa-ecb-oaepwithsha-256andmgf1padding
+
+(Deprecated due to the keys are not readable by Java in Windows)Encrypt with OpenSSL, Decrypt with Java, Using OpenSSL RSA Public Private Keys (Main)
 https://www.javacodegeeks.com/2020/04/encrypt-with-openssl-decrypt-with-java-using-openssl-rsa-public-private-keys.html
+Problem: It has Base64 decode error when the same code is run in Windows, MacOS doesn't have such problem.
+
+Why use genpkey instead of genrsa?
+https://serverfault.com/questions/590140/openssl-genrsa-vs-genpkey
+
+(Current On Going)Researching on generating RSA key pair using latest "openssl genpkey" command:
+https://blog.sleeplessbeastie.eu/2017/12/28/how-to-generate-private-key/
 
 // Encrypt and decrypt solution of password from frontend to backend using RSA 4096 with OpenSSL command line tool.
 
 1. Generate Private key with pkcs8 encoding:
-openssl genpkey -out private_key_rsa_4096_pkcs8-generated.pem -algorithm RSA -pkeyopt rsa_keygen_bits:4096
+# openssl genpkey -out private_key_rsa_4096_pkcs8-generated.pem -algorithm RSA -pkeyopt rsa_keygen_bits:4096
+
+echo "keypassword" | openssl genpkey -algorithm RSA -out example.org.key -pkeyopt rsa_keygen_bits:4096 -aes256 -pass stdin
+
+openssl rsa -in example.org.key -out example.org.enc.key -aes256 -passout pass:keypassword
 
 It will generate a file with .pem file format.
 
