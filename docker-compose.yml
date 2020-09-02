@@ -91,9 +91,7 @@ services:
 #        ME_CONFIG_MONGODB_AUTH_USERNAME: root
 #        ME_CONFIG_MONGODB_AUTH_PASSWORD: password
       depends_on:
-        - mongo
-      links:
-        - mongo
+        - hk-mongodb
   rabbitmq:
     image: rabbitmq:3-management
     hostname: my-rabbit
