@@ -83,6 +83,8 @@ public class EncryptionUtil {
     // TODO: May need to encrypt/decrypt texts with RSA encryption by researching the following link:
     // https://stackoverflow.com/questions/32161720/breaking-down-rsa-ecb-oaepwithsha-256andmgf1padding
 
+    // TODO: Create Sign and Verify message (encrypt using private key and decrypt using public key)
+
     /**
      * Generate new RSA Key Pair.
      * Built for dynamic RSA key pair between server and user. But end to end encryption it is not enough. Server are keeping the keys for the user, means the company itself, if know the method to reverse engineer it, they can break them.

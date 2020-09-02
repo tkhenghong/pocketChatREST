@@ -64,19 +64,17 @@ services:
     volumes:
     - /tmp/pocketChat/logs:/logs
     depends_on:
-      - mongo
-      # - mongo-express
       - rabbitmq
       - zookeeper
     links:
       - mongo
       - rabbitmq
-    networks:
-      - app-tier
+#    networks:
+#      - app-tier
   mongo:
     image: mongo
     container_name: mongodb
-    hostname: mongo
+    hostname: hk-mongodb
     ports:
       - 27017:27017
     restart: always
@@ -88,8 +86,6 @@ services:
       # MONGODB_URI: mongodb://mongodb
 #      MONGO_INITDB_ROOT_USERNAME: root
 #      MONGO_INITDB_ROOT_PASSWORD: password
-    networks:
-      - app-tier
   mongo-express:
       image: mongo-express
       restart: always
