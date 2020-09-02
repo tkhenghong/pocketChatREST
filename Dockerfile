@@ -18,6 +18,9 @@
 
 # temp container to build using gradle
 FROM gradle:jdk14 as TEMP_BUILD_IMAGE
+
+MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
+
 ENV APP_HOME=/tmp/app/
 WORKDIR $APP_HOME
 COPY build.gradle settings.gradle $APP_HOME

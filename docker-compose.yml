@@ -50,10 +50,6 @@
 
 version: "3"
 
-networks:
-  app-tier:
-    driver: bridge
-
 services:
   pocketChat:
     image: tkhenghong/pocketchat:latest
@@ -64,17 +60,14 @@ services:
     volumes:
     - /tmp/pocketChat/logs:/logs
     depends_on:
+      - hk-mongodb
       - rabbitmq
       - zookeeper
     links:
-      - mongo
       - rabbitmq
-#    networks:
-#      - app-tier
-  mongo:
+  hk-mongodb:
     image: mongo
-    container_name: mongodb
-    hostname: hk-mongodb
+    container_name: hk-mongodb
     ports:
       - 27017:27017
     restart: always
@@ -101,8 +94,6 @@ services:
         - mongo
       links:
         - mongo
-      networks:
-        - app-tier
   rabbitmq:
     image: rabbitmq:3-management
     hostname: my-rabbit
@@ -120,7 +111,7 @@ services:
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     ports:
-      - '2181:2181'
+      - 2181:2181
     # DEVELOPMENT
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -132,12 +123,10 @@ services:
 #      - ALLOW_ANONYMOUS_LOGIN=no
     volumes:
       - /tmp/zookeeper/data:/bitnami/zookeeper
-    networks:
-      - app-tier
   kafka:
     image: 'bitnami/kafka:latest'
     ports:
-      - '9092'
+      - 9092
     # DEVELOPMENT
     environment:
       - KAFKA_BROKER_ID=1
@@ -164,7 +153,5 @@ services:
       - zookeeper
     depends_on:
       - zookeeper
-    networks:
-      - app-tier
 
 # For Zookeeper and Kafka in Docker, we are using bitnami/zookeeper and bitnami/kafka, both have 50M downloads
