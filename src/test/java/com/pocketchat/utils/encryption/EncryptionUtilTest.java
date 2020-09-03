@@ -144,8 +144,6 @@ public class EncryptionUtilTest {
         String randomString = UUID.randomUUID().toString();
         logger.info("randomString: {}", randomString);
 
-        Charset charSetForEncryptionAndDecryption = StandardCharsets.UTF_8;
-
         // OAEPParameterSpec configuration. It is used for decryption of encrypted string using algorithm RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING.
         String mdName = "SHA-256"; // md means MessageDigest.
         String mgfName = "MGF1";
