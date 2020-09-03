@@ -132,7 +132,41 @@ public class EncryptionUtilTest {
     }
 
     /***
+     * Hashing function: A function that transforms the string to randomized cipher text in one way. You're unable to
+     * restore the text back to original self.
+     * For example, SHA-1, MD5, SHA-256 and so forth.
+     */
+
+    /***
+     * OEAP is a complicated security scheme implemented to use 2 hash functions. It is implemented to cover up possible
+     * attacks that can be made to normal RSA encryption such as Broadcast Attack.
+     *
+     * OEAP with padding will improve the security of RSA keys, because each time the result value of the encryption
+     * will be different.
+     *
+     * MGF1 as the mask generation function used in OEAP. Inside of MGF1 Spec you need to provide the algorithm of hash
+     * function such as SHA-1, MD5, SHA-256 and so forth.
+     *
+     * ECB means Electronic Code Book, a mode of operation for a block cipher to encrypt every block of the plaintext
+     * with predefined corresponding ciphertext value. Not suitable for plain text that is too small in length which
+     * allows codebook attack.
+     *
+     * Bouncy Castle is one of the open source security provider for the OEAP solution.
+     *
+     * Read the documents below for understanding:
+     * https://medium.com/blue-space/improving-the-security-of-rsa-with-oaep-e854a5084918
+     * https://stackoverflow.com/questions/50298687/bouncy-castle-vs-java-default-rsa-with-oaep
+     * https://stackoverflow.com/questions/27885726/encryption-mode-and-padding/27886397#27886397
+     * https://searchsecurity.techtarget.com/definition/Electronic-Code-Book
+     * https://stackoverflow.com/questions/49483281
+     *
+     * Java default RSA key algorithm is RSA/None/PKCS1Padding.
+     * BouncyCastle default RSA key algorithm is RSA/None/NoPadding.
+     * */
+
+    /***
      * Try use other RSA Java providers with OEAP, SHA 256 and MGF1 Padding.
+     * NOTE: RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING means RSA encryption with ECB mode, OAEP mode, SHA-256 as message digest and MGF1 as padding
      * Referred from: https://stackoverflow.com/questions/32161720/breaking-down-rsa-ecb-oaepwithsha-256andmgf1padding
      * Encrypted string is encoded with Base64 from package java.util.
      * https://stackoverflow.com/questions/43325310/rsa-encyrption-converting-between-bytes-array-and-string/43325830#43325830
@@ -163,6 +197,9 @@ public class EncryptionUtilTest {
 
         assertEquals(decryptedString, randomString);
     }
+
+    // TODO: Encrypt and Decrypt with Bouncy Castle provider
+    // https://stackoverflow.com/questions/50298687/bouncy-castle-vs-java-default-rsa-with-oaep
 
     @Test
     public void testDefaultAESEncryption() {
