@@ -80,3 +80,13 @@ dependencyManagement {
 test {
     useJUnitPlatform()
 }
+
+// If you have any projects that is not Spring Boot, you need to specify the below:
+// https://stackoverflow.com/questions/56861256
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
