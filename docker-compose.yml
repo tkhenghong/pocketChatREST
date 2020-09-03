@@ -48,6 +48,10 @@
 # https://hub.docker.com/r/bitnami/kafka/
 # to install new certificates for the server for secure Kafka authentication (SASL).
 
+# Spring Boot in Docker:
+# Externalising Spring Boot properties when deploying to Docker:
+# https://stackoverflow.com/questions/46057625/externalising-spring-boot-properties-when-deploying-to-docker
+
 version: "3"
 
 services:
@@ -76,14 +80,14 @@ services:
       - email.smtp.starttls.enable=true
       - email.debug=true
     depends_on:
-      - hk-mongodb
+      - mongodb
       - rabbitmq
       - zookeeper
     links:
       - rabbitmq
-  hk-mongodb:
+  mongodb:
     image: mongo
-    container_name: hk-mongodb
+    container_name: mongodb
     ports:
       - 27017:27017
 #    restart: always
@@ -107,7 +111,7 @@ services:
 #        ME_CONFIG_MONGODB_AUTH_USERNAME: root
 #        ME_CONFIG_MONGODB_AUTH_PASSWORD: password
       depends_on:
-        - hk-mongodb
+        - mongodb
   rabbitmq:
     image: rabbitmq:3-management
     hostname: my-rabbit
