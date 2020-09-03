@@ -123,12 +123,12 @@
     {
       "name": "encryption.aes.cipher.algorithm.with.padding",
       "type": "java.lang.String",
-      "description": "Algorithm for the cipher to be used for creating AES ."
+      "description": "Algorithm for the cipher to be used for creating AES. Recommended by SonarLint."
     },
     {
       "name": "encryption.rsa.cipher.algorithm.with.padding",
       "type": "java.lang.String",
-      "description": "Description for encryption.rsa.cipher.algorithm.with.padding."
+      "description": "Cipher algorithm for RSA encryption. Recommended by SonarLint."
     },
     {
       "name": "encryption.rsa.cipher.key.size",
@@ -164,6 +164,31 @@
       "name": "encryption.rsa.cipher.algorithm.provider",
       "type": "java.lang.String",
       "description": "Provider of the RSA cipher algorithm. There are some required open source providers for some algorithms."
+    },
+    {
+      "name": "encryption.aes.default.secret",
+      "type": "java.lang.String",
+      "description": "Default key for AES encryption's secret."
+    },
+    {
+      "name": "encryption.aes.default.secret.key.spec.algorithm",
+      "type": "java.lang.String",
+      "description": "Algorithm of the Cipher used by the Default AES loaded with encryption.aes.default.secret."
+    },
+    {
+      "name": "encryption.aes.cipher.algorithm.with.padding2",
+      "type": "java.lang.String",
+      "description": "Algorithm for the cipher to be used for creating AES. Recommended by SonarLint. Used by multiple tutorials."
+    },
+    {
+      "name": "encryption.rsa.cipher.algorithm.with.padding2",
+      "type": "java.lang.String",
+      "description": "2nd Cipher algorithm for RSA encryption. Recommended by SonarLint. Used by 3rd party."
+    },
+    {
+      "name": "encryption.aes.message.digest.algorithm",
+      "type": "java.lang.String",
+      "description": "Message digest algorithm for the AES Encryption."
     }
   ]
 }

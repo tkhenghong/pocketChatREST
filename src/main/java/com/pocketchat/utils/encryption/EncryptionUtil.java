@@ -8,18 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.spec.*;
+import java.util.Arrays;
 import java.util.Base64;
 
 @Service
@@ -31,11 +33,13 @@ public class EncryptionUtil {
 
     private String rsaPrivateKeyDirectory;
 
-    private String aesPrivateKeyDirectory;
+    private String rsaKeyFactoryAlgorithm;
 
     private String rsaCipherAlgorithmWithPadding;
 
-    private String aesCipherAlgorithmWithPadding;
+    private String rsaCipherAlgorithmWithPadding2ForEncryption;
+
+    private String rsaCipherAlgorithmWithPadding2ForDecryption;
 
     // Problem source: https://stackoverflow.com/questions/29922176/java-security-nosuchalgorithmexception-cannot-find-any-provider-supporting-rsa
     // NOTE: You need to specify provider for RSA/None/OAEPWITHSHA-256ANDMGF1PADDING.
@@ -44,28 +48,57 @@ public class EncryptionUtil {
 
     private int rsaCipherKeySize;
 
+    private String aesPrivateKeyDirectory;
+
+    private String aesCipherAlgorithmWithPadding;
+
+    private String aesCipherAlgorithmWithPadding2;
+
+    private String aesDefaultSecret;
+
+    private String aesSecretKeySpecAlgorithm;
+
+    private String aesMessageDigestAlgorithm;
+
     private KeyFactory keyFactory;
 
-    private PrivateKey privateKey;
+    private PrivateKey rsaPrivateKey;
 
-    private PublicKey publicKey;
+    private PublicKey rsaPublicKey;
+
+    private SecretKeySpec aesSecretKeySpec;
 
     @Autowired
     public EncryptionUtil(
             @Value("${encryption.rsa.public.key.directory}") String rsaPublicKeyDirectory,
             @Value("${encryption.rsa.private.key.directory}") String rsaPrivateKeyDirectory,
-            @Value("${encryption.aes.private.key.directory}") String aesPrivateKeyDirectory,
+            @Value("${encryption.rsa.key.factory.algorithm}") String rsaKeyFactoryAlgorithm,
             @Value("${encryption.rsa.cipher.algorithm.with.padding}") String rsaCipherAlgorithmWithPadding,
+            @Value("${encryption.rsa.cipher.algorithm.with.padding2.for.encryption}") String rsaCipherAlgorithmWithPadding2ForEncryption,
+            @Value("${encryption.rsa.cipher.algorithm.with.padding2.for.decryption}") String rsaCipherAlgorithmWithPadding2ForDecryption,
             @Value("${encryption.rsa.cipher.algorithm.provider}") String rsaCipherAlgorithmProvider,
+            @Value("${encryption.rsa.cipher.key.size}") int rsaCipherKeySize,
+            @Value("${encryption.aes.default.secret.key.spec.algorithm}") String aesSecretKeySpecAlgorithm,
             @Value("${encryption.aes.cipher.algorithm.with.padding}") String aesCipherAlgorithmWithPadding,
-            @Value("${encryption.rsa.cipher.key.size}") int rsaCipherKeySize) {
+            @Value("${encryption.aes.cipher.algorithm.with.padding2}") String aesCipherAlgorithmWithPadding2,
+            @Value("${encryption.aes.private.key.directory}") String aesPrivateKeyDirectory,
+            @Value("${encryption.aes.default.secret}") String aesDefaultSecret,
+            @Value("${encryption.aes.message.digest.algorithm}") String aesMessageDigestAlgorithm) {
         this.rsaPublicKeyDirectory = rsaPublicKeyDirectory;
         this.rsaPrivateKeyDirectory = rsaPrivateKeyDirectory;
-        this.aesPrivateKeyDirectory = aesPrivateKeyDirectory;
+        this.rsaKeyFactoryAlgorithm = rsaKeyFactoryAlgorithm;
         this.rsaCipherAlgorithmWithPadding = rsaCipherAlgorithmWithPadding;
+        this.rsaCipherAlgorithmWithPadding2ForEncryption = rsaCipherAlgorithmWithPadding2ForEncryption;
+        this.rsaCipherAlgorithmWithPadding2ForDecryption = rsaCipherAlgorithmWithPadding2ForDecryption;
         this.rsaCipherAlgorithmProvider = rsaCipherAlgorithmProvider;
-        this.aesCipherAlgorithmWithPadding = aesCipherAlgorithmWithPadding;
         this.rsaCipherKeySize = rsaCipherKeySize;
+
+        this.aesSecretKeySpecAlgorithm = aesSecretKeySpecAlgorithm;
+        this.aesCipherAlgorithmWithPadding = aesCipherAlgorithmWithPadding;
+        this.aesCipherAlgorithmWithPadding2 = aesCipherAlgorithmWithPadding2;
+        this.aesPrivateKeyDirectory = aesPrivateKeyDirectory;
+        this.aesDefaultSecret = aesDefaultSecret;
+        this.aesMessageDigestAlgorithm = aesMessageDigestAlgorithm;
 
         try {
             // Why java.security.NoSuchProviderException No such provider: BC?
@@ -75,6 +108,7 @@ public class EncryptionUtil {
             setupRSAKeyFactory();
             setupRSAPrivateKey();
             setupRSAPublicKey();
+            setupDefaultAESKey();
         } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException generalSecurityException) {
             throw new EncryptionErrorException(generalSecurityException.getMessage());
         }
@@ -84,6 +118,8 @@ public class EncryptionUtil {
     // https://stackoverflow.com/questions/32161720/breaking-down-rsa-ecb-oaepwithsha-256andmgf1padding
 
     // TODO: Create Sign and Verify message (encrypt using private key and decrypt using public key)
+
+    /************************************************RSA START************************************************/
 
     /**
      * Generate new RSA Key Pair.
@@ -103,13 +139,14 @@ public class EncryptionUtil {
 
     /**
      * Encrypt a plain text with PublicKey object loaded from a file of directory encryption.rsa.public.key.directory.
+     *
      * @param plainText : Any normal text that you want to encrypt on.
      */
-    public String encryptStringWithSpecialRSABase64Encoded(String plainText) {
+    public String encryptStringWithDefaultRSAPublicKey(String plainText) {
         String encoded;
         try {
             Cipher cipher = Cipher.getInstance(rsaCipherAlgorithmWithPadding, rsaCipherAlgorithmProvider);
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            cipher.init(Cipher.ENCRYPT_MODE, rsaPublicKey);
             // Encrypt with RSA
             byte[] rsaEncrypted = cipher.doFinal(plainText.getBytes());
             // Encode with Base64
@@ -128,13 +165,14 @@ public class EncryptionUtil {
     /**
      * Only use this if you have a PublicKey object with the correct encryption.aes.cipher.algorithm.with.padding.
      * Encrypt a plain text with PublicKey object loaded from a file, with directory from encryption.rsa.public.key.directory.
+     *
      * @param plainText : Any normal text that you want to encrypt on.
      * @param publicKey : A PublicKey object get from this class itself, loaded from encryption.rsa.public.key.directory.
      */
-    public String encryptStringWithSpecialRSABase64Encoded(String plainText, PublicKey publicKey) {
+    public String encryptStringWithDefaultRSAPublicKey(String plainText, PublicKey publicKey) {
         String encoded;
         try {
-            Cipher cipher = Cipher.getInstance(aesCipherAlgorithmWithPadding, rsaCipherAlgorithmProvider);
+            Cipher cipher = Cipher.getInstance(rsaCipherAlgorithmWithPadding, rsaCipherAlgorithmProvider);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
             // Encrypt with RSA
@@ -154,14 +192,15 @@ public class EncryptionUtil {
     }
 
     /**
-     * Encrypt a plain text with PublicKey object made from the Java program itself.
+     * Encrypt a plain text with given RSA PublicKey object made from the Java program itself.
+     *
      * @param plainText : Any normal text that you want to encrypt on.
      * @param publicKey : A PublicKey object get from @return of the generateNewRSAKeyPair() itself.
      */
-    public String encryptStringWithRSABase64Encoded(String plainText, PublicKey publicKey) {
+    public String encryptStringWithGivenRSAPublicKey(String plainText, PublicKey publicKey) {
         String encoded;
         try {
-            Cipher cipher = Cipher.getInstance("RSA");
+            Cipher cipher = Cipher.getInstance(rsaKeyFactoryAlgorithm);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
             // Encrypt with RSA
@@ -185,13 +224,13 @@ public class EncryptionUtil {
      * @param base64EncodedEncryptedString: A base64 encoded, RSA encrypted String using file encryption.rsa.public.key.directory
      *                                      Note: privateKey variable is self loaded by using encryption.rsa.private.key.directory during startup.
      */
-    public String decryptWithSpecialRSABase64Encoded(String base64EncodedEncryptedString) {
+    public String decryptStringWithDefaultRSAPrivateKey(String base64EncodedEncryptedString) {
         String plainText;
         try {
             // SonarLint recommends*
             // https://rules.sonarsource.com/java/RSPEC-5542
             Cipher cipher = Cipher.getInstance(rsaCipherAlgorithmWithPadding, rsaCipherAlgorithmProvider);
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            cipher.init(Cipher.DECRYPT_MODE, rsaPrivateKey);
 
             // Decode Base64
             byte[] encryptedString = Base64
@@ -214,13 +253,13 @@ public class EncryptionUtil {
     }
 
     /**
-     * Use this if you have a PrivateKey object with the correct encryption.rsa.cipher.algorithm.with.padding.
-     * Decrypt a encoded Base64, RSA encrypted text with PrivateKey object from the file, with directory from  encryption.rsa.private.key.directory.
+     * Decrypt a base64 encoded, RSA encrypted string with given RSA Private Key.
+     * NOTE: Your PrivateKey object MUST be made with the correct encryption.rsa.cipher.algorithm.with.padding.
      *
      * @param base64EncodedEncryptedString: A base64 encoded, RSA encrypted String using file encryption.rsa.public.key.directory.
      * @param privateKey                    : PrivateKey object, loaded by using encryption.rsa.private.key.directory during startup.
      */
-    public String decryptWithSpecialRSABase64Encoded(String base64EncodedEncryptedString, PrivateKey privateKey) {
+    public String decryptStringWithGivenCustomRSAPrivateKey(String base64EncodedEncryptedString, PrivateKey privateKey) {
         String plainText;
         try {
             // SonarLint recommends*
@@ -250,15 +289,16 @@ public class EncryptionUtil {
 
     /**
      * Decrypt a encoded Base64, RSA encrypted text with PrivateKey object made from the Java program itself.
+     *
      * @param base64EncodedEncryptedString : A base64 encoded, RSA encrypted String using @method generateNewRSAKeyPair().
-     * @param privateKey : A PrivateKey object get from @return of the generateNewRSAKeyPair() itself.
+     * @param privateKey                   : A PrivateKey object get from @return of the generateNewRSAKeyPair() itself.
      */
-    public String decryptWithRSABase64Encoded(String base64EncodedEncryptedString, PrivateKey privateKey) {
+    public String decryptStringWithGivenRSAPrivateKey(String base64EncodedEncryptedString, PrivateKey privateKey) {
         String plainText;
         try {
             // SonarLint recommends*
             // https://rules.sonarsource.com/java/RSPEC-5542
-            Cipher cipher = Cipher.getInstance("RSA");
+            Cipher cipher = Cipher.getInstance(rsaKeyFactoryAlgorithm);
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
             // Decode Base64
@@ -280,11 +320,193 @@ public class EncryptionUtil {
         return plainText;
     }
 
+    /***
+     * Encrypt text with given RSA Public Key with supported Java Cipher algorithm.
+     * @param plainText: Text/String that you want to be encrypted with.
+     * @param rsaPublicKey: Public Key created by KeyPair object. Remember generate KeyPair object using generateNewRSAKeyPair().
+     * @param rsaCipherAlgorithmWithPadding: Supported Java Cipher algorithms.
+     *                                     Refer to: https://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html
+     * @return Base64 encoded, RSA encrypted String object.
+     */
+    public String encryptStringWithGivenPublicKeyAndAlgorithm(String plainText,
+                                                              PublicKey rsaPublicKey,
+                                                              String rsaCipherAlgorithmWithPadding) {
+        Charset charSet = StandardCharsets.UTF_8;
+        try {
+            Cipher cipher = Cipher.getInstance(rsaCipherAlgorithmWithPadding);
+            cipher.init(Cipher.ENCRYPT_MODE, rsaPublicKey);
+            byte[] cipheredText = cipher.doFinal(plainText.getBytes(charSet));
+
+            return Base64.getEncoder().encodeToString(cipheredText);
+        } catch (NoSuchAlgorithmException |
+                NoSuchPaddingException |
+                BadPaddingException |
+                IllegalBlockSizeException |
+                InvalidKeyException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /***
+     * Decrypt Base64 encoded, RSA encrypted text with given RSA Private Key with supported Java Cipher algorithm.
+     * @param encryptedText: Text/String that you want to be encrypted with.
+     * @param rsaPrivateKey: Private Key created by KeyPair object. Remember generate KeyPair object using generateNewRSAKeyPair().
+     * @param rsaCipherAlgorithmWithPadding: Supported Java Cipher algorithms.
+     *                                     Refer to: https://docs.oracle.com/javase/7/docs/api/javax/crypto/Cipher.html
+     * @param algorithmParameterSpec : Specification that needs to be added into the Cipher, for example OAEPParameterSpec.
+     * @return Plain text.
+     */
+    public String decryptStringWithGivenPrivateKeyAndAlgorithm(String encryptedText,
+                                                               PrivateKey rsaPrivateKey,
+                                                               String rsaCipherAlgorithmWithPadding,
+                                                               AlgorithmParameterSpec algorithmParameterSpec) {
+        Charset charSet = StandardCharsets.UTF_8;
+        try {
+            Cipher cipher = Cipher.getInstance(rsaCipherAlgorithmWithPadding);
+
+            if (ObjectUtils.isEmpty(algorithmParameterSpec)) {
+                cipher.init(Cipher.DECRYPT_MODE, rsaPrivateKey);
+            } else {
+                cipher.init(Cipher.DECRYPT_MODE, rsaPrivateKey, algorithmParameterSpec);
+            }
+
+            byte[] encryptedBytes = Base64.getDecoder().decode(encryptedText);
+
+            byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
+            return new String(decryptedBytes, charSet);
+        } catch (NoSuchAlgorithmException |
+                NoSuchPaddingException |
+                InvalidKeyException |
+                InvalidAlgorithmParameterException |
+                BadPaddingException |
+                IllegalBlockSizeException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /************************************************RSA END************************************************/
+
+    /************************************************AES START***********************************************/
+
+    /***
+     * https://howtodoinjava.com/java/java-security/java-aes-encryption-example/
+     *
+     * Encrypt with aesSecretKeySpec with a secret from encryption.aes.default.secret.
+     *
+     * @param plainText: Any plain text to be secured with.
+     * @return Encrypted, Base64 encoded string with AES.
+     */
+    public String encryptWithDefaultAESKey(String plainText) {
+        try {
+            Cipher cipher = Cipher.getInstance(aesCipherAlgorithmWithPadding2);
+            cipher.init(Cipher.ENCRYPT_MODE, aesSecretKeySpec);
+            return Base64.getEncoder().encodeToString(cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8)));
+        } catch (InvalidKeyException |
+                NoSuchAlgorithmException |
+                NoSuchPaddingException |
+                BadPaddingException |
+                IllegalBlockSizeException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /***
+     * https://howtodoinjava.com/java/java-security/java-aes-encryption-example/
+     * Decrypt base64 encoded and AES encrypted string with aesSecretKeySpec with a secret from encryption.aes.default.secret.
+     *
+     * @param plainText: Any plain text to be secured with.
+     * @return Plain text.
+     */
+    public String decryptWithDefaultAESKey(String plainText) {
+        try {
+            Cipher cipher = Cipher.getInstance(aesCipherAlgorithmWithPadding2);
+            cipher.init(Cipher.DECRYPT_MODE, aesSecretKeySpec);
+            return new String(cipher.doFinal(Base64.getDecoder().decode(plainText)));
+        } catch (InvalidKeyException |
+                NoSuchAlgorithmException |
+                NoSuchPaddingException |
+                BadPaddingException |
+                IllegalBlockSizeException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /***
+     * https://howtodoinjava.com/java/java-security/java-aes-encryption-example/
+     *
+     * Encrypt with aesSecretKeySpec with a secret from encryption.aes.default.secret.
+     *
+     * @param plainText: Any plain text to be secured with.
+     * @param aesSecretKeySpec : An object that is used to perform AES encryption.
+     *                     Remember to generate from @method generateAESSecretKeySpecWithSecret().
+     * @return Encrypted, Base64 encoded string with AES.
+     */
+    public String encryptWithGivenAESKey(String plainText, SecretKeySpec aesSecretKeySpec) {
+        try {
+            Cipher cipher = Cipher.getInstance(aesCipherAlgorithmWithPadding2);
+            cipher.init(Cipher.ENCRYPT_MODE, aesSecretKeySpec);
+            return Base64.getEncoder().encodeToString(cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8)));
+        } catch (InvalidKeyException |
+                NoSuchAlgorithmException |
+                NoSuchPaddingException |
+                BadPaddingException |
+                IllegalBlockSizeException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /***
+     * https://howtodoinjava.com/java/java-security/java-aes-encryption-example/
+     * Decrypt base64 encoded and AES encrypted string with aesSecretKeySpec with a secret from encryption.aes.default.secret.
+     *
+     * @param plainText: Any plain text to be secured with.
+     * @param aesSecretKeySpec : An object that is used to perform AES decryption.
+     *                     Remember to generate from @method generateAESSecretKeySpecWithSecret().
+     * @return Plain text.
+     */
+    public String decryptWithGivenAESKey(String plainText, SecretKeySpec aesSecretKeySpec) {
+        try {
+            Cipher cipher = Cipher.getInstance(aesCipherAlgorithmWithPadding2);
+            cipher.init(Cipher.DECRYPT_MODE, aesSecretKeySpec);
+            return new String(cipher.doFinal(Base64.getDecoder().decode(plainText)));
+        } catch (InvalidKeyException |
+                NoSuchAlgorithmException |
+                NoSuchPaddingException |
+                BadPaddingException |
+                IllegalBlockSizeException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /***
+     * https://howtodoinjava.com/java/java-security/java-aes-encryption-example/
+     * Generate a SecretKeySpec object that can be used for AES encryption dynamically.
+     *
+     * @param secret: Plain text to be encrypted.
+     * @return SecretKeySpec object that contains the key to encrypt/decrypt anything. Do not compromise the key.
+     */
+    public SecretKeySpec generateAESSecretKeySpecWithSecret(String secret) throws NoSuchAlgorithmException {
+        SecretKeySpec aesSecretKeySpec;
+        MessageDigest sha;
+        byte[] key;
+
+        key = secret.getBytes(StandardCharsets.UTF_8);
+        sha = MessageDigest.getInstance(aesMessageDigestAlgorithm);
+        key = sha.digest(key);
+        key = Arrays.copyOf(key, 16);
+        aesSecretKeySpec = new SecretKeySpec(key, aesSecretKeySpecAlgorithm);
+
+        return aesSecretKeySpec;
+    }
+
+    /**********************************************AES END***********************************************/
+
     /**
      * Set up Key Factory for RSA for symmetric encryption.
-     * */
+     */
     private void setupRSAKeyFactory() throws NoSuchAlgorithmException {
-        keyFactory = KeyFactory.getInstance("RSA");
+        keyFactory = KeyFactory.getInstance(rsaKeyFactoryAlgorithm);
     }
 
     /**
@@ -303,7 +525,7 @@ public class EncryptionUtil {
         KeySpec keySpec
                 = new PKCS8EncodedKeySpec(privateKeyBytes);
 
-        privateKey = keyFactory.generatePrivate(keySpec);
+        rsaPrivateKey = keyFactory.generatePrivate(keySpec);
     }
 
     /**
@@ -323,6 +545,21 @@ public class EncryptionUtil {
         KeySpec keySpec
                 = new X509EncodedKeySpec(publicKeyBytes);
 
-        publicKey = keyFactory.generatePublic(keySpec);
+        rsaPublicKey = keyFactory.generatePublic(keySpec);
+    }
+
+    /***
+     * Setup default AES key for AES encryption with using encryption.aes.default.secret.
+     * Reference: https://howtodoinjava.com/java/java-security/java-aes-encryption-example/
+     */
+    private void setupDefaultAESKey() throws NoSuchAlgorithmException {
+        MessageDigest sha;
+        byte[] key;
+
+        key = aesDefaultSecret.getBytes(StandardCharsets.UTF_8);
+        sha = MessageDigest.getInstance(aesMessageDigestAlgorithm);
+        key = sha.digest(key);
+        key = Arrays.copyOf(key, 16);
+        aesSecretKeySpec = new SecretKeySpec(key, aesSecretKeySpecAlgorithm);
     }
 }

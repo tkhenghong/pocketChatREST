@@ -29,6 +29,7 @@ https://blog.sleeplessbeastie.eu/2017/12/28/how-to-generate-private-key/
 1. Generate Private key with pkcs8 encoding:
 # openssl genpkey -out private_key_rsa_4096_pkcs8-generated.pem -algorithm RSA -pkeyopt rsa_keygen_bits:4096
 
+(New with using openssl genpkey... command, with .key format)
 echo "keypassword" | openssl genpkey -algorithm RSA -out example.org.key -pkeyopt rsa_keygen_bits:4096 -aes256 -pass stdin
 
 openssl rsa -in example.org.key -out example.org.enc.key -aes256 -passout pass:keypassword
