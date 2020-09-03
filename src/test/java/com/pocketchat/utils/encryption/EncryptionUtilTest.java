@@ -182,7 +182,7 @@ public class EncryptionUtilTest {
     }
 
     @Test
-    public void testGivenAESEncryption() {
+    public void testGivenAESEncryption() throws NoSuchAlgorithmException {
         String randomSecret = UUID.randomUUID().toString();
         String randomString = UUID.randomUUID().toString();
 
