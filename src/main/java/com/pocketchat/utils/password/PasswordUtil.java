@@ -33,9 +33,13 @@ public class PasswordUtil {
 
     private final int digitNumberCharacterLength;
 
+    private final String specialCharactersList;
+
     private final int specialCharactersLength;
 
     private final int minimumPasswordLength;
+
+    private final int maximumPasswordLength;
 
     private CharacterRule lowerCaseRule;
 
@@ -54,14 +58,19 @@ public class PasswordUtil {
                  @Value("${password.lower.case.character.length}") int lowerCaseCharacterLength,
                  @Value("${password.upper.case.character.length}") int upperCaseCharacterLength,
                  @Value("${password.digit.number.character.length}") int digitNumberCharacterLength,
+                 @Value("${password.special.character.list}") String specialCharactersList,
                  @Value("${password.special.character.length}") int specialCharactersLength,
-                 @Value("${password.minimum.length}") int minimumPasswordLength) {
+                 @Value("${password.minimum.length}") int minimumPasswordLength,
+                 @Value("${password.maximum.length}") int maximumPasswordLength) {
         this.passwordEncoder = passwordEncoder;
         this.lowerCaseCharacterLength = lowerCaseCharacterLength;
         this.upperCaseCharacterLength = upperCaseCharacterLength;
         this.digitNumberCharacterLength = digitNumberCharacterLength;
+        this.specialCharactersList = specialCharactersList;
         this.specialCharactersLength = specialCharactersLength;
         this.minimumPasswordLength = minimumPasswordLength;
+        this.maximumPasswordLength = maximumPasswordLength;
+
         passwordGenerator = new PasswordGenerator();
         generatePasswordRules();
         generatePasswordValidator();
@@ -131,7 +140,7 @@ public class PasswordUtil {
             }
 
             public String getCharacters() {
-                return "!@#$%^&*()_+";
+                return specialCharactersList;
             }
         };
 
@@ -140,7 +149,7 @@ public class PasswordUtil {
     }
 
     private void createLengthRule() {
-        lengthRule = new LengthRule(minimumPasswordLength);
+        lengthRule = new LengthRule(minimumPasswordLength, maximumPasswordLength);
     }
 
     private void createUsernameRule() {
@@ -165,7 +174,7 @@ public class PasswordUtil {
         AtomicReference<String> passwordValidationErrorMessage = new AtomicReference<>("");
 
         ruleResultDetails.forEach(ruleResultDetail -> {
-            String validationErrorMessage = "{ errorCode: " + ruleResultDetail.getErrorCode() + ", " +
+            String validationErrorMessage = "{ errorCode: \"" + ruleResultDetail.getErrorCode() + "\", " +
                     "details: " + printErrorDetails(ruleResultDetail.getParameters()) +
                     " }";
 
@@ -178,7 +187,7 @@ public class PasswordUtil {
     private String printErrorDetails(Map<String, Object> stringObjectMap) {
         AtomicReference<String> errorDetails = new AtomicReference<>("[");
         stringObjectMap.forEach((String key, Object value) -> {
-            errorDetails.set(errorDetails.get() + "{ " + key + ": " + value.toString() + " },");
+            errorDetails.set(errorDetails.get() + "{ \"" + key + "\": \"" + value.toString() + "\" },");
         });
 
         errorDetails.set(errorDetails.get().substring(0, errorDetails.get().length() - 1)); // Remove last ,

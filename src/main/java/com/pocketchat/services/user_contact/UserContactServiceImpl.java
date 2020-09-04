@@ -116,6 +116,11 @@ public class UserContactServiceImpl implements UserContactService {
         return userContactOptional.get();
     }
 
+    /**
+     * Find User Contact by using Mobile no.
+     * @param mobileNo: Mobile number of a potential UserContact.
+     * @return UserContact which has existing UserContact's information.
+     */
     @Override
     public UserContact getUserContactByMobileNo(String mobileNo) {
         String filteredMobileNo = mobileNo.replaceAll("[-.^:,\\s+]", "");
