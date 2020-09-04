@@ -83,10 +83,12 @@ test {
 
 // If you have any projects that is not Spring Boot, you need to specify the below:
 // https://stackoverflow.com/questions/56861256
-bootJar {
-    enabled = false
-}
-
-jar {
-    enabled = true
-}
+// Due to you have to manually specify which class to run in the jar file, due to Manifest.mf file in the jar doesn't
+// have main class info anymore, we will remove the lines below:
+//bootJar {
+//    enabled = false
+//}
+//
+//jar {
+//    enabled = true
+//}
