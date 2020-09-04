@@ -62,7 +62,7 @@ services:
     ports:
       - 8888:8888
     volumes:
-    - /tmp/pocketChat/logs:/logs
+    - ~/pocketChat/logs:/logs
     environment:
       - server.startup.send.email.enabled=true
       # SMS Configurations for Twilio
@@ -116,10 +116,10 @@ services:
     image: rabbitmq:3-management
     hostname: my-rabbit
     volumes:
-      - /tmp/rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
-      - /tmp/rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - /tmp/rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
-      - /tmp/rabbitmq/logs:/var/log/rabbitmq/log
+      - ~/rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+      - ~/rabbitmq/etc/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ~/rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+      - ~/rabbitmq/logs:/var/log/rabbitmq/log
 #    environment:
 #      RABBITMQ_DEFAULT_USER: guest
 #      RABBITMQ_DEFAULT_PASS: guest
@@ -140,7 +140,7 @@ services:
 #      - ZOO_SERVER_PASSWORDS=kafka_password
 #      - ALLOW_ANONYMOUS_LOGIN=no
     volumes:
-      - /tmp/zookeeper/data:/bitnami/zookeeper
+      - ~/zookeeper/data:/bitnami/zookeeper
   kafka:
     image: 'bitnami/kafka:latest'
     ports:
@@ -164,7 +164,7 @@ services:
 #      - KAFKA_CLIENT_PASSWORD=password
 #      - KAFKA_CERTIFICATE_PASSWORD=certificatePassword123
     volumes:
-      - /tmp/kafka/data:/bitnami/kafka
+      - ~/kafka/data:/bitnami/kafka
       - './kafka.keystore.jks:/opt/bitnami/kafka/conf/certs/kafka.keystore.jks:ro'
       - './kafka.truststore.jks:/opt/bitnami/kafka/conf/certs/kafka.truststore.jks:ro'
     links:
