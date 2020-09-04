@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.passay.PasswordValidator;
 import org.slf4j.Logger;
@@ -57,6 +58,8 @@ public class PasswordUtilTest {
 
     @BeforeEach
     public void setup() {
+        //if we don't call below, we will get NullPointerException
+        MockitoAnnotations.initMocks(this);
         passwordUtil = new PasswordUtil(
                 passwordEncoder,
                 lowerCaseCharacterLength,

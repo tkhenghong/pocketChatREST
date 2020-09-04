@@ -3,43 +3,37 @@ package com.pocketchat.server.configurations.security.service;
 import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.models.user_privilege.UserPrivilege;
 import com.pocketchat.db.models.user_role.UserRole;
-import com.pocketchat.db.repo_services.user_authentication.UserAuthenticationRepoService;
-import com.pocketchat.db.repo_services.user_role.UserRoleRepoService;
+import com.pocketchat.services.user_authentication.UserAuthenticationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
-    private final UserAuthenticationRepoService userAuthenticationRepoService;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final UserRoleRepoService userRoleRepoService;
+    private final UserAuthenticationService userAuthenticationService;
 
     @Autowired
-    MyUserDetailsService(UserAuthenticationRepoService userAuthenticationRepoService,
-                         UserRoleRepoService userRoleRepoService) {
-        this.userAuthenticationRepoService = userAuthenticationRepoService;
-        this.userRoleRepoService = userRoleRepoService;
+    public MyUserDetailsService(@Lazy UserAuthenticationService userAuthenticationService) {
+        this.userAuthenticationService = userAuthenticationService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        Optional<UserAuthentication> authenticationOptional = userAuthenticationRepoService.findFirstByUsername(username);
-        if (authenticationOptional.isEmpty()) {
-            throw new UsernameNotFoundException("Username not found with this username: " + username);
-        }
-        UserAuthentication userAuthentication = authenticationOptional.get();
+        UserAuthentication userAuthentication = userAuthenticationService.findByUsername(username);
         return new User(userAuthentication.getUsername(), userAuthentication.getPassword(), getUserAuthorities(userAuthentication.getUserRoles()));
     }
 
