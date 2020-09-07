@@ -1,5 +1,7 @@
 package com.pocketchat.utils.encryption;
 
+import com.pocketchat.models.enums.utils.encryption.DigitalSignatureAlgorithm;
+import com.pocketchat.server.exceptions.encryption.EncryptionErrorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -24,9 +26,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.MGF1ParameterSpec;
+import java.util.Base64;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -182,15 +187,15 @@ public class EncryptionUtilTest {
         String mgfParameterMdName = "SHA-1";
 
         KeyPair rsaKeyPair = encryptionUtil.generateNewRSAKeyPair();
-        RSAPublicKey publicKey = (RSAPublicKey) rsaKeyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) rsaKeyPair.getPublic();
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
 
-        String encryptedText = encryptionUtil.encryptStringWithGivenPublicKeyAndAlgorithm(randomString, publicKey,
+        String encryptedText = encryptionUtil.encryptStringWithGivenPublicKeyAndAlgorithm(randomString, rsaPublicKey,
                 rsaCipherAlgorithmWithPadding2ForEncryption);
 
         OAEPParameterSpec oaepParams = new OAEPParameterSpec(mdName, mgfName, new MGF1ParameterSpec(mgfParameterMdName), PSource.PSpecified.DEFAULT);
 
-        String decryptedString = encryptionUtil.decryptStringWithGivenPrivateKeyAndAlgorithm(encryptedText, privateKey,
+        String decryptedString = encryptionUtil.decryptStringWithGivenPrivateKeyAndAlgorithm(encryptedText, rsaPrivateKey,
                 rsaCipherAlgorithmWithPadding2ForDecryption, oaepParams);
 
         logger.info("decryptedString: {}", decryptedString);
@@ -198,8 +203,140 @@ public class EncryptionUtilTest {
         assertEquals(decryptedString, randomString);
     }
 
-    // TODO: Encrypt and Decrypt with Bouncy Castle provider
-    // https://stackoverflow.com/questions/50298687/bouncy-castle-vs-java-default-rsa-with-oaep
+    @Test
+    public void testRSARSASignAndVerifyProvidedByBouncyCastle() {
+        String randomString = UUID.randomUUID().toString();
+
+        KeyPair rsaKeyPair = encryptionUtil.generateNewRSAKeyPairByBouncyCastle();
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) rsaKeyPair.getPublic();
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
+
+        String signedMessage = encryptionUtil.signStringWithGivenPrivateKey(randomString, rsaPrivateKey);
+
+        logger.info("signedMessage: {}", signedMessage);
+
+        boolean signedMessageIsValid = encryptionUtil.verifyStringWithGivenPublicKey(randomString, signedMessage, rsaPublicKey);
+
+        assertNotNull(signedMessage);
+        assertNotEquals(signedMessage, randomString);
+        assertTrue(signedMessageIsValid);
+    }
+
+    /**
+     * To test the sign and verify process if use any plain message in verification process.
+     */
+    @Test
+    public void testRSASignAndVerifyProvidedByBouncyCastleButSuddenUsePlainMessageToVerify() {
+        String randomString = UUID.randomUUID().toString();
+
+        KeyPair rsaKeyPair = encryptionUtil.generateNewRSAKeyPairByBouncyCastle();
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) rsaKeyPair.getPublic();
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
+
+        String wrongSignedMessage = UUID.randomUUID().toString(); // Intended wrong message
+
+        logger.info("wrongSignedMessage: {}", wrongSignedMessage);
+
+        try {
+            encryptionUtil.verifyStringWithGivenPublicKey(randomString, wrongSignedMessage, rsaPublicKey);
+            failBecauseExceptionWasNotThrown(Exception.class);
+        } catch (Exception exception) {
+            assertThat(exception).isInstanceOf(EncryptionErrorException.class);
+        }
+
+        assertNotNull(wrongSignedMessage);
+        assertNotEquals(wrongSignedMessage, randomString);
+    }
+
+    /**
+     * To test the sign and verify process if use any wrong Base64 encoded message in the verification process.
+     */
+    @Test
+    public void testRSASignAndVerifyProvidedByBouncyCastleButWrongSignedMessage() {
+        String randomString = UUID.randomUUID().toString();
+
+        KeyPair rsaKeyPair = encryptionUtil.generateNewRSAKeyPairByBouncyCastle();
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) rsaKeyPair.getPublic();
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
+
+        String randomWrongMessage = UUID.randomUUID().toString(); // Intended wrong message
+        String wrongSignedMessage = Base64.getEncoder().encodeToString(randomWrongMessage.getBytes());
+
+        logger.info("wrongSignedMessage: {}", wrongSignedMessage);
+
+        boolean signedMessageIsValid = encryptionUtil.verifyStringWithGivenPublicKey(randomString, wrongSignedMessage, rsaPublicKey);
+
+        assertNotNull(wrongSignedMessage);
+        assertNotEquals(wrongSignedMessage, randomString);
+        assertFalse(signedMessageIsValid);
+    }
+
+    /**
+     * To test the sign and verify process if use Java default security provider with algorithm(RSA/None/PKCS1Padding)
+     * to sign and verify messages.
+     * NOTE: The test reveals even if you use default Java Security provider to generate Key Pair and use them in sign/verify
+     * will still make the correct result.
+     */
+    @Test
+    public void testRSASignAndVerifyProvidedByBouncyCastleButUseDifferentSecurityProvider() {
+        String randomString = UUID.randomUUID().toString();
+
+        KeyPair differentRSAKeyPair = encryptionUtil.generateNewRSAKeyPair(); // Using default method to generate RSA Key Pair.
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) differentRSAKeyPair.getPublic();
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) differentRSAKeyPair.getPrivate();
+
+        String signedMessage = encryptionUtil.signStringWithGivenPrivateKey(randomString, rsaPrivateKey);
+
+        logger.info("signedMessage: {}", signedMessage);
+
+        boolean signedMessageIsValid = encryptionUtil.verifyStringWithGivenPublicKey(randomString, signedMessage, rsaPublicKey);
+
+        assertNotNull(signedMessage);
+        assertNotEquals(signedMessage, randomString);
+        assertTrue(signedMessageIsValid);
+    }
+
+    @Test
+    public void testRSASignAndVerifyProvidedByBouncyCastleButUseWrongPublicKeyToVerifyMessage() {
+        String randomString = UUID.randomUUID().toString();
+
+        KeyPair rsaKeyPair = encryptionUtil.generateNewRSAKeyPairByBouncyCastle();
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) rsaKeyPair.getPublic();
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
+
+        KeyPair anotherRSAKeyPair = encryptionUtil.generateNewRSAKeyPair();
+        RSAPublicKey wrongRSAPublicKey = (RSAPublicKey) anotherRSAKeyPair.getPublic();
+        RSAPrivateKey wrongRSAPrivateKey = (RSAPrivateKey) anotherRSAKeyPair.getPrivate();
+
+        String signedMessage = encryptionUtil.signStringWithGivenPrivateKey(randomString, rsaPrivateKey);
+
+        logger.info("signedMessage: {}", signedMessage);
+
+        boolean signedMessageIsValid = encryptionUtil.verifyStringWithGivenPublicKey(randomString, signedMessage, wrongRSAPublicKey);
+
+        assertNotNull(signedMessage);
+        assertNotEquals(signedMessage, randomString);
+        assertFalse(signedMessageIsValid);
+    }
+
+    @Test
+    public void testRSASignAndVerifyWithCustom() {
+        String randomString = UUID.randomUUID().toString();
+
+        KeyPair rsaKeyPair = encryptionUtil.generateNewRSAKeyPair();
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) rsaKeyPair.getPublic();
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
+
+        DigitalSignatureAlgorithm digitalSignatureAlgorithm = DigitalSignatureAlgorithm.SHA256WithRSA;
+
+        String signedMessage = encryptionUtil.signStringWithGivenPrivateKeyAndAlgorithm(randomString, rsaPrivateKey, digitalSignatureAlgorithm);
+
+        boolean signedMessageIsValid = encryptionUtil.verifyStringWithGivenPublicKeyAndAlgorithm(randomString, signedMessage, rsaPublicKey, digitalSignatureAlgorithm);
+
+        assertNotNull(signedMessage);
+        assertNotEquals(signedMessage, randomString);
+        assertTrue(signedMessageIsValid);
+    }
 
     @Test
     public void testDefaultAESEncryption() {

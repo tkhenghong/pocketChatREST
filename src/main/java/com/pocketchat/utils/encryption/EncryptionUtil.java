@@ -1,6 +1,7 @@
 package com.pocketchat.utils.encryption;
 
 import com.pocketchat.server.exceptions.encryption.EncryptionErrorException;
+import com.pocketchat.models.enums.utils.encryption.DigitalSignatureAlgorithm;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,15 +115,12 @@ public class EncryptionUtil {
         }
     }
 
-    // TODO: May need to encrypt/decrypt texts with RSA encryption by researching the following link:
-    // https://stackoverflow.com/questions/32161720/breaking-down-rsa-ecb-oaepwithsha-256andmgf1padding
-
-    // TODO: Create Sign and Verify message (encrypt using private key and decrypt using public key)
-
     /************************************************RSA START************************************************/
 
     /**
      * Generate new RSA Key Pair.
+     * https://stackoverflow.com/questions/21179959/rsa-signing-and-verifying-in-java
+     * NOTE: This Key Pair algorithm is default algorithm provided by Java which is RSA/None/PKCS1Padding.
      * Built for dynamic RSA key pair between server and user. But end to end encryption it is not enough. Server are keeping the keys for the user, means the company itself, if know the method to reverse engineer it, they can break them.
      * Please store it somewhere safe in the database.
      */
@@ -134,6 +132,22 @@ public class EncryptionUtil {
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
             throw new EncryptionErrorException(noSuchAlgorithmException.getMessage());
+        }
+    }
+
+    /**
+     * Generate new RSA Key Pair provided by BouncyCastle.
+     * NOTE: This Key Pair algorithm is default algorithm provided by BouncyCastle which is RSA/None/NoPadding.
+     * Please store it somewhere safe in the database.
+     */
+    public KeyPair generateNewRSAKeyPairByBouncyCastle() {
+        try {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA", "BC");
+            keyPairGenerator.initialize(rsaCipherKeySize, new SecureRandom());
+
+            return keyPairGenerator.generateKeyPair();
+        } catch (NoSuchAlgorithmException | NoSuchProviderException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
         }
     }
 
@@ -382,6 +396,163 @@ public class EncryptionUtil {
                 BadPaddingException |
                 IllegalBlockSizeException generalSecurityException) {
             throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /**
+     * Part of the concept of signing and verifying the message with different 3rd parties.
+     * https://stackoverflow.com/questions/21179959/rsa-signing-and-verifying-in-java
+     * https://www.baeldung.com/java-digital-signature
+     * Sign the message using Private Key from RSA Key Pair, provided by BouncyCastle.
+     * NOTE: You must give BouncyCastle generated RSA Key Pair, or else the following algorithm will give exceptions.
+     *
+     * @param message:    Signed message(or called signature) to be signed with RSA encryption provided by BouncyCastle.
+     * @param privateKey: RSA Private Key provided by BouncyCastle.
+     * @return A signed message, to be verified where needed.
+     */
+    public String signStringWithGivenPrivateKey(String message, PrivateKey privateKey) {
+        try {
+            Signature signature = generateSignatureType(DigitalSignatureAlgorithm.SHA1WithRSAWithBC);
+            signature.initSign(privateKey, new SecureRandom());
+
+            signature.update(message.getBytes());
+
+            byte[] signatureBytes = signature.sign();
+
+            return Base64.getEncoder().encodeToString(signatureBytes);
+        } catch (NoSuchAlgorithmException |
+                NoSuchProviderException |
+                InvalidKeyException |
+                SignatureException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /**
+     * Part of the concept of signing and verifying the message with different 3rd parties.
+     * https://stackoverflow.com/questions/21179959/rsa-signing-and-verifying-in-java
+     * https://www.baeldung.com/java-digital-signature
+     * Verify the message using Public Key from RSA Key Pair, provided by BouncyCastle.
+     * NOTE: You must give BouncyCastle generated RSA Key Pair, or else the following algorithm will give exceptions.
+     * NOTE: You need to bring in the originalMessage in order to verify the message successfully.
+     *
+     * @param originalMessage: Original message (not signed/encrypted by RSA).
+     * @param signedMessage:   Signed message(or called signature) to be verified with RSA encryption provided by BouncyCastle.
+     * @param publicKey:       RSA Public Key provided by BouncyCastle.
+     * @return A boolean value.
+     * If true, the signed message verification is successful and signed message is correct match with the Public Key.
+     * Else, vice versa.
+     */
+    public boolean verifyStringWithGivenPublicKey(String originalMessage, String signedMessage, PublicKey publicKey) {
+        try {
+            Signature signature = generateSignatureType(DigitalSignatureAlgorithm.SHA1WithRSAWithBC);
+            signature.initVerify(publicKey);
+
+            byte[] signedMessageBytes = Base64.getDecoder().decode(signedMessage);
+
+            signature.update(originalMessage.getBytes());
+
+            return signature.verify(signedMessageBytes);
+        } catch (NoSuchAlgorithmException |
+                InvalidKeyException |
+                SignatureException |
+                IllegalArgumentException |
+                NoSuchProviderException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /**
+     * Part of the concept of signing and verifying the message with different 3rd parties.
+     * https://stackoverflow.com/questions/21179959/rsa-signing-and-verifying-in-java
+     * https://www.baeldung.com/java-digital-signature
+     * Sign the message using Private Key from RSA Key Pair, provided by BouncyCastle.
+     * NOTE: You must give BouncyCastle generated RSA Key Pair, or else the following algorithm will give exceptions.
+     *
+     * @param message:    Signed message to be signed with RSA encryption provided by BouncyCastle.
+     * @param privateKey: RSA Private Key provided by BouncyCastle.
+     * @param digitalSignatureAlgorithm: DigitalSignatureAlgorithm object to generate Signature object based on different
+     *                                 algorithm requirements, provided by 3rd parties.
+     * @return A signed message, to be verified where needed.
+     */
+    public String signStringWithGivenPrivateKeyAndAlgorithm(String message, PrivateKey privateKey, DigitalSignatureAlgorithm digitalSignatureAlgorithm) {
+        try {
+            Signature signature = generateSignatureType(digitalSignatureAlgorithm);
+            signature.initSign(privateKey);
+
+            signature.update(message.getBytes());
+
+            byte[] signatureBytes = signature.sign();
+
+            return Base64.getEncoder().encodeToString(signatureBytes);
+        } catch (NoSuchAlgorithmException |
+                NoSuchProviderException |
+                InvalidKeyException |
+                SignatureException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /**
+     * Part of the concept of signing and verifying the message with different 3rd parties.
+     * https://stackoverflow.com/questions/21179959/rsa-signing-and-verifying-in-java
+     * https://www.baeldung.com/java-digital-signature
+     * Verify the message using Public Key from RSA Key Pair, provided by BouncyCastle.
+     * NOTE: You must give BouncyCastle generated RSA Key Pair, or else the following algorithm will give exceptions.
+     * NOTE: You need to bring in the originalMessage in order to verify the message successfully.
+     *
+     * @param originalMessage: Original message (not signed/encrypted by RSA).
+     * @param signedMessage:   Signed message(or called signature) to be verified with RSA encryption provided by BouncyCastle.
+     * @param publicKey:       RSA Public Key provided by BouncyCastle.
+     * @param digitalSignatureAlgorithm: DigitalSignatureAlgorithm object to generate Signature object based on different
+     *                                 algorithm requirements, provided by 3rd parties.
+     * @return A boolean value.
+     * If true, the signed message verification is successful and signed message is correct match with the Public Key.
+     * Else, vice versa.
+     */
+    public boolean verifyStringWithGivenPublicKeyAndAlgorithm(String originalMessage, String signedMessage, PublicKey publicKey, DigitalSignatureAlgorithm digitalSignatureAlgorithm) {
+        try {
+            Signature signature = generateSignatureType(digitalSignatureAlgorithm);
+            signature.initVerify(publicKey);
+
+            byte[] signedMessageBytes = Base64.getDecoder().decode(signedMessage);
+
+            signature.update(originalMessage.getBytes());
+
+            return signature.verify(signedMessageBytes);
+        } catch (NoSuchAlgorithmException |
+                InvalidKeyException |
+                SignatureException |
+                IllegalArgumentException |
+                NoSuchProviderException generalSecurityException) {
+            throw new EncryptionErrorException(generalSecurityException.getMessage());
+        }
+    }
+
+    /**
+     *
+     * @param digitalSignatureAlgorithm: DigitalSignatureAlgorithm object to generate Signature object based on different
+     *                                 algorithm requirements, provided by 3rd parties.
+     * @return Initialized Signature object, ready for signing/verifying messages.
+     * @throws NoSuchAlgorithmException: Exception when no such String value inputted into the Signature.getInstance(...).
+     * @throws NoSuchProviderException: Exception when no such provider String value inputted into the Signature.getInstance(...).
+     */
+    private Signature generateSignatureType(DigitalSignatureAlgorithm digitalSignatureAlgorithm) throws NoSuchAlgorithmException, NoSuchProviderException {
+        switch (digitalSignatureAlgorithm) {
+            case NoneWithRSA:
+                return Signature.getInstance("RSA");
+            case SHA1WithRSA:
+                return Signature.getInstance("SHA1withRSA");
+            case SHA256WithRSA:
+                return Signature.getInstance("SHA256WithRSA");
+            case SHA1WithDSA:
+                return Signature.getInstance("SHA1WithDSA");
+            case MD5WithRSA:
+                return Signature.getInstance("MD5WithRSA");
+            case SHA1WithRSAWithBC:
+                return Signature.getInstance("SHA1withRSA", "BC");
+            default:
+                throw new EncryptionErrorException("Unknown DigitalSignatureAlgorithm detected.");
         }
     }
 
