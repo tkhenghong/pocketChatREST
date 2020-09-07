@@ -1,10 +1,16 @@
 package com.pocketchat.conversation_group.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
+import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
+import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
+import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
+import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupAdminNotInMemberIdListException;
 import com.pocketchat.server.exceptions.conversation_group.CreatorIsNotConversationGroupMemberException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
@@ -33,8 +39,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 
 // https://www.infoworld.com/article/3537563/junit-5-tutorial-part-1-unit-testing-with-junit-5-mockito-and-hamcrest.html
@@ -113,11 +120,12 @@ public class ConversationGroupServiceTests {
                 conversationGroupRepoService,
                 chatMessageService,
                 userContactService,
-                rabbitMQService);
+                rabbitMQService,
+                new ObjectMapper());
     }
 
     @Test
-    public void testAddConversationGroupWithoutUserContactsFound() {
+    public void testAddConversationGroupButOwnUserContactNotFound() {
         CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
 
         try {
@@ -131,7 +139,41 @@ public class ConversationGroupServiceTests {
     }
 
     @Test
-    public void testCreateConversationGroupButAdminIsNotWithinMembersAndAdmins() {
+    public void testAddPersonalConversationGroupButAdminMembersAreEmpty() {
+        CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
+        UserContact creatorUserContact = generateUserContactObject();
+
+        createConversationGroupRequest.setAdminMemberIds(new ArrayList<>());
+
+        try {
+            Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
+            conversationGroupService.addConversation(createConversationGroupRequest);
+            failBecauseExceptionWasNotThrown(Exception.class);
+        } catch (Exception exception) {
+            Mockito.verify(userContactService).getOwnUserContact();
+            assertThat(exception).isInstanceOf(CreatorIsNotConversationGroupMemberException.class);
+        }
+    }
+
+    @Test
+    public void testAddPersonalConversationButGroupMembersAreEmpty() {
+        CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
+        UserContact creatorUserContact = generateUserContactObject();
+
+        createConversationGroupRequest.setMemberIds(new ArrayList<>());
+
+        try {
+            Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
+            conversationGroupService.addConversation(createConversationGroupRequest);
+            failBecauseExceptionWasNotThrown(Exception.class);
+        } catch (Exception exception) {
+            Mockito.verify(userContactService).getOwnUserContact();
+            assertThat(exception).isInstanceOf(CreatorIsNotConversationGroupMemberException.class);
+        }
+    }
+
+    @Test
+    public void testCreatePersonalConversationGroupButAdminIsNotWithinMembersAndAdmins() {
         int numberOfGroupMembers = 20;
         UserContact creatorUserContact = generateUserContactObject();
         ConversationGroup conversationGroup = generateConversationGroupObject();
@@ -164,7 +206,7 @@ public class ConversationGroupServiceTests {
     }
 
     @Test
-    public void testCreateConversationGroupButSomeAdminIdsNotWithinMemberIds() {
+    public void testCreatePersonalConversationGroupButSomeAdminIdsNotWithinMemberIds() {
         int numberOfGroupMembers = 20;
         UserContact creatorUserContact = generateUserContactObject();
         ConversationGroup conversationGroup = generateConversationGroupObject();
@@ -217,6 +259,57 @@ public class ConversationGroupServiceTests {
         }
     }
 
+    @Test
+    public void testCreatePersonalConversationGroup() {
+        int numberOfGroupMembers = 20;
+        String conversationGroupId = UUID.randomUUID().toString();
+        UserContact creatorUserContact = generateUserContactObject();
+        ChatMessage chatMessage = generateChatMessage();
+        WebSocketMessage webSocketMessage = generateWebSocketMessage();
+        webSocketMessage.setChatMessage(chatMessage);
+
+        List<UserContact> userContacts = new ArrayList<>();
+
+        for (int i = 0; i < numberOfGroupMembers; i++) {
+            userContacts.add(generateUserContactObject());
+        }
+
+        List<String> memberUserContactStrings = userContacts.stream().map(UserContact::getId).collect(Collectors.toList());
+        userContacts.add(creatorUserContact);
+        memberUserContactStrings.add(creatorUserContact.getId()); // Add creatorUserContact ID to member list, but not admin member list.
+
+        CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
+        createConversationGroupRequest.setMemberIds(memberUserContactStrings);
+        createConversationGroupRequest.setAdminMemberIds(memberUserContactStrings);
+
+        Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
+        Mockito.when(userContactService.getUserContact(argThat(t ->
+                createConversationGroupRequest.getMemberIds().contains(t)))).thenAnswer(i ->
+                userContacts.stream().filter(userContact ->
+                        userContact.getId().equals(Arrays.asList(i.getArguments()).get(0)))
+                        .findAny().orElseThrow(NullPointerException::new)
+        );
+        Mockito.when(conversationGroupRepoService.save(any())).thenAnswer(i -> {
+            ConversationGroup toBeSaved = (ConversationGroup) Arrays.asList(i.getArguments()).get(0);
+            toBeSaved.setId(conversationGroupId);
+            return toBeSaved;
+        });
+        Mockito.when(chatMessageService.addChatMessage(any())).thenReturn(chatMessage);
+
+        ConversationGroup savedConversationGroup = conversationGroupService.addConversation(createConversationGroupRequest);
+
+        Mockito.verify(userContactService).getOwnUserContact();
+        int totalNumberOfUserContacts = createConversationGroupRequest.getAdminMemberIds().size() +
+                createConversationGroupRequest.getMemberIds().size();
+        Mockito.verify(userContactService, times(totalNumberOfUserContacts)).getUserContact(any());
+        Mockito.verify(conversationGroupRepoService).save(any());
+        Mockito.verify(chatMessageService).addChatMessage(any());
+        Mockito.verify(rabbitMQService, times(21)).addMessageToQueue(anyString(), anyString(), anyString(), anyString());
+
+        assertNotNull(savedConversationGroup);
+        assertEquals(savedConversationGroup.getId(), conversationGroupId);
+    }
+
     private CreateConversationGroupRequest generateCreateConversationGroupRequest() {
         List<String> memberIds = generateRandomObjectIds(10);
         return CreateConversationGroupRequest.builder()
@@ -248,6 +341,7 @@ public class ConversationGroupServiceTests {
         List<String> memberIds = generateRandomObjectIds(10);
 
         return ConversationGroup.builder()
+                .id(UUID.randomUUID().toString())
                 .conversationGroupType(ConversationGroupType.Group)
                 .name(UUID.randomUUID().toString())
                 .memberIds(memberIds)
@@ -257,6 +351,35 @@ public class ConversationGroupServiceTests {
                 .creatorUserId(memberIds.get(0))
                 .notificationExpireDate(LocalDateTime.now())
                 .block(false)
+                .build();
+    }
+
+    private ChatMessage generateChatMessage() {
+        return ChatMessage.builder()
+                .id(UUID.randomUUID().toString())
+                .chatMessageType(ChatMessageType.Text)
+                .conversationId(UUID.randomUUID().toString())
+                .createdTime(LocalDateTime.now())
+                .chatMessageStatus(ChatMessageStatus.Sent)
+                .messageContent(UUID.randomUUID().toString())
+                .multimediaId(UUID.randomUUID().toString())
+                .senderId(UUID.randomUUID().toString())
+                .senderMobileNo(UUID.randomUUID().toString())
+                .senderName(UUID.randomUUID().toString())
+                .sentTime(LocalDateTime.now())
+                .build();
+    }
+
+    private WebSocketMessage generateWebSocketMessage() {
+        return WebSocketMessage.builder().build();
+    }
+
+    private CreateChatMessageRequest generateCreateChatMessageRequest() {
+        return CreateChatMessageRequest.builder()
+                .chatMessageType(ChatMessageType.Text)
+                .conversationId(UUID.randomUUID().toString())
+                .messageContent(UUID.randomUUID().toString())
+                .multimediaId(UUID.randomUUID().toString())
                 .build();
     }
 

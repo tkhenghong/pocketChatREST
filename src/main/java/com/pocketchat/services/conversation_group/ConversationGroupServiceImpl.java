@@ -1,5 +1,7 @@
 package com.pocketchat.services.conversation_group;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.user_contact.UserContact;
@@ -11,9 +13,7 @@ import com.pocketchat.models.controllers.response.conversation_group.Conversatio
 import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.models.websocket.WebSocketMessage;
-import com.pocketchat.server.exceptions.conversation_group.ConversationGroupAdminNotInMemberIdListException;
-import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
-import com.pocketchat.server.exceptions.conversation_group.CreatorIsNotConversationGroupMemberException;
+import com.pocketchat.server.exceptions.conversation_group.*;
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.user_contact.UserContactService;
@@ -42,16 +42,20 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     private final RabbitMQService rabbitMQService;
 
+    private final ObjectMapper objectMapper;
+
     // Avoid Field Injection
     @Autowired
     public ConversationGroupServiceImpl(ConversationGroupRepoService conversationGroupRepoService,
                                         ChatMessageService chatMessageService,
                                         UserContactService userContactService,
-                                        RabbitMQService rabbitMQService) {
+                                        RabbitMQService rabbitMQService,
+                                        ObjectMapper objectMapper) {
         this.conversationGroupRepoService = conversationGroupRepoService;
         this.chatMessageService = chatMessageService;
         this.userContactService = userContactService;
         this.rabbitMQService = rabbitMQService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -61,7 +65,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
         boolean creatorIsInCreateConversationGroupRequest =
                 createConversationGroupRequest.getAdminMemberIds().contains(creatorUserContact.getId()) &&
-                createConversationGroupRequest.getMemberIds().contains(creatorUserContact.getId());
+                        createConversationGroupRequest.getMemberIds().contains(creatorUserContact.getId());
 
         if (!creatorIsInCreateConversationGroupRequest) {
             throw new CreatorIsNotConversationGroupMemberException("The creator must be in both member and admins.");
@@ -69,8 +73,9 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
         ConversationGroup conversationGroup = createConversationGroupRequestToConversationGroupMapper(createConversationGroupRequest);
 
-
         String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + " on " + conversationGroup.getCreatedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
+        conversationGroup.setCreatorUserId(creatorUserContact.getId());
 
         switch (conversationGroup.getConversationGroupType()) {
             case Group:
@@ -90,10 +95,11 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 } else if (personalConversationGroupList.isEmpty()) { // Must be 0 conversationGroup
                     return createAndSendMessage(conversationGroup, message);
                 } else {
-                    return null;
+                    throw new InvalidPersonalConversationGroupException("Found Multiple Personal Conversation Group with" +
+                            " same members, which shouldn't be happening. Please contact developer.");
                 }
             default:
-                return null;
+                throw new InvalidConversationGroupTypeException("Invalid Conversation Group Type detected.");
         }
     }
 
@@ -211,11 +217,19 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         ChatMessage chatMessage = chatMessageService.addChatMessage(createChatMessageRequest);
 
         WebSocketMessage webSocketMessage = WebSocketMessage.builder()
+                .conversationGroup(conversationGroup)
                 .chatMessage(chatMessage)
                 .build();
 
-        conversationGroup.getMemberIds().forEach(memberId ->
-                this.rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(),
-                        conversationGroup.getId(), webSocketMessage.toString()));
+        try {
+            String webSocketMessageString = objectMapper.writeValueAsString(webSocketMessage);
+
+            conversationGroup.getMemberIds().forEach(memberId ->
+                    rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(),
+                            conversationGroup.getId(), webSocketMessageString));
+        } catch (JsonProcessingException e) {
+            throw new WebSocketObjectConversionFailedException("Failed to convert Welcome Chat Message. Message: "
+                    + e.getMessage());
+        }
     }
 }

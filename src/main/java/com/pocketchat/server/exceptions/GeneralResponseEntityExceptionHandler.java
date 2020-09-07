@@ -1,8 +1,7 @@
 package com.pocketchat.server.exceptions;
 
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
-import com.pocketchat.server.exceptions.conversation_group.ConversationGroupAdminNotInMemberIdListException;
-import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
+import com.pocketchat.server.exceptions.conversation_group.*;
 import com.pocketchat.server.exceptions.country_code.CountryCodeNotFoundException;
 import com.pocketchat.server.exceptions.encryption.EncryptionErrorException;
 import com.pocketchat.server.exceptions.general.StringEmptyException;
@@ -71,6 +70,7 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
             StringEmptyException.class,
             UserGoogleAccountIsAlreadyRegisteredException.class,
             UsernameExistException.class,
+            InvalidConversationGroupTypeException.class
     })
     public ResponseEntity<ExceptionResponse> handleNotAcceptableExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.NOT_ACCEPTABLE);
@@ -103,7 +103,9 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
 
     // Handle Server Internal Error Exceptions
     @ExceptionHandler({
-            EncryptionErrorException.class
+            EncryptionErrorException.class,
+            InvalidPersonalConversationGroupException.class,
+            WebSocketObjectConversionFailedException.class
     })
     public ResponseEntity<ExceptionResponse> handleServerInternalErrorExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
