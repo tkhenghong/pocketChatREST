@@ -61,7 +61,7 @@ public class EncryptionUtilTest {
     String rsaCipherAlgorithmProvider = "BC";
 
     @Value("${encryption.rsa.cipher.key.size}")
-    int rsaCipherKeySize = 4096;
+    int rsaCipherKeySize = 1024;
 
     @Value("${encryption.aes.default.secret.key.spec.algorithm}")
     String aesSecretKeySpecAlgorithm = "AES";

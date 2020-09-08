@@ -20,6 +20,7 @@ import com.pocketchat.services.user_contact.UserContactService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +51,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                                         ChatMessageService chatMessageService,
                                         UserContactService userContactService,
                                         RabbitMQService rabbitMQService,
-                                        ObjectMapper objectMapper) {
+                                        @Qualifier("generalOM") ObjectMapper objectMapper) {
         this.conversationGroupRepoService = conversationGroupRepoService;
         this.chatMessageService = chatMessageService;
         this.userContactService = userContactService;

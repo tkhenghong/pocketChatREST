@@ -1,6 +1,7 @@
 package com.pocketchat.server.configurations.object_conversion;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,7 +12,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GlobalJSONObjectConverter {
 
+    // TODO: this is causing return LocalDateTIme in server response object to become Maps<String, Object> in frontend.
     @Bean
+    @Qualifier("generalOM")
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
