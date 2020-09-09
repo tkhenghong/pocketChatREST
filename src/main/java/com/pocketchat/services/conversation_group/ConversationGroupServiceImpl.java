@@ -51,7 +51,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                                         ChatMessageService chatMessageService,
                                         UserContactService userContactService,
                                         RabbitMQService rabbitMQService,
-                                        @Qualifier("generalOM") ObjectMapper objectMapper) {
+                                        ObjectMapper objectMapper) {
         this.conversationGroupRepoService = conversationGroupRepoService;
         this.chatMessageService = chatMessageService;
         this.userContactService = userContactService;

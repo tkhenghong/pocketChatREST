@@ -22,7 +22,6 @@ public class ConversationGroupRepoService {
     public List<ConversationGroup> findAllConversationGroupsByIds(List<String> ids) {
         Iterable<ConversationGroup> conversationGroupIterable = conversationGroupRepository.findAllById(ids);
 
-        // TODO: Need expert review for possibly better options
         // From Iterable to Collection List
         // https://stackoverflow.com/questions/6416706/easy-way-to-convert-iterable-to-collection
         List<ConversationGroup> conversationGroupList = new ArrayList<>();
