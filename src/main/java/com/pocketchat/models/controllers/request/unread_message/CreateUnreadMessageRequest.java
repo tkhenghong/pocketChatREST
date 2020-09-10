@@ -5,9 +5,6 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class CreateUnreadMessageRequest {
-
-    private String id;
-
     @NotBlank
     private String conversationId;
 
@@ -21,8 +18,7 @@ public class CreateUnreadMessageRequest {
 
     private Integer count;
 
-    CreateUnreadMessageRequest(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull LocalDateTime date, Integer count) {
-        this.id = id;
+    CreateUnreadMessageRequest(@NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull LocalDateTime date, Integer count) {
         this.conversationId = conversationId;
         this.userId = userId;
         this.lastMessage = lastMessage;
@@ -34,9 +30,6 @@ public class CreateUnreadMessageRequest {
         return new CreateUnreadMessageRequestBuilder();
     }
 
-    public String getId() {
-        return this.id;
-    }
 
     public @NotBlank String getConversationId() {
         return this.conversationId;
@@ -56,10 +49,6 @@ public class CreateUnreadMessageRequest {
 
     public Integer getCount() {
         return this.count;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setConversationId(@NotBlank String conversationId) {
@@ -88,9 +77,6 @@ public class CreateUnreadMessageRequest {
             return false;
         final CreateUnreadMessageRequest other = (CreateUnreadMessageRequest) o;
         if (!other.canEqual((Object) this)) return false;
-        final Object this$id = this.getId();
-        final Object other$id = other.getId();
-        if (this$id == null ? other$id != null : !this$id.equals(other$id)) return false;
         final Object this$conversationId = this.getConversationId();
         final Object other$conversationId = other.getConversationId();
         if (this$conversationId == null ? other$conversationId != null : !this$conversationId.equals(other$conversationId))
@@ -118,8 +104,6 @@ public class CreateUnreadMessageRequest {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
-        final Object $id = this.getId();
-        result = result * PRIME + ($id == null ? 43 : $id.hashCode());
         final Object $conversationId = this.getConversationId();
         result = result * PRIME + ($conversationId == null ? 43 : $conversationId.hashCode());
         final Object $userId = this.getUserId();
@@ -134,11 +118,10 @@ public class CreateUnreadMessageRequest {
     }
 
     public String toString() {
-        return "CreateUnreadMessageRequest(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", userId=" + this.getUserId() + ", lastMessage=" + this.getLastMessage() + ", date=" + this.getDate() + ", count=" + this.getCount() + ")";
+        return "CreateUnreadMessageRequest(conversationId=" + this.getConversationId() + ", userId=" + this.getUserId() + ", lastMessage=" + this.getLastMessage() + ", date=" + this.getDate() + ", count=" + this.getCount() + ")";
     }
 
     public static class CreateUnreadMessageRequestBuilder {
-        private String id;
         private @NotBlank String conversationId;
         private @NotBlank String userId;
         private String lastMessage;
@@ -146,11 +129,6 @@ public class CreateUnreadMessageRequest {
         private Integer count;
 
         CreateUnreadMessageRequestBuilder() {
-        }
-
-        public CreateUnreadMessageRequest.CreateUnreadMessageRequestBuilder id(String id) {
-            this.id = id;
-            return this;
         }
 
         public CreateUnreadMessageRequest.CreateUnreadMessageRequestBuilder conversationId(@NotBlank String conversationId) {
@@ -179,11 +157,11 @@ public class CreateUnreadMessageRequest {
         }
 
         public CreateUnreadMessageRequest build() {
-            return new CreateUnreadMessageRequest(id, conversationId, userId, lastMessage, date, count);
+            return new CreateUnreadMessageRequest(conversationId, userId, lastMessage, date, count);
         }
 
         public String toString() {
-            return "CreateUnreadMessageRequest.CreateUnreadMessageRequestBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", userId=" + this.userId + ", lastMessage=" + this.lastMessage + ", date=" + this.date + ", count=" + this.count + ")";
+            return "CreateUnreadMessageRequest.CreateUnreadMessageRequestBuilder(conversationId=" + this.conversationId + ", userId=" + this.userId + ", lastMessage=" + this.lastMessage + ", date=" + this.date + ", count=" + this.count + ")";
         }
     }
 }

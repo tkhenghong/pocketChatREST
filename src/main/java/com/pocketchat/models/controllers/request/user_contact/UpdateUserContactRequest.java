@@ -9,6 +9,7 @@ import java.util.List;
 
 public class UpdateUserContactRequest {
 
+    @NotBlank
     private String id;
 
     @NotBlank
@@ -35,7 +36,7 @@ public class UpdateUserContactRequest {
 
     private String multimediaId;
 
-    UpdateUserContactRequest(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, LocalDateTime lastSeenDate, boolean block, String multimediaId) {
+    UpdateUserContactRequest(@NotBlank String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, LocalDateTime lastSeenDate, boolean block, String multimediaId) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -52,7 +53,8 @@ public class UpdateUserContactRequest {
         return new UpdateUserContactRequestBuilder();
     }
 
-    public String getId() {
+
+    public @NotBlank String getId() {
         return this.id;
     }
 
@@ -92,7 +94,7 @@ public class UpdateUserContactRequest {
         return this.multimediaId;
     }
 
-    public void setId(String id) {
+    public void setId(@NotBlank String id) {
         this.id = id;
     }
 
@@ -206,7 +208,7 @@ public class UpdateUserContactRequest {
     }
 
     public static class UpdateUserContactRequestBuilder {
-        private String id;
+        private @NotBlank String id;
         private @NotBlank String displayName;
         private @NotBlank String realName;
         private String about;
@@ -220,7 +222,7 @@ public class UpdateUserContactRequest {
         UpdateUserContactRequestBuilder() {
         }
 
-        public UpdateUserContactRequest.UpdateUserContactRequestBuilder id(String id) {
+        public UpdateUserContactRequest.UpdateUserContactRequestBuilder id(@NotBlank String id) {
             this.id = id;
             return this;
         }

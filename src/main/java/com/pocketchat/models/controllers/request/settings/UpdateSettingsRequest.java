@@ -4,6 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 public class UpdateSettingsRequest {
 
+    @NotBlank
     private String id;
 
     @NotBlank
@@ -11,7 +12,7 @@ public class UpdateSettingsRequest {
 
     private boolean allowNotifications;
 
-    UpdateSettingsRequest(String id, @NotBlank String userId, boolean allowNotifications) {
+    UpdateSettingsRequest(@NotBlank String id, @NotBlank String userId, boolean allowNotifications) {
         this.id = id;
         this.userId = userId;
         this.allowNotifications = allowNotifications;
@@ -21,7 +22,8 @@ public class UpdateSettingsRequest {
         return new UpdateSettingsRequestBuilder();
     }
 
-    public String getId() {
+
+    public @NotBlank String getId() {
         return this.id;
     }
 
@@ -33,7 +35,7 @@ public class UpdateSettingsRequest {
         return this.allowNotifications;
     }
 
-    public void setId(String id) {
+    public void setId(@NotBlank String id) {
         this.id = id;
     }
 
@@ -80,14 +82,14 @@ public class UpdateSettingsRequest {
     }
 
     public static class UpdateSettingsRequestBuilder {
-        private String id;
+        private @NotBlank String id;
         private @NotBlank String userId;
         private boolean allowNotifications;
 
         UpdateSettingsRequestBuilder() {
         }
 
-        public UpdateSettingsRequest.UpdateSettingsRequestBuilder id(String id) {
+        public UpdateSettingsRequest.UpdateSettingsRequestBuilder id(@NotBlank String id) {
             this.id = id;
             return this;
         }

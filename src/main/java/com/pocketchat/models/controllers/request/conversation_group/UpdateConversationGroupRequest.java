@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class UpdateConversationGroupRequest {
+
+    @NotBlank
     private String id;
 
     @NotBlank
@@ -39,7 +41,7 @@ public class UpdateConversationGroupRequest {
 
     private LocalDateTime notificationExpireDate;
 
-    UpdateConversationGroupRequest(String id, @NotBlank String creatorUserId, @NotNull LocalDateTime createdDate, @NotBlank String name, @NotBlank String type, String description, @Valid @NotEmpty @Size(min = 1) List<String> memberIds, @Valid @NotEmpty @Size(min = 1) List<String> adminMemberIds, boolean block, LocalDateTime notificationExpireDate) {
+    UpdateConversationGroupRequest(@NotBlank String id, @NotBlank String creatorUserId, @NotNull LocalDateTime createdDate, @NotBlank String name, @NotBlank String type, String description, @Valid @NotEmpty @Size(min = 1) List<String> memberIds, @Valid @NotEmpty @Size(min = 1) List<String> adminMemberIds, boolean block, LocalDateTime notificationExpireDate) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.createdDate = createdDate;
@@ -56,7 +58,8 @@ public class UpdateConversationGroupRequest {
         return new UpdateConversationGroupRequestBuilder();
     }
 
-    public String getId() {
+
+    public @NotBlank String getId() {
         return this.id;
     }
 
@@ -96,7 +99,7 @@ public class UpdateConversationGroupRequest {
         return this.notificationExpireDate;
     }
 
-    public void setId(String id) {
+    public void setId(@NotBlank String id) {
         this.id = id;
     }
 
@@ -212,7 +215,7 @@ public class UpdateConversationGroupRequest {
     }
 
     public static class UpdateConversationGroupRequestBuilder {
-        private String id;
+        private @NotBlank String id;
         private @NotBlank String creatorUserId;
         private @NotNull LocalDateTime createdDate;
         private @NotBlank String name;
@@ -226,7 +229,7 @@ public class UpdateConversationGroupRequest {
         UpdateConversationGroupRequestBuilder() {
         }
 
-        public UpdateConversationGroupRequest.UpdateConversationGroupRequestBuilder id(String id) {
+        public UpdateConversationGroupRequest.UpdateConversationGroupRequestBuilder id(@NotBlank String id) {
             this.id = id;
             return this;
         }

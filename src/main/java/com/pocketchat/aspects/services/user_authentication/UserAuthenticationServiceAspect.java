@@ -25,7 +25,6 @@ public class UserAuthenticationServiceAspect {
 
     @Autowired
     public UserAuthenticationServiceAspect() {
-
     }
 
     @Around("execution(* com.pocketchat.services.user_authentication.UserAuthenticationService.registerMobileNumber(..))")

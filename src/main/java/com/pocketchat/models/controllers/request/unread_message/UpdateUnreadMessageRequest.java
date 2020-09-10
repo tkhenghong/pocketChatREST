@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public class UpdateUnreadMessageRequest {
 
+    @NotBlank
     private String id;
 
     @NotBlank
@@ -21,7 +22,7 @@ public class UpdateUnreadMessageRequest {
 
     private Integer count;
 
-    UpdateUnreadMessageRequest(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull LocalDateTime date, Integer count) {
+    UpdateUnreadMessageRequest(@NotBlank String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull LocalDateTime date, Integer count) {
         this.id = id;
         this.conversationId = conversationId;
         this.userId = userId;
@@ -34,7 +35,7 @@ public class UpdateUnreadMessageRequest {
         return new UpdateUnreadMessageRequestBuilder();
     }
 
-    public String getId() {
+    public @NotBlank String getId() {
         return this.id;
     }
 
@@ -58,7 +59,7 @@ public class UpdateUnreadMessageRequest {
         return this.count;
     }
 
-    public void setId(String id) {
+    public void setId(@NotBlank String id) {
         this.id = id;
     }
 
@@ -138,7 +139,7 @@ public class UpdateUnreadMessageRequest {
     }
 
     public static class UpdateUnreadMessageRequestBuilder {
-        private String id;
+        private @NotBlank String id;
         private @NotBlank String conversationId;
         private @NotBlank String userId;
         private String lastMessage;
@@ -148,7 +149,7 @@ public class UpdateUnreadMessageRequest {
         UpdateUnreadMessageRequestBuilder() {
         }
 
-        public UpdateUnreadMessageRequest.UpdateUnreadMessageRequestBuilder id(String id) {
+        public UpdateUnreadMessageRequest.UpdateUnreadMessageRequestBuilder id(@NotBlank String id) {
             this.id = id;
             return this;
         }

@@ -17,7 +17,9 @@ import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundExceptio
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.conversation_group.ConversationGroupServiceImpl;
+import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
+import com.pocketchat.services.unread_message.UnreadMessageService;
 import com.pocketchat.services.user_contact.UserContactService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,6 +112,12 @@ public class ConversationGroupServiceTests {
     UserContactService userContactService;
 
     @Mock
+    UnreadMessageService unreadMessageService;
+
+    @Mock
+    MultimediaService multimediaService;
+
+    @Mock
     RabbitMQService rabbitMQService;
 
     @BeforeEach
@@ -120,6 +128,8 @@ public class ConversationGroupServiceTests {
                 conversationGroupRepoService,
                 chatMessageService,
                 userContactService,
+                unreadMessageService,
+                multimediaService,
                 rabbitMQService,
                 new ObjectMapper());
     }

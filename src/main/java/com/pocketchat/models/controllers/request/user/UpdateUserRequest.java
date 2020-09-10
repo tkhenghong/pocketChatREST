@@ -5,6 +5,9 @@ import javax.validation.constraints.NotBlank;
 public class UpdateUserRequest {
 
     @NotBlank
+    private String id;
+
+    @NotBlank
     private String displayName;
 
     @NotBlank
@@ -24,7 +27,8 @@ public class UpdateUserRequest {
     @NotBlank
     private String effectivePhoneNumber;
 
-    UpdateUserRequest(@NotBlank String displayName, @NotBlank String realName, @NotBlank String mobileNo, @NotBlank String googleAccountId, String emailAddress, @NotBlank String countryCode, @NotBlank String effectivePhoneNumber) {
+    UpdateUserRequest(@NotBlank String id, @NotBlank String displayName, @NotBlank String realName, @NotBlank String mobileNo, @NotBlank String googleAccountId, String emailAddress, @NotBlank String countryCode, @NotBlank String effectivePhoneNumber) {
+        this.id = id;
         this.displayName = displayName;
         this.realName = realName;
         this.mobileNo = mobileNo;
@@ -36,6 +40,11 @@ public class UpdateUserRequest {
 
     public static UpdateUserRequestBuilder builder() {
         return new UpdateUserRequestBuilder();
+    }
+
+
+    public @NotBlank String getId() {
+        return this.id;
     }
 
     public @NotBlank String getDisplayName() {
@@ -64,6 +73,10 @@ public class UpdateUserRequest {
 
     public @NotBlank String getEffectivePhoneNumber() {
         return this.effectivePhoneNumber;
+    }
+
+    public void setId(@NotBlank String id) {
+        this.id = id;
     }
 
     public void setDisplayName(@NotBlank String displayName) {
@@ -99,6 +112,9 @@ public class UpdateUserRequest {
         if (!(o instanceof UpdateUserRequest)) return false;
         final UpdateUserRequest other = (UpdateUserRequest) o;
         if (!other.canEqual((Object) this)) return false;
+        final Object this$id = this.getId();
+        final Object other$id = other.getId();
+        if (this$id == null ? other$id != null : !this$id.equals(other$id)) return false;
         final Object this$displayName = this.getDisplayName();
         final Object other$displayName = other.getDisplayName();
         if (this$displayName == null ? other$displayName != null : !this$displayName.equals(other$displayName))
@@ -135,6 +151,8 @@ public class UpdateUserRequest {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
+        final Object $id = this.getId();
+        result = result * PRIME + ($id == null ? 43 : $id.hashCode());
         final Object $displayName = this.getDisplayName();
         result = result * PRIME + ($displayName == null ? 43 : $displayName.hashCode());
         final Object $realName = this.getRealName();
@@ -153,10 +171,11 @@ public class UpdateUserRequest {
     }
 
     public String toString() {
-        return "UpdateUserRequest(displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", mobileNo=" + this.getMobileNo() + ", googleAccountId=" + this.getGoogleAccountId() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", effectivePhoneNumber=" + this.getEffectivePhoneNumber() + ")";
+        return "UpdateUserRequest(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", mobileNo=" + this.getMobileNo() + ", googleAccountId=" + this.getGoogleAccountId() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", effectivePhoneNumber=" + this.getEffectivePhoneNumber() + ")";
     }
 
     public static class UpdateUserRequestBuilder {
+        private @NotBlank String id;
         private @NotBlank String displayName;
         private @NotBlank String realName;
         private @NotBlank String mobileNo;
@@ -166,6 +185,11 @@ public class UpdateUserRequest {
         private @NotBlank String effectivePhoneNumber;
 
         UpdateUserRequestBuilder() {
+        }
+
+        public UpdateUserRequest.UpdateUserRequestBuilder id(@NotBlank String id) {
+            this.id = id;
+            return this;
         }
 
         public UpdateUserRequest.UpdateUserRequestBuilder displayName(@NotBlank String displayName) {
@@ -204,11 +228,11 @@ public class UpdateUserRequest {
         }
 
         public UpdateUserRequest build() {
-            return new UpdateUserRequest(displayName, realName, mobileNo, googleAccountId, emailAddress, countryCode, effectivePhoneNumber);
+            return new UpdateUserRequest(id, displayName, realName, mobileNo, googleAccountId, emailAddress, countryCode, effectivePhoneNumber);
         }
 
         public String toString() {
-            return "UpdateUserRequest.UpdateUserRequestBuilder(displayName=" + this.displayName + ", realName=" + this.realName + ", mobileNo=" + this.mobileNo + ", googleAccountId=" + this.googleAccountId + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", effectivePhoneNumber=" + this.effectivePhoneNumber + ")";
+            return "UpdateUserRequest.UpdateUserRequestBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", mobileNo=" + this.mobileNo + ", googleAccountId=" + this.googleAccountId + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", effectivePhoneNumber=" + this.effectivePhoneNumber + ")";
         }
     }
 }

@@ -3,6 +3,8 @@ package com.pocketchat.models.controllers.request.multimedia;
 import javax.validation.constraints.NotBlank;
 
 public class UpdateMultimediaRequest {
+
+    @NotBlank
     private String id;
 
     private String localFullFileUrl;
@@ -16,14 +18,16 @@ public class UpdateMultimediaRequest {
     private String remoteFullFileUrl;
 
     private String messageId;
+
     private String userContactId;
+
     private String conversationId;
 
     private String userId;
 
     private Integer fileSize;
 
-    UpdateMultimediaRequest(String id, String localFullFileUrl, String localThumbnailUrl, @NotBlank String remoteThumbnailUrl, @NotBlank String remoteFullFileUrl, String messageId, String userContactId, String conversationId, String userId, Integer fileSize) {
+    UpdateMultimediaRequest(@NotBlank String id, String localFullFileUrl, String localThumbnailUrl, @NotBlank String remoteThumbnailUrl, @NotBlank String remoteFullFileUrl, String messageId, String userContactId, String conversationId, String userId, Integer fileSize) {
         this.id = id;
         this.localFullFileUrl = localFullFileUrl;
         this.localThumbnailUrl = localThumbnailUrl;
@@ -40,7 +44,7 @@ public class UpdateMultimediaRequest {
         return new UpdateMultimediaRequestBuilder();
     }
 
-    public String getId() {
+    public @NotBlank String getId() {
         return this.id;
     }
 
@@ -80,7 +84,7 @@ public class UpdateMultimediaRequest {
         return this.fileSize;
     }
 
-    public void setId(String id) {
+    public void setId(@NotBlank String id) {
         this.id = id;
     }
 
@@ -199,7 +203,7 @@ public class UpdateMultimediaRequest {
     }
 
     public static class UpdateMultimediaRequestBuilder {
-        private String id;
+        private @NotBlank String id;
         private String localFullFileUrl;
         private String localThumbnailUrl;
         private @NotBlank String remoteThumbnailUrl;
@@ -213,7 +217,7 @@ public class UpdateMultimediaRequest {
         UpdateMultimediaRequestBuilder() {
         }
 
-        public UpdateMultimediaRequest.UpdateMultimediaRequestBuilder id(String id) {
+        public UpdateMultimediaRequest.UpdateMultimediaRequestBuilder id(@NotBlank String id) {
             this.id = id;
             return this;
         }
