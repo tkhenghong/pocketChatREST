@@ -4,23 +4,27 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
+import com.pocketchat.db.models.unread_message.UnreadMessage;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
+import com.pocketchat.models.controllers.request.multimedia.CreateMultimediaRequest;
+import com.pocketchat.models.controllers.request.unread_message.CreateUnreadMessageRequest;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
 import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.conversation_group.*;
 import com.pocketchat.services.chat_message.ChatMessageService;
+import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
+import com.pocketchat.services.unread_message.UnreadMessageService;
 import com.pocketchat.services.user_contact.UserContactService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +45,10 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     private final UserContactService userContactService;
 
+    private final UnreadMessageService unreadMessageService;
+
+    private final MultimediaService multimediaService;
+
     private final RabbitMQService rabbitMQService;
 
     private final ObjectMapper objectMapper;
@@ -50,11 +58,15 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     public ConversationGroupServiceImpl(ConversationGroupRepoService conversationGroupRepoService,
                                         ChatMessageService chatMessageService,
                                         UserContactService userContactService,
+                                        UnreadMessageService unreadMessageService,
+                                        MultimediaService multimediaService,
                                         RabbitMQService rabbitMQService,
                                         ObjectMapper objectMapper) {
         this.conversationGroupRepoService = conversationGroupRepoService;
         this.chatMessageService = chatMessageService;
         this.userContactService = userContactService;
+        this.unreadMessageService = unreadMessageService;
+        this.multimediaService = multimediaService;
         this.rabbitMQService = rabbitMQService;
         this.objectMapper = objectMapper;
     }
@@ -82,26 +94,37 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             case Group:
             case Broadcast:
                 // Group/Broadcast
-                return createAndSendMessage(conversationGroup, message);
+                conversationGroup = createConversationGroup(conversationGroup);
+                break;
             case Single:
                 // 1. Find a list of conversationGroup that has same memberIds
                 List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(conversationGroup.getMemberIds());
                 // 2. Filter to get the Personal ConversationGroup
+                ConversationGroup finalConversationGroup = conversationGroup;
                 List<ConversationGroup> personalConversationGroupList = conversationGroupList
-                        .stream().filter((ConversationGroup conversationGroup1) -> conversationGroup1.getConversationGroupType().equals(ConversationGroupType.Single)
-                                && conversationGroup1.getAdminMemberIds().equals(conversationGroup.getAdminMemberIds())).collect(Collectors.toList());
+                        .stream().filter((ConversationGroup conversationGroup1) ->
+                                conversationGroup1.getConversationGroupType().equals(ConversationGroupType.Single)
+                                && conversationGroup1.getAdminMemberIds().equals(finalConversationGroup.getAdminMemberIds()))
+                        .collect(Collectors.toList());
                 // 3. Should found the exact group
                 if (personalConversationGroupList.size() == 1) {
-                    return personalConversationGroupList.iterator().next();
+                    conversationGroup = personalConversationGroupList.iterator().next();
                 } else if (personalConversationGroupList.isEmpty()) { // Must be 0 conversationGroup
-                    return createAndSendMessage(conversationGroup, message);
+                    conversationGroup = createConversationGroup(conversationGroup);
                 } else {
                     throw new InvalidPersonalConversationGroupException("Found Multiple Personal Conversation Group with" +
                             " same members, which shouldn't be happening. Please contact developer.");
                 }
+                break;
             default:
                 throw new InvalidConversationGroupTypeException("Invalid Conversation Group Type detected.");
         }
+
+        createUnreadMessage(conversationGroup, creatorUserContact);
+        createConversationGroupProfilePhoto(conversationGroup);
+        sendWelcomeMessage(conversationGroup, message);
+
+        return conversationGroup;
     }
 
     @Override
@@ -187,11 +210,21 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .build();
     }
 
+    /**
+     * Check all user contacts are valid or not.
+     * If user contact ID doesn't exist, the UserContactService will throw exception there.
+     * @param userContactIds: List of String with UserObject ID.
+     */
     private void checkUserContactsExist(List<String> userContactIds) {
         userContactIds.forEach(userContactService::getUserContact);
     }
 
-    ConversationGroup createAndSendMessage(ConversationGroup conversationGroup, String message) {
+    /**
+     * Save the ConversationGroup object(Creation). Before that check normal member and admin member IDs are logical or not.
+     * @param conversationGroup: To be saved ConversationGroup object.
+     * @return Saved Conversation Group object.
+     */
+    private ConversationGroup createConversationGroup(ConversationGroup conversationGroup) {
         checkUserContactsExist(conversationGroup.getMemberIds());
         checkUserContactsExist(conversationGroup.getAdminMemberIds());
 
@@ -201,12 +234,43 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             throw new ConversationGroupAdminNotInMemberIdListException("Error while creating a conversation group, admin ID is not included in memberId list!");
         }
 
-        ConversationGroup newConversationGroup = conversationGroupRepoService.save(conversationGroup);
-        sendWelcomeMessage(newConversationGroup, message);
-
-        return newConversationGroup;
+        return conversationGroupRepoService.save(conversationGroup);
     }
 
+    /**
+     * Create UnreadMessage object after created Conversation Group object.
+     * @param conversationGroup: Saved conversationGroup object.
+     * @param creatorUserContact: UserContact object of the creator.
+     */
+    private void createUnreadMessage(ConversationGroup conversationGroup, UserContact creatorUserContact) {
+        CreateUnreadMessageRequest createUnreadMessageRequest = CreateUnreadMessageRequest.builder()
+                .conversationId(conversationGroup.getId())
+                .count(0)
+                .date(LocalDateTime.now())
+                .lastMessage(creatorUserContact.getDisplayName() + " has created this group.")
+                .userId(creatorUserContact.getUserId())
+                .build();
+
+        unreadMessageService.addUnreadMessage(createUnreadMessageRequest);
+    }
+
+    /**
+     * Create the Multimedia object of the conversation group's Profile Photo.
+     * @param conversationGroup: Saved conversation group.
+     */
+    private void createConversationGroupProfilePhoto(ConversationGroup conversationGroup) {
+        CreateMultimediaRequest createMultimediaRequest = CreateMultimediaRequest.builder()
+                .conversationId(conversationGroup.getId())
+                .build();
+        multimediaService.addMultimedia(createMultimediaRequest);
+    }
+
+    /**
+     * Send a ChatMessage object as welcome message, and ConversationGroup object into a WebSocketMessage object
+     * to be sent to group members.
+     * @param conversationGroup: Saved ConversationGroup object.
+     * @param message: Welcome Message for the conversation group.
+     */
     private void sendWelcomeMessage(ConversationGroup conversationGroup, String message) {
         CreateChatMessageRequest createChatMessageRequest = CreateChatMessageRequest.builder()
                 .chatMessageType(ChatMessageType.Text)

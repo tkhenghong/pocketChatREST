@@ -18,13 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +44,7 @@ public class JwtUtilTest {
     @Value("${jwt.alive.seconds}")
     private final int jwtAliveSeconds = 36000000;
 
-    JwtUtil jwtUtil;
+    private JwtUtil jwtUtil;
 
     @Mock
     private MyUserDetailsService myUserDetailsService;
@@ -63,6 +64,10 @@ public class JwtUtilTest {
         myUserDetailsService = new MyUserDetailsService(userAuthenticationService);
     }
 
+    /**
+     * Test a generated JWT with all correct information within the string itself.
+     * Covered all methods in JWTUtils.
+     */
     @Test
     public void testGenerateRandomJWT() {
         String username = UUID.randomUUID().toString();
@@ -93,7 +98,7 @@ public class JwtUtilTest {
         assertFalse(tokenIsExpired);
         assertEquals(extractedUsername, username);
         assertTrue(jwtExpiryDateConverted.isAfter(now));
-        assertEquals(claims.size(), 5); // Include Subject, expiration and issued at.
+        assertEquals(5, claims.size()); // Include Subject, expiration and issued at.
         assertEquals(claims.get("grantedAuthorities"), grantedAuthorities);
         assertEquals(claims.get("password"), userDetails.getPassword());
         assertEquals(claims.getExpiration(), jwtExpiryDate);

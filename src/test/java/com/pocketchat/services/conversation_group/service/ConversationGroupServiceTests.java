@@ -1,4 +1,4 @@
-package com.pocketchat.conversation_group.service;
+package com.pocketchat.services.conversation_group.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.chat_message.ChatMessage;
@@ -100,25 +100,25 @@ public class ConversationGroupServiceTests {
 
     // NOTE: Any unnecessary Mockito check will also make the test fail.
 
-    ConversationGroupService conversationGroupService;
+    private ConversationGroupService conversationGroupService;
 
     @Mock
-    ConversationGroupRepoService conversationGroupRepoService;
+    private ConversationGroupRepoService conversationGroupRepoService;
 
     @Mock
-    ChatMessageService chatMessageService;
+    private ChatMessageService chatMessageService;
 
     @Mock
-    UserContactService userContactService;
+    private UserContactService userContactService;
 
     @Mock
-    UnreadMessageService unreadMessageService;
+    private UnreadMessageService unreadMessageService;
 
     @Mock
-    MultimediaService multimediaService;
+    private MultimediaService multimediaService;
 
     @Mock
-    RabbitMQService rabbitMQService;
+    private RabbitMQService rabbitMQService;
 
     @BeforeEach
     public void setup() {

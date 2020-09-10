@@ -94,7 +94,6 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
 
     public UnreadMessage createUnreadMessageRequestToUnreadMessageMapper(CreateUnreadMessageRequest createUnreadMessageRequest) {
         return UnreadMessage.builder()
-                .id(createUnreadMessageRequest.getId())
                 .conversationId(createUnreadMessageRequest.getConversationId())
                 .count(createUnreadMessageRequest.getCount())
                 .date(createUnreadMessageRequest.getDate())

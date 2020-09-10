@@ -1,4 +1,4 @@
-package com.pocketchat.conversation_group.repository;
+package com.pocketchat.services.conversation_group.repository;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;

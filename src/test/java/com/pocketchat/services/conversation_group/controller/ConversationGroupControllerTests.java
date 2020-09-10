@@ -1,4 +1,4 @@
-package com.pocketchat.conversation_group.controller;
+package com.pocketchat.services.conversation_group.controller;
 
 import com.pocketchat.controllers.conversation_group.ConversationGroupController;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;

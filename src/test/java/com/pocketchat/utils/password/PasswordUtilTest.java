@@ -29,30 +29,27 @@ public class PasswordUtilTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${password.lower.case.character.length}")
-    int lowerCaseCharacterLength = 1;
+    private int lowerCaseCharacterLength = 1;
 
     @Value("${password.upper.case.character.length}")
-    int upperCaseCharacterLength = 1;
+    private int upperCaseCharacterLength = 1;
 
     @Value("${password.digit.number.character.length}")
-    int digitNumberCharacterLength = 1;
+    private int digitNumberCharacterLength = 1;
 
     @Value("${password.special.character.list}")
-    String specialCharactersList = "!@#$%^&*()_+";
+    private String specialCharactersList = "!@#$%^&*()_+";
 
     @Value("${password.special.character.length}")
-    int specialCharactersLength = 1;
+    private int specialCharactersLength = 1;
 
     @Value("${password.minimum.length}")
-    int minimumPasswordLength = 8;
+    private int minimumPasswordLength = 8;
 
     @Value("${password.maximum.length}")
-    int maximumPasswordLength = 256;
+    private int maximumPasswordLength = 256;
 
-    PasswordUtil passwordUtil;
-
-    @Mock
-    PasswordValidator passwordValidator;
+    private PasswordUtil passwordUtil;
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 

@@ -40,46 +40,46 @@ public class EncryptionUtilTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${encryption.rsa.public.key.directory}")
-    String rsaPublicKeyDirectory = "encryption/rsa/public_key.der";
+    private String rsaPublicKeyDirectory = "encryption/rsa/public_key.der";
 
     @Value("${encryption.rsa.private.key.directory}")
-    String rsaPrivateKeyDirectory = "encryption/rsa/private_key.der";
+    private String rsaPrivateKeyDirectory = "encryption/rsa/private_key.der";
 
     @Value("${encryption.rsa.key.factory.algorithm}")
-    String rsaKeyFactoryAlgorithm = "RSA";
+    private String rsaKeyFactoryAlgorithm = "RSA";
 
     @Value("${encryption.rsa.cipher.algorithm.with.padding}")
-    String rsaCipherAlgorithmWithPadding = "RSA/None/OAEPWITHSHA-256ANDMGF1PADDING";
+    private String rsaCipherAlgorithmWithPadding = "RSA/None/OAEPWITHSHA-256ANDMGF1PADDING";
 
     @Value("${encryption.rsa.cipher.algorithm.with.padding2.for.encryption}")
-    String rsaCipherAlgorithmWithPadding2ForEncryption = "RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING";
+    private String rsaCipherAlgorithmWithPadding2ForEncryption = "RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING";
 
     @Value("${encryption.rsa.cipher.algorithm.with.padding2.for.decryption}")
-    String rsaCipherAlgorithmWithPadding2ForDecryption = "RSA/ECB/OAEPPadding";
+    private String rsaCipherAlgorithmWithPadding2ForDecryption = "RSA/ECB/OAEPPadding";
 
     @Value("${encryption.rsa.cipher.algorithm.provider}")
-    String rsaCipherAlgorithmProvider = "BC";
+    private String rsaCipherAlgorithmProvider = "BC";
 
     @Value("${encryption.rsa.cipher.key.size}")
-    int rsaCipherKeySize = 1024;
+    private int rsaCipherKeySize = 1024;
 
     @Value("${encryption.aes.default.secret.key.spec.algorithm}")
-    String aesSecretKeySpecAlgorithm = "AES";
+    private String aesSecretKeySpecAlgorithm = "AES";
 
     @Value("${encryption.aes.cipher.algorithm.with.padding}")
-    String aesCipherAlgorithmWithPadding = "AES/GCM/NoPadding";
+    private String aesCipherAlgorithmWithPadding = "AES/GCM/NoPadding";
 
     @Value("${encryption.aes.cipher.algorithm.with.padding2}")
-    String aesCipherAlgorithmWithPadding2 = "AES/ECB/PKCS5Padding";
+    private String aesCipherAlgorithmWithPadding2 = "AES/ECB/PKCS5Padding";
 
     @Value("${encryption.aes.private.key.directory}")
-    String aesPrivateKeyDirectory = "";
+    private String aesPrivateKeyDirectory = "";
 
     @Value("${encryption.aes.default.secret}")
-    String aesDefaultSecret = "PocketChatAESTest";
+    private String aesDefaultSecret = "PocketChatAESTest";
 
     @Value("${encryption.aes.message.digest.algorithm}")
-    String aesMessageDigestAlgorithm = "SHA-1";
+    private String aesMessageDigestAlgorithm = "SHA-1";
 
     private EncryptionUtil encryptionUtil;
 
