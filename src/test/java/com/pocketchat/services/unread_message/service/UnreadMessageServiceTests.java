@@ -15,7 +15,10 @@ import com.pocketchat.services.user.UserService;
 import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import com.pocketchat.services.user_contact.UserContactService;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -241,7 +244,9 @@ class UnreadMessageServiceTests {
         Mockito.verify(unreadMessageRepoService).delete(any());
     }
 
-    @Disabled
+    /**
+     * Test whether the user is able to get their own UnreadMessages.
+     */
     @Test
     void testGetUserOwnUnreadMessages() {
         int numberOfConversationGroups = 10;
@@ -261,16 +266,37 @@ class UnreadMessageServiceTests {
         Mockito.when(unreadMessageRepoService.findByConversationGroupId(argThat(i ->
                 conversationGroups.stream().map(ConversationGroup::getId).collect(Collectors.toList()).contains(i))))
                 .thenAnswer(i -> unreadMessages.stream().filter(unreadMessage ->
-                        unreadMessage.getConversationId().equals(i.getArguments()[0]))
-                        .findAny().orElseThrow(NullPointerException::new)
-                );
-        // userContacts.stream().filter(userContact -> userContact.getId().equals(i.getArguments()[0]))
-        //                            .findAny().orElseThrow(NullPointerException::new)
+                        unreadMessage.getConversationId().equals(i.getArguments()[0])).findAny());
 
         List<UnreadMessage> resultUnreadMessages = unreadMessageService.getUserOwnUnreadMessages();
 
         Mockito.verify(conversationGroupService).getUserOwnConversationGroups();
         Mockito.verify(unreadMessageRepoService, times(numberOfConversationGroups)).findByConversationGroupId(any());
+
+        assertNotNull(resultUnreadMessages);
+        assertEquals(resultUnreadMessages.size(), numberOfConversationGroups);
+        assertEquals(resultUnreadMessages.size(), unreadMessages.size());
+        assertEquals(resultUnreadMessages.size(), conversationGroups.size());
+
+        assertTrue(resultUnreadMessages.containsAll(unreadMessages));
+    }
+
+    /**
+     * Test whether the user is able to get their own UnreadMessages correctly
+     * when there are no results without any error occurs.
+     */
+    @Test
+    void testGetUserOwnUnreadMessagesWhenEmpty() {
+        int numberOfConversationGroups = 0;
+        List<ConversationGroup> conversationGroups = new ArrayList<>();
+        List<UnreadMessage> unreadMessages = new ArrayList<>();
+
+        Mockito.when(conversationGroupService.getUserOwnConversationGroups()).thenReturn(conversationGroups);
+
+        List<UnreadMessage> resultUnreadMessages = unreadMessageService.getUserOwnUnreadMessages();
+
+        Mockito.verify(conversationGroupService).getUserOwnConversationGroups();
+        Mockito.verify(unreadMessageRepoService, times(0)).findByConversationGroupId(any());
 
         assertNotNull(resultUnreadMessages);
         assertEquals(resultUnreadMessages.size(), numberOfConversationGroups);
