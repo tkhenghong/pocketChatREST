@@ -99,7 +99,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     private final PasswordUtil passwordUtil;
 
-
     @Value("${server.otp.length}")
     private int otpLength;
 

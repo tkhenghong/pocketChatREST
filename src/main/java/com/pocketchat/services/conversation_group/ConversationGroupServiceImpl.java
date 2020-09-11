@@ -25,6 +25,7 @@ import com.pocketchat.services.user_contact.UserContactService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,8 +59,8 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     public ConversationGroupServiceImpl(ConversationGroupRepoService conversationGroupRepoService,
                                         ChatMessageService chatMessageService,
                                         UserContactService userContactService,
-                                        UnreadMessageService unreadMessageService,
-                                        MultimediaService multimediaService,
+                                        @Lazy UnreadMessageService unreadMessageService,
+                                        @Lazy MultimediaService multimediaService,
                                         RabbitMQService rabbitMQService,
                                         ObjectMapper objectMapper) {
         this.conversationGroupRepoService = conversationGroupRepoService;

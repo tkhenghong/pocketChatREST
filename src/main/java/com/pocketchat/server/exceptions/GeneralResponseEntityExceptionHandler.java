@@ -18,6 +18,7 @@ import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import com.pocketchat.server.exceptions.user_authentication.PasswordIncorrectException;
 import com.pocketchat.server.exceptions.user_authentication.UsernameExistException;
 import com.pocketchat.server.exceptions.user_authentication.UsernameNotFoundException;
+import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import com.pocketchat.server.exceptions.user_privilege.UserPrivilegeNotFoundException;
 import com.pocketchat.server.exceptions.user_role.UserRoleNotFoundException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -56,6 +57,7 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
             SettingsNotFoundException.class,
             UnreadMessageNotFoundException.class,
             UserNotFoundException.class,
+            UserContactNotFoundException.class,
             UsernameNotFoundException.class,
             UserPrivilegeNotFoundException.class,
             UserRoleNotFoundException.class,
