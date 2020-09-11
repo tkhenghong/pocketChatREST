@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -37,12 +38,18 @@ public class UserServiceImpl implements UserService {
     public User addUser(CreateUserRequest createUserRequest) {
         User user = createUserRequestToUserMapper(createUserRequest);
 
-        Optional<User> userOptional = userRepoService.findByGoogleAccountId(user.getGoogleAccountId());
-        if (userOptional.isPresent()) {
-            throw new UserGoogleAccountIsAlreadyRegisteredException("Google Account has been already registered. Google Account ID: " + user.getGoogleAccountId());
-        }
+        checkUserExistingGoogleAccount(user);
 
         return userRepoService.save(user); // userOptional.isPresent() ? userOptional.get() : userRepoService.save(user)
+    }
+
+    private void checkUserExistingGoogleAccount(User user) {
+        if (!StringUtils.isEmpty(user.getGoogleAccountId())) {
+            Optional<User> userOptional = userRepoService.findByGoogleAccountId(user.getGoogleAccountId());
+            if (userOptional.isPresent()) {
+                throw new UserGoogleAccountIsAlreadyRegisteredException("Google Account has been already registered. Google Account ID: " + user.getGoogleAccountId());
+            }
+        }
     }
 
     @Override
