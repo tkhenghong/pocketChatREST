@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class JwtUtilTest {
+class JwtUtilTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${jwt.secret.key}")
@@ -53,7 +53,7 @@ public class JwtUtilTest {
     private UserAuthenticationService userAuthenticationService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         //if we don't call below, we will get NullPointerException
         MockitoAnnotations.initMocks(this);
         jwtUtil = new JwtUtil(
@@ -69,7 +69,7 @@ public class JwtUtilTest {
      * Covered all methods in JWTUtils.
      */
     @Test
-    public void testGenerateRandomJWT() {
+    void testGenerateRandomJWT() {
         String username = UUID.randomUUID().toString();
 
         UserDetails userDetails = generateUserDetailsObject(username);

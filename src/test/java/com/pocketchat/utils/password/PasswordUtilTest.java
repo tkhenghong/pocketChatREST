@@ -6,10 +6,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.passay.PasswordValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class PasswordUtilTest {
+class PasswordUtilTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -54,7 +52,7 @@ public class PasswordUtilTest {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         //if we don't call below, we will get NullPointerException
         MockitoAnnotations.initMocks(this);
         passwordUtil = new PasswordUtil(
@@ -73,7 +71,7 @@ public class PasswordUtilTest {
      * To test a random generated password fulfills all minimum requirements setup by the server configuration.
      */
     @Test
-    public void testGenerateRandomSecurePassword() {
+    void testGenerateRandomSecurePassword() {
         String password = passwordUtil.generateRandomSecurePassword();
 
         logger.info("password: {}", password);
@@ -90,7 +88,7 @@ public class PasswordUtilTest {
      * Note: PasswordEncoder bean is configured within SecurityConfiguration.java file, with BCryptPasswordEncoder.
      */
     @Test
-    public void testEncodeAndVerifyWithPasswordEncoder() {
+    void testEncodeAndVerifyWithPasswordEncoder() {
         String randomString = UUID.randomUUID().toString();
 
         String encodedString = passwordUtil.encodePassword(randomString);
@@ -107,7 +105,7 @@ public class PasswordUtilTest {
      * 2. There's no username within the password.
      */
     @Test
-    public void testPasswordStrengthWhenPasswordFulfilledTheRequirements() {
+    void testPasswordStrengthWhenPasswordFulfilledTheRequirements() {
         String username = UUID.randomUUID().toString();
 
         String password = passwordUtil.generateRandomSecurePassword();
@@ -126,7 +124,7 @@ public class PasswordUtilTest {
      * 2. But there's username within the password.
      */
     @Test
-    public void testPasswordStrengthButPasswordHasUsernameWithinIt() {
+    void testPasswordStrengthButPasswordHasUsernameWithinIt() {
         String username = UUID.randomUUID().toString();
 
         String passwordWithCorrectRequirements = passwordUtil.generateRandomSecurePassword();
@@ -151,7 +149,7 @@ public class PasswordUtilTest {
      * 2. No username within the password.
      */
     @Test
-    public void testPasswordStrengthButPasswordDoesNotMeetRequirements() {
+    void testPasswordStrengthButPasswordDoesNotMeetRequirements() {
         String username = UUID.randomUUID().toString();
         String password = "1234abcd";
 

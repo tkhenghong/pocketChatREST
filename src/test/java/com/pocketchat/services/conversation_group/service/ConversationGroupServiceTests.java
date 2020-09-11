@@ -46,59 +46,68 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 
-// https://www.infoworld.com/article/3537563/junit-5-tutorial-part-1-unit-testing-with-junit-5-mockito-and-hamcrest.html
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class ConversationGroupServiceTests {
+class ConversationGroupServiceTests {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    // This is a test case that only involves JUnit5, Mockito(From Jupiter), and Hamcrest.
-    // Every test classes ONLY use @ExtendWith(MockitoExtension.class) and @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class),
-    // DO NOT USE ANY OF THE FOLLOWING ANYMORE:
-    // 1. @RunWith(SpringRunner.class)
-    // 2a. @SpringBootTest
-    // 2b. @SpringBootTest(**OR ANY SORT OF CONFIGURATIONS**)
-    // 2c. @SpringBootTest(SpringBootTest.WebEnvironment.MOCK, class = Application.class)
-    // 3. WebMvcTest (Probably not using it, since normally only service layer needs to be tested.)
-    // 4. @AutoConfigureMockMvc
-    // 5. @TestPropertySource(locations = "classpath:application-integrationtest.properties") (Not using unless other environments are needed)
-    // 6. @Test from package org.junit;
-    // 7. @Ignore from package org.junit;
-    // 8. @MockBean coming from package org.springframework.boot.test.mock.mockito;
-    // 9. Test lifecycle annotations such as @Before, @After from package org.junit;
-    //
-    // For more, please visit: Migrate from JUnit4 from official documentation:
-    // https://junit.org/junit5/docs/current/user-guide/#migrating-from-junit4
-
-    // In this world, ONLY USE:
-    // Anything comes from org.junit.jupiter.api
-    // @ExtendWith(MockitoExtension.class)
-    // @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-    // @Test from package org.junit.jupiter.api;
-    // @DisplayName from package org.junit.jupiter.api;
-    // @Disabled from package org.junit.jupiter.api;
-    // @DisplayNameGeneration from package org.junit.jupiter.api;
-    // @Mock from package org.mockito;
-    // @InjectMocks from package org.mockito, (NOTE: InjectMocks cannot mock Interfaces***)
-    // Lifecycle of annotations of JUnit5 such as @BeforeEach, @AfterEach, @AfterAll.
-    // Assertions from JUnit5 from package org.junit.jupiter.api.Assertions; Example: assertAll, assertEquals, assertNotNull, assertThrows, assertTrue and etc...
-    // Optionally, you may use 3rd party such as Hamcrest to perform assertion that JUnit5 cannot do.
-
-    // https://www.journaldev.com/21866/mockito-mock-examples
-    // https://stackoverflow.com/questions/35325403/how-to-mock-an-inject-interface/35325581
-
-    // Current Strategy of creating tests:
-    // 1. Select any service class in service layer that you want to test on.
-    // 2. Create a Test class like this class to test. organize your files properly in /test directory.
-    // 3. Now this is important. The Service Interface itself will NOT be annotated with any annotations.
-    // 4. Then, for ALL dependencies that used Constructor Injection in the ServiceImpl class that implements
-    // the Service Interface MUST be annotated with @Mock. Even the RepoService class has to be annotated with @Mock.
-    // 5.And you need to have @BeforeEach, write:
-    // 5a. MockitoAnnotations.initMocks(this); // Initiate mocks to all dependencies.
-    // 5b. Instantiate the Service Interface with the ServiceImpl with the constructor that has all mocked dependencies in it.
-
-    // NOTE: Any unnecessary Mockito check will also make the test fail.
+    /**
+     * This is a test case that only involves JUnit5, Mockito(From Jupiter), and Hamcrest.
+     * Every test classes ONLY use @ExtendWith(MockitoExtension.class) and @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class),
+     * DO NOT USE ANY OF THE FOLLOWING ANYMORE:
+     * 1. @RunWith(SpringRunner.class)
+     * 2a. @SpringBootTest
+     * 2b. @SpringBootTest(**OR ANY SORT OF CONFIGURATIONS**)
+     * 2c. @SpringBootTest(SpringBootTest.WebEnvironment.MOCK, class = Application.class)
+     * 3. WebMvcTest (Probably not using it, since normally only service layer needs to be tested.)
+     * 4. @AutoConfigureMockMvc
+     * 5. @TestPropertySource(locations = "classpath:application-integrationtest.properties") (Not using unless other environments are needed)
+     * 6. @Test from package org.junit;
+     * 7. @Ignore from package org.junit;
+     * 8. @MockBean coming from package org.springframework.boot.test.mock.mockito;
+     * 9. Test lifecycle annotations such as @Before, @After from package org.junit;
+     * <p>
+     * For more, please visit: Migrate from JUnit4 from official documentation:
+     * https://junit.org/junit5/docs/current/user-guide/#migrating-from-junit4
+     * <p>
+     * In this testing architecture, ONLY USE:
+     * 1. Anything comes from org.junit.jupiter.api
+     * 2. @ExtendWith(MockitoExtension.class)
+     * 3. @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+     * 4. @Test from package org.junit.jupiter.api;
+     * 5. @DisplayName from package org.junit.jupiter.api;
+     * 6. @Disabled from package org.junit.jupiter.api;
+     * 7. @DisplayNameGeneration from package org.junit.jupiter.api;
+     * 8. @Mock from package org.mockito;
+     * 9. @InjectMocks from package org.mockito, (NOTE: InjectMocks cannot mock Interfaces***)
+     * Lifecycle of annotations of JUnit5 such as @BeforeEach, @AfterEach, @AfterAll.
+     * Assertions from JUnit5 from package org.junit.jupiter.api.Assertions; Example: assertAll, assertEquals, assertNotNull, assertThrows, assertTrue and etc...
+     * Optionally, you may use 3rd party such as Hamcrest to perform assertion that JUnit5 cannot do.
+     * <p>
+     * https://www.journaldev.com/21866/mockito-mock-examples
+     * https://stackoverflow.com/questions/35325403/how-to-mock-an-inject-interface/35325581
+     * <p>
+     * Current Strategy of creating tests:
+     * 1. Select any service class in service layer that you want to test on.
+     * 2. Create a Test class like this class to test. organize your files properly in /test directory.
+     * 3. Now this is important. You have to decide the strategy of Mocking. If:
+     * 3a. Your target testing class is NOT interface and has variables annotated with @Value, go to Step 4.
+     * 3b. Your target testing class is NOT interface and do NOT have any variables annotated with @Value, go to Step 7.
+     * 3c. Your target testing class is interface and has variables annotated with @Value, go to Step 4.
+     * 4. The Service Interface itself will NOT be annotated with any annotations.
+     * 5. Then, for ALL dependencies that used Constructor Injection in the ServiceImpl class that implements
+     * the Service Interface MUST be annotated with @Mock. Even the RepoService class has to be annotated with @Mock.
+     * 6.And you need to have @BeforeEach void setup() {..}, write:
+     * 6a. MockitoAnnotations.initMocks(this); // Initiate mocks to all dependencies.
+     * 6b. Instantiate the Service Interface with the ServiceImpl with the constructor
+     * that has all mocked dependencies in it. Go to Step .
+     * <p>
+     * 7. Your strategy is to only use @Mock @InjectMocks. You annotate the testing class with @InjectMocks and annotate
+     * dependencies with @Mock. (Refer to ConversationGroupRepositoryTests2)
+     * <p>
+     * NOTE: Any unnecessary Mockito check will also make the test fail by throwing UnnecessaryStubbingException.
+     */
 
     private ConversationGroupService conversationGroupService;
 
@@ -121,7 +130,7 @@ public class ConversationGroupServiceTests {
     private RabbitMQService rabbitMQService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         //if we don't call below, we will get NullPointerException
         MockitoAnnotations.initMocks(this);
         conversationGroupService = new ConversationGroupServiceImpl(
@@ -135,7 +144,7 @@ public class ConversationGroupServiceTests {
     }
 
     @Test
-    public void testAddConversationGroupButOwnUserContactNotFound() {
+    void testAddConversationGroupButOwnUserContactNotFound() {
         CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
 
         try {
@@ -149,7 +158,7 @@ public class ConversationGroupServiceTests {
     }
 
     @Test
-    public void testAddPersonalConversationGroupButAdminMembersAreEmpty() {
+    void testAddPersonalConversationGroupButAdminMembersAreEmpty() {
         CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
         UserContact creatorUserContact = generateUserContactObject();
 
@@ -166,7 +175,7 @@ public class ConversationGroupServiceTests {
     }
 
     @Test
-    public void testAddPersonalConversationButGroupMembersAreEmpty() {
+    void testAddPersonalConversationButGroupMembersAreEmpty() {
         CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
         UserContact creatorUserContact = generateUserContactObject();
 
@@ -183,7 +192,7 @@ public class ConversationGroupServiceTests {
     }
 
     @Test
-    public void testCreatePersonalConversationGroupButAdminIsNotWithinMembersAndAdmins() {
+    void testCreatePersonalConversationGroupButAdminIsNotWithinMembersAndAdmins() {
         int numberOfGroupMembers = 20;
         UserContact creatorUserContact = generateUserContactObject();
         ConversationGroup conversationGroup = generateConversationGroupObject();
@@ -216,7 +225,7 @@ public class ConversationGroupServiceTests {
     }
 
     @Test
-    public void testCreatePersonalConversationGroupButSomeAdminIdsNotWithinMemberIds() {
+    void testCreatePersonalConversationGroupButSomeAdminIdsNotWithinMemberIds() {
         int numberOfGroupMembers = 20;
         UserContact creatorUserContact = generateUserContactObject();
         ConversationGroup conversationGroup = generateConversationGroupObject();
@@ -270,7 +279,7 @@ public class ConversationGroupServiceTests {
     }
 
     @Test
-    public void testCreatePersonalConversationGroup() {
+    void testCreatePersonalConversationGroup() {
         int numberOfGroupMembers = 20;
         String conversationGroupId = UUID.randomUUID().toString();
         UserContact creatorUserContact = generateUserContactObject();

@@ -2,6 +2,8 @@ package com.pocketchat.db.repo_services.conversation_group;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.repositories.conversation_group.ConversationGroupRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ import java.util.Optional;
 
 @Service
 public class ConversationGroupRepoService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ConversationGroupRepository conversationGroupRepository;
 

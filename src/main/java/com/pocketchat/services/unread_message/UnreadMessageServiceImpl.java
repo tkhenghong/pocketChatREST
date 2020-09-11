@@ -54,8 +54,13 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
     @Transactional
     public UnreadMessage addUnreadMessage(CreateUnreadMessageRequest createUnreadMessageRequest) {
         UnreadMessage unreadMessage = createUnreadMessageRequestToUnreadMessageMapper(createUnreadMessageRequest);
-        // Find the unreadMessage that has the same conversationId in the DB
+
+        // Check ConversationGroup's existence.
+        conversationGroupService.getSingleConversation(unreadMessage.getConversationId());
+
+        // Check any UnreadMessage with same ConversationGroup ID.
         Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findByConversationGroupId(unreadMessage.getConversationId());
+
         return unreadMessageOptional.orElseGet(() -> unreadMessageRepoService.save(unreadMessage));
     }
 
@@ -63,6 +68,10 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
     @Transactional
     public UnreadMessage editUnreadMessage(UpdateUnreadMessageRequest updateUnreadMessageRequest) {
         getSingleUnreadMessage(updateUnreadMessageRequest.getId());
+
+        // Check ConversationGroup's existence.
+        conversationGroupService.getSingleConversation(updateUnreadMessageRequest.getConversationId());
+
         return unreadMessageRepoService.save(updateUnreadMessageRequestToUnreadMessageMapper(updateUnreadMessageRequest));
     }
 

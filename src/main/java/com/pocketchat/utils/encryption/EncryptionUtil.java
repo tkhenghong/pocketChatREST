@@ -118,9 +118,8 @@ public class EncryptionUtil {
     /************************************************RSA START************************************************/
 
     /**
-     * Generate new RSA Key Pair.
+     * Generate new RSA Key Pair with default algorithm which is RSA/None/PKCS1Padding.
      * https://stackoverflow.com/questions/21179959/rsa-signing-and-verifying-in-java
-     * NOTE: This Key Pair algorithm is default algorithm provided by Java which is RSA/None/PKCS1Padding.
      * Built for dynamic RSA key pair between server and user. But end to end encryption it is not enough. Server are keeping the keys for the user, means the company itself, if know the method to reverse engineer it, they can break them.
      * Please store it somewhere safe in the database.
      */
@@ -136,9 +135,7 @@ public class EncryptionUtil {
     }
 
     /**
-     * Generate new RSA Key Pair provided by BouncyCastle.
-     * NOTE: This Key Pair algorithm is default algorithm provided by BouncyCastle which is RSA/None/NoPadding.
-     * Please store it somewhere safe in the database.
+     * Generate new RSA Key Pair with default algorithm which is RSA/None/NoPadding provided by BouncyCastle.
      */
     public KeyPair generateNewRSAKeyPairByBouncyCastle() {
         try {
@@ -177,7 +174,7 @@ public class EncryptionUtil {
     }
 
     /**
-     * Only use this if you have a PublicKey object with the correct encryption.aes.cipher.algorithm.with.padding.
+     * Only use this if you have a PublicKey object with the correct encryption.rsa.cipher.algorithm.with.padding.
      * Encrypt a plain text with PublicKey object loaded from a file, with directory from encryption.rsa.public.key.directory.
      *
      * @param plainText : Any normal text that you want to encrypt on.
@@ -610,7 +607,7 @@ public class EncryptionUtil {
      *
      * @param plainText: Any plain text to be secured with.
      * @param aesSecretKeySpec : An object that is used to perform AES encryption.
-     *                     Remember to generate from @method generateAESSecretKeySpecWithSecret().
+     *                     Remember to generate from @method generateDefaultAESSecretKeySpec().
      * @return Encrypted, Base64 encoded string with AES.
      */
     public String encryptWithGivenAESKey(String plainText, SecretKeySpec aesSecretKeySpec) {
@@ -633,7 +630,7 @@ public class EncryptionUtil {
      *
      * @param plainText: Any plain text to be secured with.
      * @param aesSecretKeySpec : An object that is used to perform AES decryption.
-     *                     Remember to generate from @method generateAESSecretKeySpecWithSecret().
+     *                     Remember to generate from @method generateDefaultAESSecretKeySpec().
      * @return Plain text.
      */
     public String decryptWithGivenAESKey(String plainText, SecretKeySpec aesSecretKeySpec) {
@@ -654,11 +651,10 @@ public class EncryptionUtil {
      * https://howtodoinjava.com/java/java-security/java-aes-encryption-example/
      * Generate a SecretKeySpec object that can be used for AES encryption dynamically.
      *
-     * @param secret: Plain text to be encrypted.
+     * @param secret: A secretive String to be used for encryption.
      * @return SecretKeySpec object that contains the key to encrypt/decrypt anything. Do not compromise the key.
      */
-    public SecretKeySpec generateAESSecretKeySpecWithSecret(String secret) throws NoSuchAlgorithmException {
-        SecretKeySpec aesSecretKeySpec;
+    public SecretKeySpec generateDefaultAESSecretKeySpec(String secret) throws NoSuchAlgorithmException {
         MessageDigest sha;
         byte[] key;
 
@@ -666,9 +662,8 @@ public class EncryptionUtil {
         sha = MessageDigest.getInstance(aesMessageDigestAlgorithm);
         key = sha.digest(key);
         key = Arrays.copyOf(key, 16);
-        aesSecretKeySpec = new SecretKeySpec(key, aesSecretKeySpecAlgorithm);
 
-        return aesSecretKeySpec;
+        return new SecretKeySpec(key, aesSecretKeySpecAlgorithm);
     }
 
     /**********************************************AES END***********************************************/
