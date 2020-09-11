@@ -289,7 +289,6 @@ class UnreadMessageServiceTests {
     void testGetUserOwnUnreadMessagesWhenEmpty() {
         int numberOfConversationGroups = 0;
         List<ConversationGroup> conversationGroups = new ArrayList<>();
-        List<UnreadMessage> unreadMessages = new ArrayList<>();
 
         Mockito.when(conversationGroupService.getUserOwnConversationGroups()).thenReturn(conversationGroups);
 
@@ -300,10 +299,7 @@ class UnreadMessageServiceTests {
 
         assertNotNull(resultUnreadMessages);
         assertEquals(resultUnreadMessages.size(), numberOfConversationGroups);
-        assertEquals(resultUnreadMessages.size(), unreadMessages.size());
         assertEquals(resultUnreadMessages.size(), conversationGroups.size());
-
-        assertTrue(resultUnreadMessages.containsAll(unreadMessages));
     }
 
     private CreateUnreadMessageRequest generateCreateUnreadMessageRequestObject() {
