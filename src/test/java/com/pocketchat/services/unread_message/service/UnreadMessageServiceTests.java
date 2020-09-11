@@ -15,10 +15,7 @@ import com.pocketchat.services.user.UserService;
 import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import com.pocketchat.services.user_contact.UserContactService;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -29,11 +26,12 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,6 +81,7 @@ class UnreadMessageServiceTests {
 
         try {
             unreadMessageService.addUnreadMessage(createUnreadMessageRequest);
+            failBecauseExceptionWasNotThrown(Exception.class);
         } catch (Exception exception) {
             Mockito.verify(conversationGroupService).getSingleConversation(eq(createUnreadMessageRequest.getConversationId()));
 
@@ -165,6 +164,7 @@ class UnreadMessageServiceTests {
 
         try {
             unreadMessageService.editUnreadMessage(updateUnreadMessageRequest);
+            failBecauseExceptionWasNotThrown(Exception.class);
         } catch (Exception exception) {
             Mockito.verify(conversationGroupService).getSingleConversation(eq(updateUnreadMessageRequest.getConversationId()));
             Mockito.verify(unreadMessageRepoService, times(0)).save(any());
@@ -216,6 +216,7 @@ class UnreadMessageServiceTests {
 
         try {
             unreadMessageService.deleteUnreadMessage(unreadMessageId);
+            failBecauseExceptionWasNotThrown(Exception.class);
         } catch (Exception exception) {
             Mockito.verify(unreadMessageRepoService).findById(eq(unreadMessageId));
             Mockito.verify(unreadMessageRepoService, times(0)).delete(any());
@@ -238,6 +239,45 @@ class UnreadMessageServiceTests {
 
         Mockito.verify(unreadMessageRepoService).findById(eq(unreadMessageId));
         Mockito.verify(unreadMessageRepoService).delete(any());
+    }
+
+    @Disabled
+    @Test
+    void testGetUserOwnUnreadMessages() {
+        int numberOfConversationGroups = 10;
+        List<ConversationGroup> conversationGroups = new ArrayList<>();
+        List<UnreadMessage> unreadMessages = new ArrayList<>();
+
+        for (int i = 0; i < numberOfConversationGroups; i++) {
+            ConversationGroup conversationGroup = generateConversationGroupObject();
+            conversationGroups.add(conversationGroup);
+
+            UnreadMessage unreadMessage = generateUnreadMessageObject();
+            unreadMessage.setConversationId(conversationGroup.getId());
+            unreadMessages.add(unreadMessage);
+        }
+
+        Mockito.when(conversationGroupService.getUserOwnConversationGroups()).thenReturn(conversationGroups);
+        Mockito.when(unreadMessageRepoService.findByConversationGroupId(argThat(i ->
+                conversationGroups.stream().map(ConversationGroup::getId).collect(Collectors.toList()).contains(i))))
+                .thenAnswer(i -> unreadMessages.stream().filter(unreadMessage ->
+                        unreadMessage.getConversationId().equals(i.getArguments()[0]))
+                        .findAny().orElseThrow(NullPointerException::new)
+                );
+        // userContacts.stream().filter(userContact -> userContact.getId().equals(i.getArguments()[0]))
+        //                            .findAny().orElseThrow(NullPointerException::new)
+
+        List<UnreadMessage> resultUnreadMessages = unreadMessageService.getUserOwnUnreadMessages();
+
+        Mockito.verify(conversationGroupService).getUserOwnConversationGroups();
+        Mockito.verify(unreadMessageRepoService, times(numberOfConversationGroups)).findByConversationGroupId(any());
+
+        assertNotNull(resultUnreadMessages);
+        assertEquals(resultUnreadMessages.size(), numberOfConversationGroups);
+        assertEquals(resultUnreadMessages.size(), unreadMessages.size());
+        assertEquals(resultUnreadMessages.size(), conversationGroups.size());
+
+        assertTrue(resultUnreadMessages.containsAll(unreadMessages));
     }
 
     private CreateUnreadMessageRequest generateCreateUnreadMessageRequestObject() {

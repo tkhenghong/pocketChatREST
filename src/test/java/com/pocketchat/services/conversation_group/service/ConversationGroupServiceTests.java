@@ -260,8 +260,7 @@ class ConversationGroupServiceTests {
                     // In .thenAnswer(), you can get the arguments inside the Mockito.when(the method that you are mocking in mockBean.mockMethodName)
                     // If the mocking method has 1 argument, then i.getArguments() will have size of 1, and vice versa.
                     // The arguments are Objects.class, you just have to cast to the correct ones to get the argument out.
-                    userContacts.stream().filter(userContact ->
-                            userContact.getId().equals(Arrays.asList(i.getArguments()).get(0)))
+                    userContacts.stream().filter(userContact -> userContact.getId().equals(i.getArguments()[0]))
                             .findAny().orElseThrow(NullPointerException::new)
             );
 
