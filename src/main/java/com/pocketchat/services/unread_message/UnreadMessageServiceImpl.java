@@ -67,8 +67,6 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
     @Override
     @Transactional
     public UnreadMessage editUnreadMessage(UpdateUnreadMessageRequest updateUnreadMessageRequest) {
-        getSingleUnreadMessage(updateUnreadMessageRequest.getId());
-
         // Check ConversationGroup's existence.
         conversationGroupService.getSingleConversation(updateUnreadMessageRequest.getConversationId());
 
