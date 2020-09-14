@@ -60,7 +60,7 @@ class DateTimeConversionUtilTests {
 
         logger.info("jodaLocalDateTime: {}", jodaLocalDateTime.toString());
 
-        // Joda DateTime
+        // Joda DateTime doesn't have millisecond precision
         int javaLocalDateTimeLength = javaLocalDateTime.toString().length();
         int jodaDateTimeLength = jodaLocalDateTime.toString().length();
 
