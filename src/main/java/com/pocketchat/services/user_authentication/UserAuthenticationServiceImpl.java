@@ -160,7 +160,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                 .build();
     }
 
-
     @Override
     public PreVerifyMobileNumberOTPResponse loginMobileNumber(PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest) {
 

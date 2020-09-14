@@ -16,6 +16,11 @@
       "description": "Phone number to be used in Twilio for sending SMS."
     },
     {
+      "name": "server.sms.twilio.verified.phone.number",
+      "type": "java.lang.String",
+      "description": "Twilio verified phone number. For debugging purpose."
+    },
+    {
       "name": "jwt.secret.key",
       "type": "java.lang.String",
       "description": "Secret key for JWT token."
@@ -199,6 +204,31 @@
       "name": "password.maximum.length",
       "type": "java.lang.String",
       "description": "Maximum number of characters in the password."
+    },
+    {
+      "name": "email.send.sms.to.email",
+      "type": "java.lang.String",
+      "description": "Allow send SMS content to email. For debug purpose only."
+    },
+    {
+      "name": "email.send.sms.to.email.address",
+      "type": "java.lang.String",
+      "description": "Email address to be used for see SMS content. For debug purpose only."
+    },
+    {
+      "name": "encryption.rsa.key.factory.algorithm",
+      "type": "java.lang.String",
+      "description": "RSA algorithm for Key Factory for default encryption of this project."
+    },
+    {
+      "name": "encryption.rsa.cipher.algorithm.with.padding2.for.encryption",
+      "type": "java.lang.String",
+      "description": "Custom RSA Cipher object's algorithm to test more secure RSA encryption. Used for encryption."
+    },
+    {
+      "name": "encryption.rsa.cipher.algorithm.with.padding2.for.decryption",
+      "type": "java.lang.String",
+      "description": "Custom RSA Cipher object's algorithm to test more secure RSA encryption. Used for decryption."
     }
   ]
 }
