@@ -69,6 +69,7 @@ services:
       - server.sms.twilio.account.sid=*Your Twilio Account SID*
       - server.sms.twilio.auth.token=*Your Twilio Account Auth token*
       - server.sms.twilio.phone.number=*Your Twilio Phone Number*
+      - server.sms.twilio.verified.phone.number=*Verified Phone Number in Twilio*
 
       # Email Configurations for Gmail
       - email.sender.host=smtp.gmail.com
@@ -79,6 +80,10 @@ services:
       - email.smtp.auth=true
       - email.smtp.starttls.enable=true
       - email.debug=true
+
+      # Send SMS content to email for easier debug.
+      - email.send.sms.to.email=false
+      - email.send.sms.to.email.address=*Your email*
     depends_on:
       - mongodb
       - rabbitmq
