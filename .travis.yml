@@ -41,7 +41,7 @@ before_install:
 
 # Executing scripts that you want to run here.
 script:
-  - ./gradlew clean check --debug
+  - ./gradlew clean check
   - ./gradlew build
   - docker build -t tkhenghong/pocketchat .
   - docker push tkhenghong/pocketchat:latest
