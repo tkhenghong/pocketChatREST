@@ -62,7 +62,7 @@ class DateTimeConversionUtilTests {
 
         // Joda DateTime doesn't have nanosecond precision
         // NOTE: java.time library--Level of precision:
-        // Year -> Month -> Date -> Hour -> Minute -> Second -> Millisecond -> Nanosecond
+        // Year -> Month -> Date -> Hour -> Minute -> Second -> Millisecond(Joda time only reaches here) -> Microsecond -> Nanosecond
         int javaLocalDateTimeLength = javaLocalDateTime.toString().length();
         int jodaDateTimeLength = jodaLocalDateTime.toString().length();
 
