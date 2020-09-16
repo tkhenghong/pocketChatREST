@@ -1,7 +1,12 @@
 package com.pocketchat.models.sms;
 
+import javax.validation.constraints.NotBlank;
+
 public class SendSMSRequest {
+    @NotBlank
     private String mobileNumber;
+
+    @NotBlank
     private String message;
 
     SendSMSRequest(String mobileNumber, String message) {

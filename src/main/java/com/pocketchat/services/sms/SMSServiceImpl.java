@@ -24,31 +24,37 @@ import java.util.Collections;
 public class SMSServiceImpl implements SMSService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${server.sms.twilio.account.sid}")
-    private String accountSid;
+    private final String accountSid;
 
-    @Value("${server.sms.twilio.auth.token}")
-    private String authToken;
+    private final String authToken;
 
-    @Value("${server.sms.twilio.phone.number}")
-    private String fromNumber;
+    private final String fromNumber;
 
-    @Value("${email.send.sms.to.email}")
-    private boolean allowSendSMStoEmail;
+    private final boolean allowSendSMStoEmail;
 
-    @Value("${email.send.sms.to.email.address}")
-    private String emailAddressForSendingSMSContent;
+    private final String emailAddressForSendingSMSContent;
 
-    @Value("${server.sms.twilio.verified.phone.number}")
-    private String verifiedPhoneNumber;
+    private final String verifiedPhoneNumber;
 
     private final EmailService emailService;
 
     private final DateTimeConversionUtil dateTimeConversionUtil;
 
     @Autowired
-    public SMSServiceImpl(EmailService emailService,
+    public SMSServiceImpl(@Value("${server.sms.twilio.account.sid}") String accountSid,
+                          @Value("${server.sms.twilio.auth.token}") String authToken,
+                          @Value("${server.sms.twilio.phone.number}") String fromNumber,
+                          @Value("${email.send.sms.to.email}") boolean allowSendSMStoEmail,
+                          @Value("${email.send.sms.to.email.address}") String emailAddressForSendingSMSContent,
+                          @Value("${server.sms.twilio.verified.phone.number}") String verifiedPhoneNumber,
+                          EmailService emailService,
                           DateTimeConversionUtil dateTimeConversionUtil) {
+        this.accountSid = accountSid;
+        this.authToken = authToken;
+        this.fromNumber = fromNumber;
+        this.allowSendSMStoEmail = allowSendSMStoEmail;
+        this.emailAddressForSendingSMSContent = emailAddressForSendingSMSContent;
+        this.verifiedPhoneNumber = verifiedPhoneNumber;
         this.emailService = emailService;
         this.dateTimeConversionUtil = dateTimeConversionUtil;
     }
@@ -90,7 +96,7 @@ public class SMSServiceImpl implements SMSService {
                     .message(sendSMSRequest.getMessage())
                     .errorCode(ObjectUtils.isEmpty(message.getErrorCode()) ? "" : message.getErrorCode().toString())
                     .errorMessage(message.getErrorMessage())
-                    .dateCreated(!ObjectUtils.isEmpty(message.getDateCreated()) ? convertLocalDateTime(message.getDateCreated().toLocalDateTime()): null)
+                    .dateCreated(!ObjectUtils.isEmpty(message.getDateCreated()) ? convertLocalDateTime(message.getDateCreated().toLocalDateTime()) : null)
                     .dateSent(!ObjectUtils.isEmpty(message.getDateSent()) ? convertLocalDateTime(message.getDateSent().toLocalDateTime()) : null)
                     .dateUpdated(!ObjectUtils.isEmpty(message.getDateUpdated()) ? convertLocalDateTime(message.getDateUpdated().toLocalDateTime()) : null)
                     .accountSid(message.getAccountSid())
