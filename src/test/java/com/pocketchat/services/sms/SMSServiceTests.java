@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-@RunWith(MockitoJUnitRunner.class)
 public class SMSServiceTests {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

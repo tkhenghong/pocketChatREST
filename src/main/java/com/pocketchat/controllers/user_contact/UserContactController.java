@@ -60,6 +60,11 @@ public class UserContactController {
         return userContactService.userContactResponseMapper(userContactService.getUserContactByMobileNo(mobileNo));
     }
 
+    @GetMapping("")
+    public UserContactResponse getOwnUserContact() {
+        return userContactService.userContactResponseMapper(userContactService.getOwnUserContact());
+    }
+
     // Get all UserContacts of the signed in user, including yourself.
     @GetMapping("/user")
     public List<UserContactResponse> getUserContactsOfAUser() {
