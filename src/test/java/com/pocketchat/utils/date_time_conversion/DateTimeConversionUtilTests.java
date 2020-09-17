@@ -13,8 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -49,6 +48,11 @@ class DateTimeConversionUtilTests {
 
     /**
      * To test whether the utility is able to convert Joda LocalDateTime to Java Time LocalDateTime correctly or not.
+     * <p>
+     * NOTE:
+     * 1. LocalDateTime.now() has different levels of precision on Windows, Mac and Linux: https://stackoverflow.com/questions/52029920
+     * 2. Joda DateTime doesn't have nanosecond precision. Java Time has nanosecond precision, but it depends on machine and OS.
+     * 3. So, unable to assertEqual between the length of String javaLocalDateTime and jodaLocalDateTime.
      */
     @Test
     void testConvertJodaToJavaTimeLocalDateTime() {
@@ -60,12 +64,7 @@ class DateTimeConversionUtilTests {
 
         logger.info("jodaLocalDateTime: {}", jodaLocalDateTime.toString());
 
-        // Joda DateTime doesn't have millisecond precision
-        int javaLocalDateTimeLength = javaLocalDateTime.toString().length();
-        int jodaDateTimeLength = jodaLocalDateTime.toString().length();
-
         assertNotNull(jodaLocalDateTime);
-        assertEquals(jodaDateTimeLength, javaLocalDateTimeLength - 3);
-        assertEquals(jodaLocalDateTime.toString(), javaLocalDateTime.toString().substring(0, jodaDateTimeLength));
+        assertTrue(javaLocalDateTime.toString().contains(jodaLocalDateTime.toString()));
     }
 }
