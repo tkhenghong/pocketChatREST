@@ -1,23 +1,28 @@
 package com.pocketchat.services.sms;
 
-
+import com.pocketchat.models.sms.SendSMSRequest;
+import com.pocketchat.server.exceptions.sms.InvalidSendSMSRequestException;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.utils.date_time_conversion.DateTimeConversionUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class SMSServiceTests {
+class SMSServiceTests {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${server.sms.twilio.account.sid}")
@@ -60,11 +65,44 @@ public class SMSServiceTests {
         );
     }
 
-    // Send SMS but no mobile number
-    // Send SMS but no SMS content
+    /**
+     * Send SMS but no mobile number in SendSMSRequest object.
+     */
+    @Test
+    void sendSMSWithoutMobileNumber() {
+        SendSMSRequest sendSMSRequest = generateSendSMSRequestObject();
+        sendSMSRequest.setMobileNumber(null);
+        try {
+            smsService.sendSMS(sendSMSRequest);
+            failBecauseExceptionWasNotThrown(Exception.class);
+        } catch (Exception exception) {
+            assertThat(exception).isInstanceOf(InvalidSendSMSRequestException.class);
+        }
+    }
+
+    /**
+     * Send SMS but no content in SendSMSRequest object.
+     */
+    @Test
+    void sendSMSWithoutMessageContent() {
+        SendSMSRequest sendSMSRequest = generateSendSMSRequestObject();
+        sendSMSRequest.setMessage(null);
+        try {
+            smsService.sendSMS(sendSMSRequest);
+            failBecauseExceptionWasNotThrown(Exception.class);
+        } catch (Exception exception) {
+            assertThat(exception).isInstanceOf(InvalidSendSMSRequestException.class);
+        }
+    }
     // Send SMS and allowSendSMStoEmail is false
     // Send SMS and allowSendSMStoEmail is true
     // Send unverified SMS
     // Send verified SMS
 
+    private SendSMSRequest generateSendSMSRequestObject() {
+        return SendSMSRequest.builder()
+                .mobileNumber(UUID.randomUUID().toString())
+                .message(UUID.randomUUID().toString())
+                .build();
+    }
 }

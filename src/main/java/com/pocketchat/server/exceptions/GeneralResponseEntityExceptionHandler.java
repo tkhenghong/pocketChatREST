@@ -12,6 +12,7 @@ import com.pocketchat.server.exceptions.otp.OTPNotFoundException;
 import com.pocketchat.server.exceptions.otp.WrongOTPException;
 import com.pocketchat.server.exceptions.password.PasswordPolicyNotMeetException;
 import com.pocketchat.server.exceptions.settings.SettingsNotFoundException;
+import com.pocketchat.server.exceptions.sms.InvalidSendSMSRequestException;
 import com.pocketchat.server.exceptions.unread_message.UnreadMessageNotFoundException;
 import com.pocketchat.server.exceptions.user.UserGoogleAccountIsAlreadyRegisteredException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
@@ -107,7 +108,8 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
     @ExceptionHandler({
             EncryptionErrorException.class,
             InvalidPersonalConversationGroupException.class,
-            WebSocketObjectConversionFailedException.class
+            WebSocketObjectConversionFailedException.class,
+            InvalidSendSMSRequestException.class
     })
     public ResponseEntity<ExceptionResponse> handleServerInternalErrorExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);

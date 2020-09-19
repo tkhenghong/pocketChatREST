@@ -3,6 +3,7 @@ package com.pocketchat.services.sms;
 import com.pocketchat.models.email.SendEmailRequest;
 import com.pocketchat.models.sms.SendSMSRequest;
 import com.pocketchat.models.sms.SendSMSResponse;
+import com.pocketchat.server.exceptions.sms.InvalidSendSMSRequestException;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.utils.date_time_conversion.DateTimeConversionUtil;
 import com.twilio.Twilio;
@@ -17,9 +18,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
+/**
+ * SMS Service that more focused on Twilio.
+ */
 @Service
 public class SMSServiceImpl implements SMSService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -59,8 +64,18 @@ public class SMSServiceImpl implements SMSService {
         this.dateTimeConversionUtil = dateTimeConversionUtil;
     }
 
+    /**
+     * Send an SMS using Twilio library.
+     *
+     * @param sendSMSRequest SendSMSRequest object.
+     * @return SendSMSResponse object that has response information from the Message object from Twilio library.
+     */
     @Override
-    public SendSMSResponse sendSMS(SendSMSRequest sendSMSRequest) {
+    public SendSMSResponse sendSMS(@Valid SendSMSRequest sendSMSRequest) {
+        if (StringUtils.isEmpty(sendSMSRequest.getMobileNumber()) || StringUtils.isEmpty(sendSMSRequest.getMessage())) {
+            throw new InvalidSendSMSRequestException("sendSMSRequest is missing required information: " + sendSMSRequest.toString());
+        }
+
         if (allowSendSMStoEmail) {
             emailService.sendEmail(SendEmailRequest.builder()
                     .emailSubject("PocketChat SMS")
