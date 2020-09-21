@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
-import com.pocketchat.db.models.unread_message.UnreadMessage;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
@@ -97,14 +96,14 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 // Group/Broadcast
                 conversationGroup = createConversationGroup(conversationGroup);
                 break;
-            case Single:
+            case Personal:
                 // 1. Find a list of conversationGroup that has same memberIds
                 List<ConversationGroup> conversationGroupList = conversationGroupRepoService.findAllByMemberIds(conversationGroup.getMemberIds());
                 // 2. Filter to get the Personal ConversationGroup
                 ConversationGroup finalConversationGroup = conversationGroup;
                 List<ConversationGroup> personalConversationGroupList = conversationGroupList
                         .stream().filter((ConversationGroup conversationGroup1) ->
-                                conversationGroup1.getConversationGroupType().equals(ConversationGroupType.Single)
+                                conversationGroup1.getConversationGroupType().equals(ConversationGroupType.Personal)
                                 && conversationGroup1.getAdminMemberIds().equals(finalConversationGroup.getAdminMemberIds()))
                         .collect(Collectors.toList());
                 // 3. Should found the exact group

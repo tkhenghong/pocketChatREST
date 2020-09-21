@@ -1,7 +1,7 @@
 package com.pocketchat.models.enums.conversation_group;
 
 public enum ConversationGroupType {
-    Single("Personal"),
+    Personal("Personal"),
     Group("Group"),
     Broadcast("Broadcast")
     ;
