@@ -7,10 +7,7 @@ import com.pocketchat.services.email.EmailService;
 import com.pocketchat.utils.date_time_conversion.DateTimeConversionUtil;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -156,9 +153,10 @@ class SMSServiceTests {
 
     /**
      * Send SMS with verified mobile number.
-     * NOTE: If the testing account balance runs low, create another account to make this success again.
+     * NOTE: Use your own Twilio account's credentials.
      */
     @Test
+    @Disabled
     void sendSMSWithVerifiedMobileNumber() {
         SendSMSRequest sendSMSRequest = generateSendSMSRequestObject();
         sendSMSRequest.setMobileNumber(verifiedPhoneNumber);
