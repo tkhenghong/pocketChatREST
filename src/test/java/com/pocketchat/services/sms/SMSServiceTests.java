@@ -1,15 +1,19 @@
 package com.pocketchat.services.sms;
 
 import com.pocketchat.models.sms.SendSMSRequest;
+import com.pocketchat.models.sms.SendSMSResponse;
 import com.pocketchat.server.exceptions.sms.InvalidSendSMSRequestException;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.utils.date_time_conversion.DateTimeConversionUtil;
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +23,9 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -29,7 +36,7 @@ class SMSServiceTests {
     private String accountSid = "ACb8bfda44c37c2c6e476ba1fda795c668";
 
     @Value("${server.sms.twilio.auth.token}")
-    private String authToken = "78ac8dc2cd60ddd5394a3580c6386c04";
+    private String authToken = "7d05382c81b39d86c8635d7f195e1093";
 
     @Value("${server.sms.twilio.phone.number}")
     private String fromNumber = "+14042058771";
@@ -94,10 +101,77 @@ class SMSServiceTests {
             assertThat(exception).isInstanceOf(InvalidSendSMSRequestException.class);
         }
     }
-    // Send SMS and allowSendSMStoEmail is false
-    // Send SMS and allowSendSMStoEmail is true
-    // Send unverified SMS
-    // Send verified SMS
+
+    /**
+     * Send SMS with allowSendSMStoEmail is false.
+     */
+    @Test
+    void sendSMSWithAllowSendSMStoEmailIsFalse() {
+        allowSendSMStoEmail = false;
+        setup();
+
+        SendSMSRequest sendSMSRequest = generateSendSMSRequestObject();
+
+        SendSMSResponse sendSMSResponse = smsService.sendSMS(sendSMSRequest);
+
+        Mockito.verify(emailService, times(0)).sendEmail(any());
+
+        assertNotNull(sendSMSResponse);
+        assertEquals(sendSMSResponse.getMessage(), sendSMSRequest.getMessage());
+        assertEquals(sendSMSResponse.getMobileNumber(), sendSMSRequest.getMobileNumber());
+    }
+
+    /**
+     * Send SMS with allowSendSMStoEmail is true.
+     */
+    @Test
+    void sendSMSWithAllowSendSMStoEmailIsTrue() {
+        SendSMSRequest sendSMSRequest = generateSendSMSRequestObject();
+        SendSMSResponse sendSMSResponse = smsService.sendSMS(sendSMSRequest);
+
+        Mockito.verify(emailService).sendEmail(any());
+
+        assertNotNull(sendSMSResponse);
+        assertEquals(sendSMSResponse.getMessage(), sendSMSRequest.getMessage());
+        assertEquals(sendSMSResponse.getMobileNumber(), sendSMSRequest.getMobileNumber());
+    }
+
+    /**
+     * Send SMS with unverified mobile number.
+     */
+    @Test
+    void sendSMSWithUnverifiedMobileNumber() {
+        SendSMSRequest sendSMSRequest = generateSendSMSRequestObject();
+        sendSMSRequest.setMobileNumber(UUID.randomUUID().toString());
+
+        SendSMSResponse sendSMSResponse = smsService.sendSMS(sendSMSRequest);
+
+        Mockito.verify(emailService).sendEmail(any());
+
+        assertNotNull(sendSMSResponse);
+        assertEquals(sendSMSResponse.getMessage(), sendSMSRequest.getMessage());
+        assertEquals(sendSMSResponse.getMobileNumber(), sendSMSRequest.getMobileNumber());
+        assertNull(sendSMSResponse.getSid());
+    }
+
+    /**
+     * Send SMS with verified mobile number.
+     * NOTE: If the testing account balance runs low, create another account to make this success again.
+     */
+    @Test
+    void sendSMSWithVerifiedMobileNumber() {
+        SendSMSRequest sendSMSRequest = generateSendSMSRequestObject();
+        sendSMSRequest.setMobileNumber(verifiedPhoneNumber);
+
+        SendSMSResponse sendSMSResponse = smsService.sendSMS(sendSMSRequest);
+
+        Mockito.verify(emailService).sendEmail(any());
+
+        assertNotNull(sendSMSResponse);
+        assertEquals(sendSMSResponse.getMessage(), sendSMSRequest.getMessage());
+        assertEquals(sendSMSResponse.getMobileNumber(), sendSMSRequest.getMobileNumber());
+        assertNotNull(sendSMSResponse.getSid());
+    }
 
     private SendSMSRequest generateSendSMSRequestObject() {
         return SendSMSRequest.builder()
