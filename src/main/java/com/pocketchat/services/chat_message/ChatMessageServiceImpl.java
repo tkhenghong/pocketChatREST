@@ -1,5 +1,7 @@
 package com.pocketchat.services.chat_message;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.user_contact.UserContact;
@@ -9,6 +11,7 @@ import com.pocketchat.models.controllers.response.chat_message.ChatMessageRespon
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
+import com.pocketchat.server.exceptions.conversation_group.WebSocketObjectConversionFailedException;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.user_contact.UserContactService;
@@ -32,16 +35,20 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final RabbitMQService rabbitMQService;
 
+    private final ObjectMapper objectMapper;
+
     // @Lazy to prevent circular dependencies in Spring Boot. https://www.baeldung.com/circular-dependencies-in-spring
     @Autowired
     public ChatMessageServiceImpl(ChatMessageRepoService chatMessageRepoService,
                                   @Lazy ConversationGroupService conversationGroupService,
                                   UserContactService userContactService,
-                                  RabbitMQService rabbitMQService) {
+                                  RabbitMQService rabbitMQService,
+                                  ObjectMapper objectMapper) {
         this.chatMessageRepoService = chatMessageRepoService;
         this.conversationGroupService = conversationGroupService;
         this.userContactService = userContactService;
         this.rabbitMQService = rabbitMQService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -122,8 +129,15 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .chatMessage(chatMessage)
                 .build();
 
-        conversationGroup.getMemberIds().forEach(memberId -> {
-            rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(), conversationGroup.getId(), webSocketMessage.toString());
-        });
+        try {
+            String webSocketMessageString = objectMapper.writeValueAsString(webSocketMessage);
+
+            conversationGroup.getMemberIds().forEach(memberId ->
+                    rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(),
+                            conversationGroup.getId(), webSocketMessageString));
+        } catch (JsonProcessingException e) {
+            throw new WebSocketObjectConversionFailedException("Failed to convert Chat message to JSON string. Message: "
+                    + e.getMessage());
+        }
     }
 }
