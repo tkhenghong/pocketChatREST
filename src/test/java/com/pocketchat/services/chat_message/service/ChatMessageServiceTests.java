@@ -153,6 +153,10 @@ class ChatMessageServiceTests {
         assertEquals(ChatMessageStatus.Sending, chatMessage.getChatMessageStatus());
     }
 
+    // deleteChatMessage
+    // getSingleChatMessage
+    // getChatMessagesOfAConversation
+
     private CreateChatMessageRequest generateChatMessageRequestObject() {
         return CreateChatMessageRequest.builder()
                 .chatMessageType(ChatMessageType.Text)
