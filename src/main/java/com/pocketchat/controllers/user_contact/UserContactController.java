@@ -27,11 +27,8 @@ public class UserContactController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> addUserContact(@Valid @RequestBody CreateUserContactRequest userContact) {
-        UserContact savedUserContact = userContactService.addUserContact(userContact);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUserContact.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+    public UserContactResponse addUserContact(@Valid @RequestBody CreateUserContactRequest userContact) {
+        return userContactService.userContactResponseMapper(userContactService.addUserContact(userContact));
     }
 
     // Add a bunch of UserContacts

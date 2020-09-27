@@ -28,11 +28,8 @@ public class ConversationGroupController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> addConversationGroup(@Valid @RequestBody CreateConversationGroupRequest conversationGroup) {
-        ConversationGroup savedConversationGroup = conversationGroupService.addConversation(conversationGroup);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedConversationGroup.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+    public ConversationGroupResponse addConversationGroup(@Valid @RequestBody CreateConversationGroupRequest conversationGroup) {
+        return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.addConversation(conversationGroup));
     }
 
     @PutMapping("")

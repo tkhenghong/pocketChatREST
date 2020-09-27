@@ -26,11 +26,8 @@ public class ChatMessageController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> addMessage(@Valid @RequestBody CreateChatMessageRequest chatMessage) {
-        ChatMessage savedChatMessage = chatMessageService.addChatMessage(chatMessage);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedChatMessage.getId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+    public ChatMessageResponse addMessage(@Valid @RequestBody CreateChatMessageRequest chatMessage) {
+        return chatMessageService.chatMessageResponseMapper(chatMessageService.addChatMessage(chatMessage));
     }
 
     @DeleteMapping("/{messageId}")
