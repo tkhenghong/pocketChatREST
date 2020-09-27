@@ -215,21 +215,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
     @Override
     public UserAuthentication getOwnUserAuthentication() {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        List<GrantedAuthority> authorities = (List<GrantedAuthority>) usernamePasswordAuthenticationToken.getAuthorities();
-
-        authorities.forEach(grantedAuthority -> {
-            SimpleGrantedAuthority simpleGrantedAuthority = (SimpleGrantedAuthority) grantedAuthority;
-            logger.info("simpleGrantedAuthority.getAuthority(): {}", simpleGrantedAuthority.getAuthority());
-        });
 
         UserDetails userDetails = (UserDetails) usernamePasswordAuthenticationToken.getPrincipal();
-
-        logger.info("userDetails.getUsername(): {}", userDetails.getUsername());
-        logger.info("userDetails.getPassword(): {}", userDetails.getPassword());
-        logger.info("userDetails.isAccountNonExpired(): {}", userDetails.isAccountNonExpired());
-        logger.info("userDetails.isAccountNonLocked(): {}", userDetails.isAccountNonLocked());
-        logger.info("userDetails.isCredentialsNonExpired(): {}", userDetails.isCredentialsNonExpired());
-        logger.info("userDetails.isEnabled(): {}", userDetails.isEnabled());
 
         return findByUsername(userDetails.getUsername());
     }

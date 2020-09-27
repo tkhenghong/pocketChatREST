@@ -229,6 +229,11 @@
       "name": "encryption.rsa.cipher.algorithm.with.padding2.for.decryption",
       "type": "java.lang.String",
       "description": "Custom RSA Cipher object's algorithm to test more secure RSA encryption. Used for decryption."
+    },
+    {
+      "name": "server.sms.allow.send.sms",
+      "type": "java.lang.Boolean",
+      "description": "If true, the system will really send the SMS. If false, the system will not send the SMS."
     }
   ]
 }

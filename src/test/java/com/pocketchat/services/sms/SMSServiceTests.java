@@ -5,8 +5,6 @@ import com.pocketchat.models.sms.SendSMSResponse;
 import com.pocketchat.server.exceptions.sms.InvalidSendSMSRequestException;
 import com.pocketchat.services.email.EmailService;
 import com.pocketchat.utils.date_time_conversion.DateTimeConversionUtil;
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -47,6 +45,9 @@ class SMSServiceTests {
     @Value("${server.sms.twilio.verified.phone.number}")
     private String verifiedPhoneNumber = "+60182262663";
 
+    @Value("${server.sms.allow.send.sms}")
+    private boolean allowSendSms = false;
+
     SMSService smsService;
 
     @Mock
@@ -64,6 +65,7 @@ class SMSServiceTests {
                 allowSendSMStoEmail,
                 emailAddressForSendingSMSContent,
                 verifiedPhoneNumber,
+                allowSendSms,
                 emailService,
                 dateTimeConversionUtil
         );

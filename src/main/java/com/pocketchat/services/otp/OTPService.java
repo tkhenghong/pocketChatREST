@@ -62,7 +62,6 @@ public class OTPService {
 
     public void saveOTPNumber(OTP otp) {
         otpCache.put(otp.getUserId(), otp);
-        logger.info("SAVED HERE.");
     }
 
     public VerifyOTPNumberResponse verifyOTPNumber(String userId, String otpNumber, String secureKeyword) {

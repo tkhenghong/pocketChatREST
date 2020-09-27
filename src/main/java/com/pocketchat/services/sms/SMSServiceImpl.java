@@ -41,6 +41,8 @@ public class SMSServiceImpl implements SMSService {
 
     private final String verifiedPhoneNumber;
 
+    private final boolean allowSendSms;
+
     private final EmailService emailService;
 
     private final DateTimeConversionUtil dateTimeConversionUtil;
@@ -52,6 +54,7 @@ public class SMSServiceImpl implements SMSService {
                           @Value("${email.send.sms.to.email}") boolean allowSendSMStoEmail,
                           @Value("${email.send.sms.to.email.address}") String emailAddressForSendingSMSContent,
                           @Value("${server.sms.twilio.verified.phone.number}") String verifiedPhoneNumber,
+                          @Value("${server.sms.allow.send.sms}") boolean allowSendSms,
                           EmailService emailService,
                           DateTimeConversionUtil dateTimeConversionUtil) {
         this.accountSid = accountSid;
@@ -60,6 +63,7 @@ public class SMSServiceImpl implements SMSService {
         this.allowSendSMStoEmail = allowSendSMStoEmail;
         this.emailAddressForSendingSMSContent = emailAddressForSendingSMSContent;
         this.verifiedPhoneNumber = verifiedPhoneNumber;
+        this.allowSendSms = allowSendSms;
         this.emailService = emailService;
         this.dateTimeConversionUtil = dateTimeConversionUtil;
     }
@@ -86,6 +90,10 @@ public class SMSServiceImpl implements SMSService {
 
         if (StringUtils.hasText(verifiedPhoneNumber) && !sendSMSRequest.getMobileNumber().equals(verifiedPhoneNumber)) {
             logger.info("Not sending unverified phone number from Twilio: {}", sendSMSRequest.getMobileNumber());
+            return createSendSMSResponse(sendSMSRequest, null);
+        }
+
+        if (!allowSendSms) {
             return createSendSMSResponse(sendSMSRequest, null);
         }
 
