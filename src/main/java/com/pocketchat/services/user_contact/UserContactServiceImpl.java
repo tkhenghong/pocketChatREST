@@ -6,6 +6,7 @@ import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
 import com.pocketchat.models.controllers.request.user_contact.CreateUserContactRequest;
 import com.pocketchat.models.controllers.request.user_contact.UpdateUserContactRequest;
 import com.pocketchat.models.controllers.response.user_contact.UserContactResponse;
+import com.pocketchat.server.exceptions.user_contact.NotOwnUserContactException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import com.pocketchat.services.user.UserService;
 import com.pocketchat.services.user_authentication.UserAuthenticationService;
@@ -96,8 +97,13 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     @Transactional
-    public UserContact editUserContact(UpdateUserContactRequest updateUserContactRequest) {
+    public UserContact editOwnUserContact(UpdateUserContactRequest updateUserContactRequest) {
         getUserContact(updateUserContactRequest.getId());
+        UserContact ownUserContact = getOwnUserContact();
+        if (!updateUserContactRequest.getId().equals(ownUserContact.getId())) {
+            throw new NotOwnUserContactException("Unable to edit UserContact due to not user's own UserContact. userContactId: " + updateUserContactRequest.getId());
+        }
+
         return userContactRepoService.save(updateUserContactRequestToUserContactMapper(updateUserContactRequest));
     }
 

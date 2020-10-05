@@ -10,7 +10,7 @@ import java.util.List;
 public interface UserContactService {
     UserContact addUserContact(CreateUserContactRequest userContact);
 
-    UserContact editUserContact(UpdateUserContactRequest userContact);
+    UserContact editOwnUserContact(UpdateUserContactRequest userContact);
 
     void deleteUserContact(String userContactId);
 

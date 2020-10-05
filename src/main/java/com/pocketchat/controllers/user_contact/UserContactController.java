@@ -38,8 +38,8 @@ public class UserContactController {
     //    }
 
     @PutMapping("")
-    public UserContactResponse editUserContact(@Valid @RequestBody UpdateUserContactRequest userContact) {
-        return userContactService.userContactResponseMapper(userContactService.editUserContact(userContact));
+    public UserContactResponse editOwnUserContact(@Valid @RequestBody UpdateUserContactRequest userContact) {
+        return userContactService.userContactResponseMapper(userContactService.editOwnUserContact(userContact));
     }
 
     @DeleteMapping("/{userContactId}")
