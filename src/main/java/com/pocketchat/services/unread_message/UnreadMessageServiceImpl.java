@@ -2,9 +2,6 @@ package com.pocketchat.services.unread_message;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.unread_message.UnreadMessage;
-import com.pocketchat.db.models.user.User;
-import com.pocketchat.db.models.user_authentication.UserAuthentication;
-import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.unread_message.UnreadMessageRepoService;
 import com.pocketchat.models.controllers.request.unread_message.CreateUnreadMessageRequest;
 import com.pocketchat.models.controllers.request.unread_message.UpdateUnreadMessageRequest;
@@ -18,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -84,6 +79,15 @@ public class UnreadMessageServiceImpl implements UnreadMessageService {
         Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findById(unreadMessageId);
         if (unreadMessageOptional.isEmpty()) {
             throw new UnreadMessageNotFoundException("Unread Message not found, id:-" + unreadMessageId);
+        }
+        return unreadMessageOptional.get();
+    }
+
+    @Override
+    public UnreadMessage geUnreadMessageByConversationGroupId(String conversationGroupId) {
+        Optional<UnreadMessage> unreadMessageOptional = unreadMessageRepoService.findByConversationGroupId(conversationGroupId);
+        if (unreadMessageOptional.isEmpty()) {
+            throw new UnreadMessageNotFoundException("Unread Message not found using conversationGroupId:-" + conversationGroupId);
         }
         return unreadMessageOptional.get();
     }

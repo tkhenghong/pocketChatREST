@@ -42,6 +42,11 @@ public class UnreadMessageController {
         return unreadMessageService.unreadMessageResponseMapper(unreadMessageService.getSingleUnreadMessage(unreadMessageId));
     }
 
+    @GetMapping("/conversationGroup/{conversationGroupId}")
+    public UnreadMessageResponse geUnreadMessageByConversationGroupId(@PathVariable String conversationGroupId) {
+        return unreadMessageService.unreadMessageResponseMapper(unreadMessageService.geUnreadMessageByConversationGroupId(conversationGroupId));
+    }
+
     @GetMapping("/user")
     public List<UnreadMessageResponse> getUnreadMessagesOfAUser() {
         return unreadMessageService.getUserOwnUnreadMessages().stream()

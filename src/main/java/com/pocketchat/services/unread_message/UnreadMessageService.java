@@ -16,6 +16,8 @@ public interface UnreadMessageService {
 
     UnreadMessage getSingleUnreadMessage(String unreadMessageId);
 
+    UnreadMessage geUnreadMessageByConversationGroupId(String conversationGroupId);
+
     List<UnreadMessage> getUserOwnUnreadMessages();
 
     UnreadMessage createUnreadMessageRequestToUnreadMessageMapper(CreateUnreadMessageRequest createUnreadMessageRequest);
