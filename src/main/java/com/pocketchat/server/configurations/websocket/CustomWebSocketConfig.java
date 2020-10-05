@@ -2,8 +2,6 @@ package com.pocketchat.server.configurations.websocket;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.WebSocketHandler;
@@ -17,8 +15,7 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 
 @Configuration
 @EnableWebSocketMessageBroker
-@Order(Ordered.HIGHEST_PRECEDENCE)
-class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     // STOMP over WebSocket
     @Override
