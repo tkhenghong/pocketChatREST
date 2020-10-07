@@ -28,8 +28,8 @@ dist: bionic
 # You can write one JDK to compile your project with that JDK. You can write multiple JDKs to test out
 # whether your project can run those version of JDKs.
 jdk:
-  - oraclejdk15
-  - openjdk15
+  - oraclejdk14
+  - openjdk14
 
 # Login into Docker before start performing scripts
 # Already added $DOCKER_PASSWORD and $DOCKER_USERNAME variables in Travis CI website before write the command here.
