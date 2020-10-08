@@ -31,17 +31,21 @@ public class FileUtil {
 
     private final ServerShutdownUtil serverShutdownUtil;
 
-    @Value("${server.file.windows.base.directory}")
-    private String windowsBaseDirectory;
+    private final String windowsBaseDirectory;
 
-    @Value("${server.file.linux.base.directory}")
-    private String linuxBaseDirectory;
+    private final String linuxBaseDirectory;
 
-    @Value("${server.file.macos.base.directory}")
-    private String macOSBaseDirectory;
+    private final String macOSBaseDirectory;
 
     @Autowired
-    FileUtil(ServerShutdownUtil serverShutdownUtil) {
+    FileUtil(
+            @Value("${server.file.windows.base.directory}") String windowsBaseDirectory,
+            @Value("${server.file.linux.base.directory}") String linuxBaseDirectory,
+            @Value("${server.file.macos.base.directory}") String macOSBaseDirectory,
+            ServerShutdownUtil serverShutdownUtil) {
+        this.windowsBaseDirectory = windowsBaseDirectory;
+        this.linuxBaseDirectory = linuxBaseDirectory;
+        this.macOSBaseDirectory = macOSBaseDirectory;
         this.serverShutdownUtil = serverShutdownUtil;
         checkBaseDirectory();
     }
