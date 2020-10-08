@@ -5,6 +5,7 @@ import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoS
 import com.pocketchat.db.repositories.conversation_group.ConversationGroupRepository;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import org.bson.types.ObjectId;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ import static org.mockito.ArgumentMatchers.eq;
  * (@InjectMocks will ONLY work when there's no @Value need to be stubbed for the target testing service.)
  * 4. If you perform Mockito.when unnecessary methods in the test cases, it will cause UnnecessaryStubbingException.
  */
+@Disabled
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ConversationGroupRepositoryTests2 {

@@ -39,11 +39,15 @@ public class ConversationGroup {
     // @Size(min = 1)
     private List<String> adminMemberIds;
 
+    // Using Multimedia ID.
+    @NotBlank
+    private String groupPhoto;
+
     private boolean block;
 
     private LocalDateTime notificationExpireDate;
 
-    ConversationGroup(String id, @NotBlank String creatorUserId, @NotNull LocalDateTime createdDate, @NotBlank String name, @NotBlank ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, LocalDateTime notificationExpireDate) {
+    ConversationGroup(String id, @NotBlank String creatorUserId, @NotNull LocalDateTime createdDate, @NotBlank String name, @NotBlank ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, @NotBlank String groupPhoto, boolean block, LocalDateTime notificationExpireDate) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.createdDate = createdDate;
@@ -52,6 +56,7 @@ public class ConversationGroup {
         this.description = description;
         this.memberIds = memberIds;
         this.adminMemberIds = adminMemberIds;
+        this.groupPhoto = groupPhoto;
         this.block = block;
         this.notificationExpireDate = notificationExpireDate;
     }
@@ -92,6 +97,10 @@ public class ConversationGroup {
         return this.adminMemberIds;
     }
 
+    public @NotBlank String getGroupPhoto() {
+        return this.groupPhoto;
+    }
+
     public boolean isBlock() {
         return this.block;
     }
@@ -130,6 +139,10 @@ public class ConversationGroup {
 
     public void setAdminMemberIds(List<String> adminMemberIds) {
         this.adminMemberIds = adminMemberIds;
+    }
+
+    public void setGroupPhoto(@NotBlank String groupPhoto) {
+        this.groupPhoto = groupPhoto;
     }
 
     public void setBlock(boolean block) {
@@ -174,6 +187,10 @@ public class ConversationGroup {
         final Object other$adminMemberIds = other.getAdminMemberIds();
         if (this$adminMemberIds == null ? other$adminMemberIds != null : !this$adminMemberIds.equals(other$adminMemberIds))
             return false;
+        final Object this$groupPhoto = this.getGroupPhoto();
+        final Object other$groupPhoto = other.getGroupPhoto();
+        if (this$groupPhoto == null ? other$groupPhoto != null : !this$groupPhoto.equals(other$groupPhoto))
+            return false;
         if (this.isBlock() != other.isBlock()) return false;
         final Object this$notificationExpireDate = this.getNotificationExpireDate();
         final Object other$notificationExpireDate = other.getNotificationExpireDate();
@@ -205,6 +222,8 @@ public class ConversationGroup {
         result = result * PRIME + ($memberIds == null ? 43 : $memberIds.hashCode());
         final Object $adminMemberIds = this.getAdminMemberIds();
         result = result * PRIME + ($adminMemberIds == null ? 43 : $adminMemberIds.hashCode());
+        final Object $groupPhoto = this.getGroupPhoto();
+        result = result * PRIME + ($groupPhoto == null ? 43 : $groupPhoto.hashCode());
         result = result * PRIME + (this.isBlock() ? 79 : 97);
         final Object $notificationExpireDate = this.getNotificationExpireDate();
         result = result * PRIME + ($notificationExpireDate == null ? 43 : $notificationExpireDate.hashCode());
@@ -212,7 +231,7 @@ public class ConversationGroup {
     }
 
     public String toString() {
-        return "ConversationGroup(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", createdDate=" + this.getCreatedDate() + ", name=" + this.getName() + ", conversationGroupType=" + this.getConversationGroupType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", block=" + this.isBlock() + ", notificationExpireDate=" + this.getNotificationExpireDate() + ")";
+        return "ConversationGroup(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", createdDate=" + this.getCreatedDate() + ", name=" + this.getName() + ", conversationGroupType=" + this.getConversationGroupType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", groupPhoto=" + this.getGroupPhoto() + ", block=" + this.isBlock() + ", notificationExpireDate=" + this.getNotificationExpireDate() + ")";
     }
 
     public static class ConversationGroupBuilder {
@@ -224,6 +243,7 @@ public class ConversationGroup {
         private String description;
         private List<String> memberIds;
         private List<String> adminMemberIds;
+        private @NotBlank String groupPhoto;
         private boolean block;
         private LocalDateTime notificationExpireDate;
 
@@ -270,6 +290,11 @@ public class ConversationGroup {
             return this;
         }
 
+        public ConversationGroup.ConversationGroupBuilder groupPhoto(@NotBlank String groupPhoto) {
+            this.groupPhoto = groupPhoto;
+            return this;
+        }
+
         public ConversationGroup.ConversationGroupBuilder block(boolean block) {
             this.block = block;
             return this;
@@ -281,11 +306,11 @@ public class ConversationGroup {
         }
 
         public ConversationGroup build() {
-            return new ConversationGroup(id, creatorUserId, createdDate, name, conversationGroupType, description, memberIds, adminMemberIds, block, notificationExpireDate);
+            return new ConversationGroup(id, creatorUserId, createdDate, name, conversationGroupType, description, memberIds, adminMemberIds, groupPhoto, block, notificationExpireDate);
         }
 
         public String toString() {
-            return "ConversationGroup.ConversationGroupBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", createdDate=" + this.createdDate + ", name=" + this.name + ", conversationGroupType=" + this.conversationGroupType + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", block=" + this.block + ", notificationExpireDate=" + this.notificationExpireDate + ")";
+            return "ConversationGroup.ConversationGroupBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", createdDate=" + this.createdDate + ", name=" + this.name + ", conversationGroupType=" + this.conversationGroupType + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", groupPhoto=" + this.groupPhoto + ", block=" + this.block + ", notificationExpireDate=" + this.notificationExpireDate + ")";
         }
     }
 }

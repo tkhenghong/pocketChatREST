@@ -234,6 +234,11 @@
       "name": "server.sms.allow.send.sms",
       "type": "java.lang.Boolean",
       "description": "If true, the system will really send the SMS. If false, the system will not send the SMS."
+    },
+    {
+      "name": "server.file.base.directory",
+      "type": "java.lang.String",
+      "description": "Directory for all files uploaded to the server."
     }
   ]
 }

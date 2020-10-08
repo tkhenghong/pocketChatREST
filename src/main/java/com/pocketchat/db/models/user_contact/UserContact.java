@@ -38,9 +38,11 @@ public class UserContact {
 
     private boolean block;
 
-    private String multimediaId;
+    // Using Multimedia ID.
+    @NotBlank
+    private String profilePicture;
 
-    UserContact(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, LocalDateTime lastSeenDate, boolean block, String multimediaId) {
+    UserContact(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, LocalDateTime lastSeenDate, boolean block, @NotBlank String profilePicture) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -50,7 +52,7 @@ public class UserContact {
         this.mobileNo = mobileNo;
         this.lastSeenDate = lastSeenDate;
         this.block = block;
-        this.multimediaId = multimediaId;
+        this.profilePicture = profilePicture;
     }
 
     public static UserContactBuilder builder() {
@@ -93,8 +95,8 @@ public class UserContact {
         return this.block;
     }
 
-    public String getMultimediaId() {
-        return this.multimediaId;
+    public @NotBlank String getProfilePicture() {
+        return this.profilePicture;
     }
 
     public void setId(String id) {
@@ -133,8 +135,8 @@ public class UserContact {
         this.block = block;
     }
 
-    public void setMultimediaId(String multimediaId) {
-        this.multimediaId = multimediaId;
+    public void setProfilePicture(@NotBlank String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public boolean equals(final Object o) {
@@ -169,9 +171,9 @@ public class UserContact {
         if (this$lastSeenDate == null ? other$lastSeenDate != null : !this$lastSeenDate.equals(other$lastSeenDate))
             return false;
         if (this.isBlock() != other.isBlock()) return false;
-        final Object this$multimediaId = this.getMultimediaId();
-        final Object other$multimediaId = other.getMultimediaId();
-        if (this$multimediaId == null ? other$multimediaId != null : !this$multimediaId.equals(other$multimediaId))
+        final Object this$profilePicture = this.getProfilePicture();
+        final Object other$profilePicture = other.getProfilePicture();
+        if (this$profilePicture == null ? other$profilePicture != null : !this$profilePicture.equals(other$profilePicture))
             return false;
         return true;
     }
@@ -200,13 +202,13 @@ public class UserContact {
         final Object $lastSeenDate = this.getLastSeenDate();
         result = result * PRIME + ($lastSeenDate == null ? 43 : $lastSeenDate.hashCode());
         result = result * PRIME + (this.isBlock() ? 79 : 97);
-        final Object $multimediaId = this.getMultimediaId();
-        result = result * PRIME + ($multimediaId == null ? 43 : $multimediaId.hashCode());
+        final Object $profilePicture = this.getProfilePicture();
+        result = result * PRIME + ($profilePicture == null ? 43 : $profilePicture.hashCode());
         return result;
     }
 
     public String toString() {
-        return "UserContact(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", lastSeenDate=" + this.getLastSeenDate() + ", block=" + this.isBlock() + ", multimediaId=" + this.getMultimediaId() + ")";
+        return "UserContact(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", lastSeenDate=" + this.getLastSeenDate() + ", block=" + this.isBlock() + ", profilePicture=" + this.getProfilePicture() + ")";
     }
 
     public static class UserContactBuilder {
@@ -219,7 +221,7 @@ public class UserContact {
         private @NotBlank String mobileNo;
         private LocalDateTime lastSeenDate;
         private boolean block;
-        private String multimediaId;
+        private @NotBlank String profilePicture;
 
         UserContactBuilder() {
         }
@@ -269,17 +271,17 @@ public class UserContact {
             return this;
         }
 
-        public UserContact.UserContactBuilder multimediaId(String multimediaId) {
-            this.multimediaId = multimediaId;
+        public UserContact.UserContactBuilder profilePicture(@NotBlank String profilePicture) {
+            this.profilePicture = profilePicture;
             return this;
         }
 
         public UserContact build() {
-            return new UserContact(id, displayName, realName, about, userIds, userId, mobileNo, lastSeenDate, block, multimediaId);
+            return new UserContact(id, displayName, realName, about, userIds, userId, mobileNo, lastSeenDate, block, profilePicture);
         }
 
         public String toString() {
-            return "UserContact.UserContactBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", lastSeenDate=" + this.lastSeenDate + ", block=" + this.block + ", multimediaId=" + this.multimediaId + ")";
+            return "UserContact.UserContactBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", lastSeenDate=" + this.lastSeenDate + ", block=" + this.block + ", profilePicture=" + this.profilePicture + ")";
         }
     }
 }

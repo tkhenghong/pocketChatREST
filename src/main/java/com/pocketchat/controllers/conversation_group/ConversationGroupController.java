@@ -8,9 +8,11 @@ import com.pocketchat.services.conversation_group.ConversationGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +32,13 @@ public class ConversationGroupController {
     @PostMapping("")
     public ConversationGroupResponse addConversationGroup(@Valid @RequestBody CreateConversationGroupRequest conversationGroup) {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.addConversation(conversationGroup));
+    }
+
+    @PutMapping("/{conversationGroupId}/upload/profilePhoto")
+    public void uploadConversationGroupProfilePhoto(
+            @PathVariable String conversationGroupId,
+            @RequestParam("file") MultipartFile multipartFile) {
+        conversationGroupService.uploadConversationGroupProfilePhoto(conversationGroupId, multipartFile);
     }
 
     @PutMapping("")

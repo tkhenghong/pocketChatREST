@@ -159,48 +159,48 @@ public class UserContactServiceImpl implements UserContactService {
     @Override
     public UserContact createUserContactRequestToUserContactMapper(CreateUserContactRequest createUserContactRequest) {
         return UserContact.builder()
-                .id(createUserContactRequest.getId())
-                .displayName(createUserContactRequest.getDisplayName())
-                .about(createUserContactRequest.getAbout())
-                .block(createUserContactRequest.isBlock())
-                .lastSeenDate(createUserContactRequest.getLastSeenDate())
-                .mobileNo(createUserContactRequest.getMobileNo())
-                .multimediaId(createUserContactRequest.getMultimediaId())
-                .realName(createUserContactRequest.getRealName())
-                .userId(createUserContactRequest.getUserId())
-                .userIds(createUserContactRequest.getUserIds())
+//                .id(createUserContactRequest.getId())
+//                .displayName(createUserContactRequest.getDisplayName())
+//                .about(createUserContactRequest.getAbout())
+//                .block(createUserContactRequest.isBlock())
+//                .lastSeenDate(createUserContactRequest.getLastSeenDate())
+//                .mobileNo(createUserContactRequest.getMobileNo())
+//                .multimediaId(createUserContactRequest.getMultimediaId())
+//                .realName(createUserContactRequest.getRealName())
+//                .userId(createUserContactRequest.getUserId())
+//                .userIds(createUserContactRequest.getUserIds())
                 .build();
     }
 
     @Override
     public UserContact updateUserContactRequestToUserContactMapper(UpdateUserContactRequest updateUserContactRequest) {
         return UserContact.builder()
-                .id(updateUserContactRequest.getId())
-                .displayName(updateUserContactRequest.getDisplayName())
-                .about(updateUserContactRequest.getAbout())
-                .block(updateUserContactRequest.isBlock())
-                .lastSeenDate(updateUserContactRequest.getLastSeenDate())
-                .mobileNo(updateUserContactRequest.getMobileNo())
-                .multimediaId(updateUserContactRequest.getMultimediaId())
-                .realName(updateUserContactRequest.getRealName())
-                .userId(updateUserContactRequest.getUserId())
-                .userIds(updateUserContactRequest.getUserIds())
+//                .id(updateUserContactRequest.getId())
+//                .displayName(updateUserContactRequest.getDisplayName())
+//                .about(updateUserContactRequest.getAbout())
+//                .block(updateUserContactRequest.isBlock())
+//                .lastSeenDate(updateUserContactRequest.getLastSeenDate())
+//                .mobileNo(updateUserContactRequest.getMobileNo())
+//                .multimediaId(updateUserContactRequest.getMultimediaId())
+//                .realName(updateUserContactRequest.getRealName())
+//                .userId(updateUserContactRequest.getUserId())
+//                .userIds(updateUserContactRequest.getUserIds())
                 .build();
     }
 
     @Override
     public UserContactResponse userContactResponseMapper(UserContact userContact) {
         return UserContactResponse.builder()
-                .id(userContact.getId())
-                .displayName(userContact.getDisplayName())
-                .realName(userContact.getRealName())
-                .about(userContact.getAbout())
-                .block(userContact.isBlock())
-                .mobileNo(userContact.getMobileNo())
-                .multimediaId(userContact.getMultimediaId())
-                .userIds(userContact.getUserIds())
-                .userId(userContact.getUserId())
-                .lastSeenDate(userContact.getLastSeenDate())
+//                .id(userContact.getId())
+//                .displayName(userContact.getDisplayName())
+//                .realName(userContact.getRealName())
+//                .about(userContact.getAbout())
+//                .block(userContact.isBlock())
+//                .mobileNo(userContact.getMobileNo())
+//                .multimediaId(userContact.getMultimediaId())
+//                .userIds(userContact.getUserIds())
+//                .userId(userContact.getUserId())
+//                .lastSeenDate(userContact.getLastSeenDate())
                 .build();
     }
 }

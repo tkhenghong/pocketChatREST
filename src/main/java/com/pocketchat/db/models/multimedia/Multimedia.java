@@ -9,43 +9,21 @@ public class Multimedia {
     @Id
     private String id;
 
-    // Don't have to upload local directory to server
-    private String localFullFileUrl;
+    private String fileDirectory;
 
-    private String localThumbnailUrl;
+    // In Kb
+    private Long fileSize;
 
-    // If Personal Conversation UserContact stranger has not set up photo yet
-    // @NotBlank
-    private String remoteThumbnailUrl;
+    private String fileExtension;
 
-    // @NotBlank
-    private String remoteFullFileUrl;
+    private String fileName;
 
-    // Can be optionally linked to a Message
-    private String messageId;
-    // Can be optionally linked to a UserContact
-    private String userContactId;
-    // Can be optionally linked to a conversationGroup
-    private String conversationId;
-
-    private String userId;
-
-    private Integer fileSize;
-
-    public Multimedia(String id, String localFullFileUrl, String localThumbnailUrl, String remoteThumbnailUrl, String remoteFullFileUrl, String messageId, String userContactId, String conversationId, String userId, Integer fileSize) {
+    Multimedia(String id, String fileDirectory, Long fileSize, String fileExtension, String fileName) {
         this.id = id;
-        this.localFullFileUrl = localFullFileUrl;
-        this.localThumbnailUrl = localThumbnailUrl;
-        this.remoteThumbnailUrl = remoteThumbnailUrl;
-        this.remoteFullFileUrl = remoteFullFileUrl;
-        this.messageId = messageId;
-        this.userContactId = userContactId;
-        this.conversationId = conversationId;
-        this.userId = userId;
+        this.fileDirectory = fileDirectory;
         this.fileSize = fileSize;
-    }
-
-    public Multimedia() {
+        this.fileExtension = fileExtension;
+        this.fileName = fileName;
     }
 
     public static MultimediaBuilder builder() {
@@ -56,80 +34,40 @@ public class Multimedia {
         return this.id;
     }
 
-    public String getLocalFullFileUrl() {
-        return this.localFullFileUrl;
+    public String getFileDirectory() {
+        return this.fileDirectory;
     }
 
-    public String getLocalThumbnailUrl() {
-        return this.localThumbnailUrl;
-    }
-
-    public String getRemoteThumbnailUrl() {
-        return this.remoteThumbnailUrl;
-    }
-
-    public String getRemoteFullFileUrl() {
-        return this.remoteFullFileUrl;
-    }
-
-    public String getMessageId() {
-        return this.messageId;
-    }
-
-    public String getUserContactId() {
-        return this.userContactId;
-    }
-
-    public String getConversationId() {
-        return this.conversationId;
-    }
-
-    public String getUserId() {
-        return this.userId;
-    }
-
-    public Integer getFileSize() {
+    public Long getFileSize() {
         return this.fileSize;
+    }
+
+    public String getFileExtension() {
+        return this.fileExtension;
+    }
+
+    public String getFileName() {
+        return this.fileName;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public void setLocalFullFileUrl(String localFullFileUrl) {
-        this.localFullFileUrl = localFullFileUrl;
+    public void setFileDirectory(String fileDirectory) {
+        this.fileDirectory = fileDirectory;
     }
 
-    public void setLocalThumbnailUrl(String localThumbnailUrl) {
-        this.localThumbnailUrl = localThumbnailUrl;
-    }
-
-    public void setRemoteThumbnailUrl(String remoteThumbnailUrl) {
-        this.remoteThumbnailUrl = remoteThumbnailUrl;
-    }
-
-    public void setRemoteFullFileUrl(String remoteFullFileUrl) {
-        this.remoteFullFileUrl = remoteFullFileUrl;
-    }
-
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
-    }
-
-    public void setUserContactId(String userContactId) {
-        this.userContactId = userContactId;
-    }
-
-    public void setConversationId(String conversationId) {
-        this.conversationId = conversationId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setFileSize(Integer fileSize) {
+    public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
+    }
+
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public boolean equals(final Object o) {
@@ -140,39 +78,20 @@ public class Multimedia {
         final Object this$id = this.getId();
         final Object other$id = other.getId();
         if (this$id == null ? other$id != null : !this$id.equals(other$id)) return false;
-        final Object this$localFullFileUrl = this.getLocalFullFileUrl();
-        final Object other$localFullFileUrl = other.getLocalFullFileUrl();
-        if (this$localFullFileUrl == null ? other$localFullFileUrl != null : !this$localFullFileUrl.equals(other$localFullFileUrl))
+        final Object this$fileDirectory = this.getFileDirectory();
+        final Object other$fileDirectory = other.getFileDirectory();
+        if (this$fileDirectory == null ? other$fileDirectory != null : !this$fileDirectory.equals(other$fileDirectory))
             return false;
-        final Object this$localThumbnailUrl = this.getLocalThumbnailUrl();
-        final Object other$localThumbnailUrl = other.getLocalThumbnailUrl();
-        if (this$localThumbnailUrl == null ? other$localThumbnailUrl != null : !this$localThumbnailUrl.equals(other$localThumbnailUrl))
+        final Object this$fileSize = this.getFileSize();
+        final Object other$fileSize = other.getFileSize();
+        if (this$fileSize == null ? other$fileSize != null : !this$fileSize.equals(other$fileSize)) return false;
+        final Object this$fileExtension = this.getFileExtension();
+        final Object other$fileExtension = other.getFileExtension();
+        if (this$fileExtension == null ? other$fileExtension != null : !this$fileExtension.equals(other$fileExtension))
             return false;
-        final Object this$remoteThumbnailUrl = this.getRemoteThumbnailUrl();
-        final Object other$remoteThumbnailUrl = other.getRemoteThumbnailUrl();
-        if (this$remoteThumbnailUrl == null ? other$remoteThumbnailUrl != null : !this$remoteThumbnailUrl.equals(other$remoteThumbnailUrl))
-            return false;
-        final Object this$remoteFullFileUrl = this.getRemoteFullFileUrl();
-        final Object other$remoteFullFileUrl = other.getRemoteFullFileUrl();
-        if (this$remoteFullFileUrl == null ? other$remoteFullFileUrl != null : !this$remoteFullFileUrl.equals(other$remoteFullFileUrl))
-            return false;
-        final Object this$messageId = this.getMessageId();
-        final Object other$messageId = other.getMessageId();
-        if (this$messageId == null ? other$messageId != null : !this$messageId.equals(other$messageId)) return false;
-        final Object this$userContactId = this.getUserContactId();
-        final Object other$userContactId = other.getUserContactId();
-        if (this$userContactId == null ? other$userContactId != null : !this$userContactId.equals(other$userContactId))
-            return false;
-        final Object this$conversationId = this.getConversationId();
-        final Object other$conversationId = other.getConversationId();
-        if (this$conversationId == null ? other$conversationId != null : !this$conversationId.equals(other$conversationId))
-            return false;
-        final Object this$userId = this.getUserId();
-        final Object other$userId = other.getUserId();
-        if (this$userId == null ? other$userId != null : !this$userId.equals(other$userId)) return false;
-        final Object this$size = this.getFileSize();
-        final Object other$size = other.getFileSize();
-        if (this$size == null ? other$size != null : !this$size.equals(other$size)) return false;
+        final Object this$fileName = this.getFileName();
+        final Object other$fileName = other.getFileName();
+        if (this$fileName == null ? other$fileName != null : !this$fileName.equals(other$fileName)) return false;
         return true;
     }
 
@@ -185,42 +104,27 @@ public class Multimedia {
         int result = 1;
         final Object $id = this.getId();
         result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-        final Object $localFullFileUrl = this.getLocalFullFileUrl();
-        result = result * PRIME + ($localFullFileUrl == null ? 43 : $localFullFileUrl.hashCode());
-        final Object $localThumbnailUrl = this.getLocalThumbnailUrl();
-        result = result * PRIME + ($localThumbnailUrl == null ? 43 : $localThumbnailUrl.hashCode());
-        final Object $remoteThumbnailUrl = this.getRemoteThumbnailUrl();
-        result = result * PRIME + ($remoteThumbnailUrl == null ? 43 : $remoteThumbnailUrl.hashCode());
-        final Object $remoteFullFileUrl = this.getRemoteFullFileUrl();
-        result = result * PRIME + ($remoteFullFileUrl == null ? 43 : $remoteFullFileUrl.hashCode());
-        final Object $messageId = this.getMessageId();
-        result = result * PRIME + ($messageId == null ? 43 : $messageId.hashCode());
-        final Object $userContactId = this.getUserContactId();
-        result = result * PRIME + ($userContactId == null ? 43 : $userContactId.hashCode());
-        final Object $conversationId = this.getConversationId();
-        result = result * PRIME + ($conversationId == null ? 43 : $conversationId.hashCode());
-        final Object $userId = this.getUserId();
-        result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
-        final Object $size = this.getFileSize();
-        result = result * PRIME + ($size == null ? 43 : $size.hashCode());
+        final Object $fileDirectory = this.getFileDirectory();
+        result = result * PRIME + ($fileDirectory == null ? 43 : $fileDirectory.hashCode());
+        final Object $fileSize = this.getFileSize();
+        result = result * PRIME + ($fileSize == null ? 43 : $fileSize.hashCode());
+        final Object $fileExtension = this.getFileExtension();
+        result = result * PRIME + ($fileExtension == null ? 43 : $fileExtension.hashCode());
+        final Object $fileName = this.getFileName();
+        result = result * PRIME + ($fileName == null ? 43 : $fileName.hashCode());
         return result;
     }
 
     public String toString() {
-        return "Multimedia(id=" + this.getId() + ", localFullFileUrl=" + this.getLocalFullFileUrl() + ", localThumbnailUrl=" + this.getLocalThumbnailUrl() + ", remoteThumbnailUrl=" + this.getRemoteThumbnailUrl() + ", remoteFullFileUrl=" + this.getRemoteFullFileUrl() + ", messageId=" + this.getMessageId() + ", userContactId=" + this.getUserContactId() + ", conversationId=" + this.getConversationId() + ", userId=" + this.getUserId() + ", size=" + this.getFileSize() + ")";
+        return "Multimedia(id=" + this.getId() + ", fileDirectory=" + this.getFileDirectory() + ", fileSize=" + this.getFileSize() + ", fileExtension=" + this.getFileExtension() + ", fileName=" + this.getFileName() + ")";
     }
 
     public static class MultimediaBuilder {
         private String id;
-        private String localFullFileUrl;
-        private String localThumbnailUrl;
-        private String remoteThumbnailUrl;
-        private String remoteFullFileUrl;
-        private String messageId;
-        private String userContactId;
-        private String conversationId;
-        private String userId;
-        private Integer size;
+        private String fileDirectory;
+        private Long fileSize;
+        private String fileExtension;
+        private String fileName;
 
         MultimediaBuilder() {
         }
@@ -230,57 +134,32 @@ public class Multimedia {
             return this;
         }
 
-        public Multimedia.MultimediaBuilder localFullFileUrl(String localFullFileUrl) {
-            this.localFullFileUrl = localFullFileUrl;
+        public Multimedia.MultimediaBuilder fileDirectory(String fileDirectory) {
+            this.fileDirectory = fileDirectory;
             return this;
         }
 
-        public Multimedia.MultimediaBuilder localThumbnailUrl(String localThumbnailUrl) {
-            this.localThumbnailUrl = localThumbnailUrl;
+        public Multimedia.MultimediaBuilder fileSize(Long fileSize) {
+            this.fileSize = fileSize;
             return this;
         }
 
-        public Multimedia.MultimediaBuilder remoteThumbnailUrl(String remoteThumbnailUrl) {
-            this.remoteThumbnailUrl = remoteThumbnailUrl;
+        public Multimedia.MultimediaBuilder fileExtension(String fileExtension) {
+            this.fileExtension = fileExtension;
             return this;
         }
 
-        public Multimedia.MultimediaBuilder remoteFullFileUrl(String remoteFullFileUrl) {
-            this.remoteFullFileUrl = remoteFullFileUrl;
-            return this;
-        }
-
-        public Multimedia.MultimediaBuilder messageId(String messageId) {
-            this.messageId = messageId;
-            return this;
-        }
-
-        public Multimedia.MultimediaBuilder userContactId(String userContactId) {
-            this.userContactId = userContactId;
-            return this;
-        }
-
-        public Multimedia.MultimediaBuilder conversationId(String conversationId) {
-            this.conversationId = conversationId;
-            return this;
-        }
-
-        public Multimedia.MultimediaBuilder userId(String userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public Multimedia.MultimediaBuilder size(Integer size) {
-            this.size = size;
+        public Multimedia.MultimediaBuilder fileName(String fileName) {
+            this.fileName = fileName;
             return this;
         }
 
         public Multimedia build() {
-            return new Multimedia(id, localFullFileUrl, localThumbnailUrl, remoteThumbnailUrl, remoteFullFileUrl, messageId, userContactId, conversationId, userId, size);
+            return new Multimedia(id, fileDirectory, fileSize, fileExtension, fileName);
         }
 
         public String toString() {
-            return "Multimedia.MultimediaBuilder(id=" + this.id + ", localFullFileUrl=" + this.localFullFileUrl + ", localThumbnailUrl=" + this.localThumbnailUrl + ", remoteThumbnailUrl=" + this.remoteThumbnailUrl + ", remoteFullFileUrl=" + this.remoteFullFileUrl + ", messageId=" + this.messageId + ", userContactId=" + this.userContactId + ", conversationId=" + this.conversationId + ", userId=" + this.userId + ", size=" + this.size + ")";
+            return "Multimedia.MultimediaBuilder(id=" + this.id + ", fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", fileName=" + this.fileName + ")";
         }
     }
 }

@@ -44,12 +44,12 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkUserExistingGoogleAccount(User user) {
-        if (!StringUtils.isEmpty(user.getGoogleAccountId())) {
-            Optional<User> userOptional = userRepoService.findByGoogleAccountId(user.getGoogleAccountId());
-            if (userOptional.isPresent()) {
-                throw new UserGoogleAccountIsAlreadyRegisteredException("Google Account has been already registered. Google Account ID: " + user.getGoogleAccountId());
-            }
-        }
+//        if (!StringUtils.isEmpty(user.getGoogleAccountId())) {
+//            Optional<User> userOptional = userRepoService.findByGoogleAccountId(user.getGoogleAccountId());
+//            if (userOptional.isPresent()) {
+//                throw new UserGoogleAccountIsAlreadyRegisteredException("Google Account has been already registered. Google Account ID: " + user.getGoogleAccountId());
+//            }
+//        }
     }
 
     @Override
@@ -90,11 +90,12 @@ public class UserServiceImpl implements UserService {
     public User getUserByGoogleAccountId(String googleAccountId) {
         // NOTE: normally you wouldn't find multiple Users with same googleAccountId back from database,
         // But for safety, I have used findFirst in MongoRepository of User class.
-        Optional<User> userOptional = userRepoService.findByGoogleAccountId(googleAccountId);
-        if (userOptional.isEmpty()) {
-            throw new UserNotFoundException("User not found by using googleAccountId: " + googleAccountId);
-        }
-        return userOptional.get();
+//        Optional<User> userOptional = userRepoService.findByGoogleAccountId(googleAccountId);
+//        if (userOptional.isEmpty()) {
+//            throw new UserNotFoundException("User not found by using googleAccountId: " + googleAccountId);
+//        }
+//        return userOptional.get();
+        return null;
     }
 
     @Override
@@ -128,25 +129,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUserRequestToUserMapper(UpdateUserRequest updateUserRequest) {
         return User.builder()
-                .countryCode(updateUserRequest.getCountryCode())
-                .displayName(updateUserRequest.getDisplayName())
-                .realName(updateUserRequest.getRealName())
-                .googleAccountId(updateUserRequest.getGoogleAccountId())
-                .mobileNo(updateUserRequest.getMobileNo())
-                .emailAddress(updateUserRequest.getEmailAddress())
+//                .countryCode(updateUserRequest.getCountryCode())
+//                .displayName(updateUserRequest.getDisplayName())
+//                .realName(updateUserRequest.getRealName())
+//                .googleAccountId(updateUserRequest.getGoogleAccountId())
+//                .mobileNo(updateUserRequest.getMobileNo())
+//                .emailAddress(updateUserRequest.getEmailAddress())
                 .build();
     }
 
     @Override
     public UserResponse userResponseMapper(User user) {
         return UserResponse.builder()
-                .id(user.getId())
-                .countryCode(user.getCountryCode())
-                .realName(user.getRealName())
-                .mobileNo(user.getMobileNo())
-                .googleAccountId(user.getGoogleAccountId())
-                .emailAddress(user.getEmailAddress())
-                .displayName(user.getDisplayName())
+//                .id(user.getId())
+//                .countryCode(user.getCountryCode())
+//                .realName(user.getRealName())
+//                .mobileNo(user.getMobileNo())
+//                .googleAccountId(user.getGoogleAccountId())
+//                .emailAddress(user.getEmailAddress())
+//                .displayName(user.getDisplayName())
                 .build();
     }
 }

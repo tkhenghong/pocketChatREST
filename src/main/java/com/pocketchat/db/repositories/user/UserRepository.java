@@ -6,8 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, String> {
-    Optional<User> findFirstByGoogleAccountId(String googleAccountId);
-
     Optional<User> findFirstByMobileNo(String mobileNo);
 
     Optional<User> findFirstByEmailAddress(String emailAddress);
