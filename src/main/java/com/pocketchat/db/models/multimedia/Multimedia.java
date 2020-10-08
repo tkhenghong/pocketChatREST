@@ -11,18 +11,24 @@ public class Multimedia {
 
     private String fileDirectory;
 
-    // In Kb
+    // Size of the file in bytes.
     private Long fileSize;
 
+    // Name of the file format. Picked from the full file name.
     private String fileExtension;
 
+    // Content type from MultipartFile.getContentType.
+    private String contentType;
+
+    // Name of the file from the MultipartFile, typically comes from the frontend.
     private String fileName;
 
-    Multimedia(String id, String fileDirectory, Long fileSize, String fileExtension, String fileName) {
+    Multimedia(String id, String fileDirectory, Long fileSize, String fileExtension, String contentType, String fileName) {
         this.id = id;
         this.fileDirectory = fileDirectory;
         this.fileSize = fileSize;
         this.fileExtension = fileExtension;
+        this.contentType = contentType;
         this.fileName = fileName;
     }
 
@@ -46,6 +52,10 @@ public class Multimedia {
         return this.fileExtension;
     }
 
+    public String getContentType() {
+        return this.contentType;
+    }
+
     public String getFileName() {
         return this.fileName;
     }
@@ -64,6 +74,10 @@ public class Multimedia {
 
     public void setFileExtension(String fileExtension) {
         this.fileExtension = fileExtension;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public void setFileName(String fileName) {
@@ -89,6 +103,10 @@ public class Multimedia {
         final Object other$fileExtension = other.getFileExtension();
         if (this$fileExtension == null ? other$fileExtension != null : !this$fileExtension.equals(other$fileExtension))
             return false;
+        final Object this$contentType = this.getContentType();
+        final Object other$contentType = other.getContentType();
+        if (this$contentType == null ? other$contentType != null : !this$contentType.equals(other$contentType))
+            return false;
         final Object this$fileName = this.getFileName();
         final Object other$fileName = other.getFileName();
         if (this$fileName == null ? other$fileName != null : !this$fileName.equals(other$fileName)) return false;
@@ -110,13 +128,15 @@ public class Multimedia {
         result = result * PRIME + ($fileSize == null ? 43 : $fileSize.hashCode());
         final Object $fileExtension = this.getFileExtension();
         result = result * PRIME + ($fileExtension == null ? 43 : $fileExtension.hashCode());
+        final Object $contentType = this.getContentType();
+        result = result * PRIME + ($contentType == null ? 43 : $contentType.hashCode());
         final Object $fileName = this.getFileName();
         result = result * PRIME + ($fileName == null ? 43 : $fileName.hashCode());
         return result;
     }
 
     public String toString() {
-        return "Multimedia(id=" + this.getId() + ", fileDirectory=" + this.getFileDirectory() + ", fileSize=" + this.getFileSize() + ", fileExtension=" + this.getFileExtension() + ", fileName=" + this.getFileName() + ")";
+        return "Multimedia(id=" + this.getId() + ", fileDirectory=" + this.getFileDirectory() + ", fileSize=" + this.getFileSize() + ", fileExtension=" + this.getFileExtension() + ", contentType=" + this.getContentType() + ", fileName=" + this.getFileName() + ")";
     }
 
     public static class MultimediaBuilder {
@@ -124,6 +144,7 @@ public class Multimedia {
         private String fileDirectory;
         private Long fileSize;
         private String fileExtension;
+        private String contentType;
         private String fileName;
 
         MultimediaBuilder() {
@@ -149,17 +170,22 @@ public class Multimedia {
             return this;
         }
 
+        public Multimedia.MultimediaBuilder contentType(String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
         public Multimedia.MultimediaBuilder fileName(String fileName) {
             this.fileName = fileName;
             return this;
         }
 
         public Multimedia build() {
-            return new Multimedia(id, fileDirectory, fileSize, fileExtension, fileName);
+            return new Multimedia(id, fileDirectory, fileSize, fileExtension, contentType, fileName);
         }
 
         public String toString() {
-            return "Multimedia.MultimediaBuilder(id=" + this.id + ", fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", fileName=" + this.fileName + ")";
+            return "Multimedia.MultimediaBuilder(id=" + this.id + ", fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", contentType=" + this.contentType + ", fileName=" + this.fileName + ")";
         }
     }
 }

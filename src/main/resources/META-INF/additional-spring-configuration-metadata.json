@@ -236,9 +236,19 @@
       "description": "If true, the system will really send the SMS. If false, the system will not send the SMS."
     },
     {
-      "name": "server.file.base.directory",
+      "name": "server.file.windows.base.directory",
       "type": "java.lang.String",
-      "description": "Directory for all files uploaded to the server."
+      "description": "Directory for all files uploaded to the Windows machine."
+    },
+    {
+      "name": "server.file.linux.base.directory",
+      "type": "java.lang.String",
+      "description": "Directory for all files uploaded to the Linux server."
+    },
+    {
+      "name": "server.file.macos.base.directory",
+      "type": "java.lang.String",
+      "description": "Directory for all files uploaded to the MacOS machine."
     }
   ]
 }
