@@ -52,7 +52,7 @@ public class UserAuthenticationController {
 
     // For testing only
     // Registration
-    @PostMapping("/")
+    @PostMapping("")
     public UserAuthenticationResponse addUsernamePasswordAuthenticationRequest(@Valid @RequestBody UsernamePasswordUserAuthenticationRequest usernamePasswordUserAuthenticationRequest) {
         return userAuthenticationService.addUsernamePasswordAuthenticationRequest(usernamePasswordUserAuthenticationRequest);
     }

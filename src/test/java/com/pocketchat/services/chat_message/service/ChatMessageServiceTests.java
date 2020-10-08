@@ -15,8 +15,10 @@ import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundExceptio
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.chat_message.ChatMessageServiceImpl;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
+import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.user_contact.UserContactService;
+import com.pocketchat.utils.file.FileUtil;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,7 +61,13 @@ class ChatMessageServiceTests {
     private UserContactService userContactService;
 
     @Mock
+    private MultimediaService multimediaService;
+
+    @Mock
     private RabbitMQService rabbitMQService;
+
+    @Mock
+    private FileUtil fileUtil;
 
     @Mock
     private ObjectMapper objectMapper;
@@ -71,7 +79,9 @@ class ChatMessageServiceTests {
                 chatMessageRepoService,
                 conversationGroupService,
                 userContactService,
+                multimediaService,
                 rabbitMQService,
+                fileUtil,
                 objectMapper
         );
     }

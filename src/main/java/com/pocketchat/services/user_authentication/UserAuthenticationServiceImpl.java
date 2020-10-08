@@ -1,14 +1,10 @@
 package com.pocketchat.services.user_authentication;
 
-import com.pocketchat.db.models.multimedia.Multimedia;
-import com.pocketchat.db.models.settings.Settings;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_authentication.UserAuthentication;
-import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.models.user_role.UserRole;
 import com.pocketchat.db.repo_services.user_authentication.UserAuthenticationRepoService;
 import com.pocketchat.db.repo_services.user_role.UserRoleRepoService;
-import com.pocketchat.models.controllers.request.multimedia.CreateMultimediaRequest;
 import com.pocketchat.models.controllers.request.settings.CreateSettingsRequest;
 import com.pocketchat.models.controllers.request.user.CreateUserRequest;
 import com.pocketchat.models.controllers.request.user_authentication.*;
@@ -48,8 +44,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -346,7 +340,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     // Create Settings, Multimedia(Profile Picture) and UserContact
     private void createUserDetails(User user) {
-        UserContact userContact = userContactService.addUserContact(CreateUserContactRequest.builder()
+        userContactService.addUserContact(CreateUserContactRequest.builder()
                 .displayName(user.getDisplayName())
                 .realName(user.getRealName())
                 .block(false)
@@ -354,11 +348,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
                 .userId(user.getId())
                 .lastSeenDate(LocalDateTime.now())
                 .userIds(Collections.singletonList(user.getId()))
-                .build());
-
-        multimediaService.addMultimedia(CreateMultimediaRequest.builder()
-                .userId(user.getId())
-                .userContactId(userContact.getId())
                 .build());
 
         settingsService.addSettings(CreateSettingsRequest.builder()

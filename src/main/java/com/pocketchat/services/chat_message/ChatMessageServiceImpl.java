@@ -4,22 +4,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
+import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.chat_message.ChatMessageRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
+import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
 import com.pocketchat.server.exceptions.conversation_group.WebSocketObjectConversionFailedException;
+import com.pocketchat.server.exceptions.file.UploadFileException;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
+import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.user_contact.UserContactService;
+import com.pocketchat.utils.file.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,21 +41,31 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final UserContactService userContactService;
 
+    private final MultimediaService multimediaService;
+
     private final RabbitMQService rabbitMQService;
 
+    private final FileUtil fileUtil;
+
     private final ObjectMapper objectMapper;
+
+    private final String moduleDirectory = "chatMessage";
 
     // @Lazy to prevent circular dependencies in Spring Boot. https://www.baeldung.com/circular-dependencies-in-spring
     @Autowired
     public ChatMessageServiceImpl(ChatMessageRepoService chatMessageRepoService,
                                   @Lazy ConversationGroupService conversationGroupService,
                                   UserContactService userContactService,
+                                  MultimediaService multimediaService,
                                   RabbitMQService rabbitMQService,
+                                  FileUtil fileUtil,
                                   ObjectMapper objectMapper) {
         this.chatMessageRepoService = chatMessageRepoService;
         this.conversationGroupService = conversationGroupService;
         this.userContactService = userContactService;
+        this.multimediaService = multimediaService;
         this.rabbitMQService = rabbitMQService;
+        this.fileUtil = fileUtil;
         this.objectMapper = objectMapper;
     }
 
@@ -71,6 +89,23 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         sendMessageToRabbitMQ(conversationGroup, newChatMessage);
 
         return newChatMessage;
+    }
+
+    @Override
+    public MultimediaResponse uploadChatMessageMultimedia(String chatMessageId, MultipartFile multipartFile) {
+        getSingleChatMessage(chatMessageId);
+        Multimedia savedMultimedia;
+        try {
+            savedMultimedia = multimediaService.addMultimedia(fileUtil.createMultimedia(multipartFile, moduleDirectory));
+        } catch (IOException ioException) {
+            throw new UploadFileException("Unable to upload chat message multimedia to the server! chatMessageId: " + chatMessageId + ", message: " + ioException.getMessage());
+        }
+
+        if (ObjectUtils.isEmpty(savedMultimedia)) {
+            throw new UploadFileException("Unable to upload chat message multimedia to the server due to savedMultimedia object is empty! chatMessageId: " + chatMessageId);
+        }
+
+        return multimediaService.multimediaResponseMapper(savedMultimedia);
     }
 
     @Override

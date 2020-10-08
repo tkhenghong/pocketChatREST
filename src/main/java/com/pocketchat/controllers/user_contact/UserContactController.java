@@ -26,17 +26,6 @@ public class UserContactController {
         this.userContactService = userContactService;
     }
 
-    @PostMapping("")
-    public UserContactResponse addUserContact(@Valid @RequestBody CreateUserContactRequest userContact) {
-        return userContactService.userContactResponseMapper(userContactService.addUserContact(userContact));
-    }
-
-    // Add a bunch of UserContacts
-    // Don't have to send UserContacts one by one from front end
-    //    public ResponseEntity<List<Object>> addUserContactList() {
-    //
-    //    }
-
     @PutMapping("")
     public UserContactResponse editOwnUserContact(@Valid @RequestBody UpdateUserContactRequest userContact) {
         return userContactService.userContactResponseMapper(userContactService.editOwnUserContact(userContact));

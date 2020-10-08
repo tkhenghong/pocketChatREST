@@ -16,9 +16,6 @@ public class UpdateUserRequest {
     @NotBlank
     private String mobileNo;
 
-    @NotBlank
-    private String googleAccountId;
-
     private String emailAddress;
 
     @NotBlank
@@ -27,21 +24,19 @@ public class UpdateUserRequest {
     @NotBlank
     private String effectivePhoneNumber;
 
-    UpdateUserRequest(@NotBlank String id, @NotBlank String displayName, @NotBlank String realName, @NotBlank String mobileNo, @NotBlank String googleAccountId, String emailAddress, @NotBlank String countryCode, @NotBlank String effectivePhoneNumber) {
-        this.id = id;
-        this.displayName = displayName;
-        this.realName = realName;
-        this.mobileNo = mobileNo;
-        this.googleAccountId = googleAccountId;
-        this.emailAddress = emailAddress;
-        this.countryCode = countryCode;
-        this.effectivePhoneNumber = effectivePhoneNumber;
+    protected UpdateUserRequest(UpdateUserRequestBuilder<?, ?> b) {
+        this.id = b.id;
+        this.displayName = b.displayName;
+        this.realName = b.realName;
+        this.mobileNo = b.mobileNo;
+        this.emailAddress = b.emailAddress;
+        this.countryCode = b.countryCode;
+        this.effectivePhoneNumber = b.effectivePhoneNumber;
     }
 
-    public static UpdateUserRequestBuilder builder() {
-        return new UpdateUserRequestBuilder();
+    public static UpdateUserRequestBuilder<?, ?> builder() {
+        return new UpdateUserRequestBuilderImpl();
     }
-
 
     public @NotBlank String getId() {
         return this.id;
@@ -57,10 +52,6 @@ public class UpdateUserRequest {
 
     public @NotBlank String getMobileNo() {
         return this.mobileNo;
-    }
-
-    public @NotBlank String getGoogleAccountId() {
-        return this.googleAccountId;
     }
 
     public String getEmailAddress() {
@@ -89,10 +80,6 @@ public class UpdateUserRequest {
 
     public void setMobileNo(@NotBlank String mobileNo) {
         this.mobileNo = mobileNo;
-    }
-
-    public void setGoogleAccountId(@NotBlank String googleAccountId) {
-        this.googleAccountId = googleAccountId;
     }
 
     public void setEmailAddress(String emailAddress) {
@@ -125,10 +112,6 @@ public class UpdateUserRequest {
         final Object this$mobileNo = this.getMobileNo();
         final Object other$mobileNo = other.getMobileNo();
         if (this$mobileNo == null ? other$mobileNo != null : !this$mobileNo.equals(other$mobileNo)) return false;
-        final Object this$googleAccountId = this.getGoogleAccountId();
-        final Object other$googleAccountId = other.getGoogleAccountId();
-        if (this$googleAccountId == null ? other$googleAccountId != null : !this$googleAccountId.equals(other$googleAccountId))
-            return false;
         final Object this$emailAddress = this.getEmailAddress();
         final Object other$emailAddress = other.getEmailAddress();
         if (this$emailAddress == null ? other$emailAddress != null : !this$emailAddress.equals(other$emailAddress))
@@ -159,8 +142,6 @@ public class UpdateUserRequest {
         result = result * PRIME + ($realName == null ? 43 : $realName.hashCode());
         final Object $mobileNo = this.getMobileNo();
         result = result * PRIME + ($mobileNo == null ? 43 : $mobileNo.hashCode());
-        final Object $googleAccountId = this.getGoogleAccountId();
-        result = result * PRIME + ($googleAccountId == null ? 43 : $googleAccountId.hashCode());
         final Object $emailAddress = this.getEmailAddress();
         result = result * PRIME + ($emailAddress == null ? 43 : $emailAddress.hashCode());
         final Object $countryCode = this.getCountryCode();
@@ -171,68 +152,72 @@ public class UpdateUserRequest {
     }
 
     public String toString() {
-        return "UpdateUserRequest(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", mobileNo=" + this.getMobileNo() + ", googleAccountId=" + this.getGoogleAccountId() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", effectivePhoneNumber=" + this.getEffectivePhoneNumber() + ")";
+        return "UpdateUserRequest(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", mobileNo=" + this.getMobileNo() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", effectivePhoneNumber=" + this.getEffectivePhoneNumber() + ")";
     }
 
-    public static class UpdateUserRequestBuilder {
+    public static abstract class UpdateUserRequestBuilder<C extends UpdateUserRequest, B extends UpdateUserRequest.UpdateUserRequestBuilder<C, B>> {
         private @NotBlank String id;
         private @NotBlank String displayName;
         private @NotBlank String realName;
         private @NotBlank String mobileNo;
-        private @NotBlank String googleAccountId;
         private String emailAddress;
         private @NotBlank String countryCode;
         private @NotBlank String effectivePhoneNumber;
 
-        UpdateUserRequestBuilder() {
-        }
-
-        public UpdateUserRequest.UpdateUserRequestBuilder id(@NotBlank String id) {
+        public B id(@NotBlank String id) {
             this.id = id;
-            return this;
+            return self();
         }
 
-        public UpdateUserRequest.UpdateUserRequestBuilder displayName(@NotBlank String displayName) {
+        public B displayName(@NotBlank String displayName) {
             this.displayName = displayName;
-            return this;
+            return self();
         }
 
-        public UpdateUserRequest.UpdateUserRequestBuilder realName(@NotBlank String realName) {
+        public B realName(@NotBlank String realName) {
             this.realName = realName;
-            return this;
+            return self();
         }
 
-        public UpdateUserRequest.UpdateUserRequestBuilder mobileNo(@NotBlank String mobileNo) {
+        public B mobileNo(@NotBlank String mobileNo) {
             this.mobileNo = mobileNo;
-            return this;
+            return self();
         }
 
-        public UpdateUserRequest.UpdateUserRequestBuilder googleAccountId(@NotBlank String googleAccountId) {
-            this.googleAccountId = googleAccountId;
-            return this;
-        }
-
-        public UpdateUserRequest.UpdateUserRequestBuilder emailAddress(String emailAddress) {
+        public B emailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
-            return this;
+            return self();
         }
 
-        public UpdateUserRequest.UpdateUserRequestBuilder countryCode(@NotBlank String countryCode) {
+        public B countryCode(@NotBlank String countryCode) {
             this.countryCode = countryCode;
-            return this;
+            return self();
         }
 
-        public UpdateUserRequest.UpdateUserRequestBuilder effectivePhoneNumber(@NotBlank String effectivePhoneNumber) {
+        public B effectivePhoneNumber(@NotBlank String effectivePhoneNumber) {
             this.effectivePhoneNumber = effectivePhoneNumber;
+            return self();
+        }
+
+        protected abstract B self();
+
+        public abstract C build();
+
+        public String toString() {
+            return "UpdateUserRequest.UpdateUserRequestBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", mobileNo=" + this.mobileNo + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", effectivePhoneNumber=" + this.effectivePhoneNumber + ")";
+        }
+    }
+
+    private static final class UpdateUserRequestBuilderImpl extends UpdateUserRequestBuilder<UpdateUserRequest, UpdateUserRequestBuilderImpl> {
+        private UpdateUserRequestBuilderImpl() {
+        }
+
+        protected UpdateUserRequest.UpdateUserRequestBuilderImpl self() {
             return this;
         }
 
         public UpdateUserRequest build() {
-            return new UpdateUserRequest(id, displayName, realName, mobileNo, googleAccountId, emailAddress, countryCode, effectivePhoneNumber);
-        }
-
-        public String toString() {
-            return "UpdateUserRequest.UpdateUserRequestBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", mobileNo=" + this.mobileNo + ", googleAccountId=" + this.googleAccountId + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", effectivePhoneNumber=" + this.effectivePhoneNumber + ")";
+            return new UpdateUserRequest(this);
         }
     }
 }

@@ -6,6 +6,7 @@ import com.pocketchat.db.repo_services.settings.SettingsRepoService;
 import com.pocketchat.models.controllers.request.settings.CreateSettingsRequest;
 import com.pocketchat.models.controllers.request.settings.UpdateSettingsRequest;
 import com.pocketchat.models.controllers.response.settings.SettingsResponse;
+import com.pocketchat.server.exceptions.settings.EditSettingsException;
 import com.pocketchat.server.exceptions.settings.SettingsNotFoundException;
 import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,23 +41,17 @@ public class SettingsServiceImpl implements SettingsService {
     @Transactional
     public Settings editSettings(UpdateSettingsRequest updateSettingsRequest) {
         Settings settings = updateSettingsRequestToSettingsMapper(updateSettingsRequest);
-        getSingleSettings(settings.getId());
+        Settings userOwnSettings = getUserOwnSettings();
+        if (!settings.getId().equals(userOwnSettings.getId())) {
+            throw new EditSettingsException("Invalid Settings to be edited.");
+        }
         return settingsRepoService.save(settings);
     }
 
     @Override
     @Transactional
     public void deleteSettings(String settingsId) {
-        settingsRepoService.delete(getSingleSettings(settingsId));
-    }
-
-    @Override
-    public Settings getSingleSettings(String settingsId) {
-        Optional<Settings> settingsOptional = settingsRepoService.findById(settingsId);
-        if (settingsOptional.isEmpty()) {
-            throw new SettingsNotFoundException("Settings not found, id:-" + settingsId);
-        }
-        return settingsOptional.get();
+        settingsRepoService.delete(getUserOwnSettings());
     }
 
     @Override

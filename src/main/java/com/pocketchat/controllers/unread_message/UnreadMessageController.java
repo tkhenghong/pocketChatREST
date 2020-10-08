@@ -1,11 +1,13 @@
 package com.pocketchat.controllers.unread_message;
 
-import com.pocketchat.models.controllers.request.unread_message.UpdateUnreadMessageRequest;
 import com.pocketchat.models.controllers.response.unread_message.UnreadMessageResponse;
 import com.pocketchat.services.unread_message.UnreadMessageService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,27 +17,10 @@ public class UnreadMessageController {
 
     private final UnreadMessageService unreadMessageService;
 
+    @Autowired
     public UnreadMessageController(UnreadMessageService unreadMessageService) {
         this.unreadMessageService = unreadMessageService;
     }
-
-//    @PostMapping("")
-//    public ResponseEntity<Object> addUnreadMessage(@Valid @RequestBody CreateUnreadMessageRequest unreadMessage) {
-//        UnreadMessage savedUnreadMessage = unreadMessageService.addUnreadMessage(unreadMessage);
-//        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUnreadMessage.getId())
-//                .toUri();
-//        return ResponseEntity.created(location).build();
-//    }
-
-    @PutMapping("")
-    public UnreadMessageResponse editUnreadMessage(@Valid @RequestBody UpdateUnreadMessageRequest unreadMessage) {
-        return unreadMessageService.unreadMessageResponseMapper(unreadMessageService.editUnreadMessage(unreadMessage));
-    }
-
-//    @DeleteMapping("/{unreadMessageId}")
-//    public void deleteUnreadMessage(@PathVariable String unreadMessageId) {
-//        unreadMessageService.deleteUnreadMessage(unreadMessageId);
-//    }
 
     @GetMapping("/{unreadMessageId}")
     public UnreadMessageResponse getSingleUnreadMessage(@PathVariable String unreadMessageId) {

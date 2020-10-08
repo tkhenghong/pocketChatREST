@@ -18,8 +18,6 @@ public interface UserService {
 
     User getOwnUser();
 
-    User getUserByGoogleAccountId(String googleAccountId);
-
     User getUserByMobileNo(String mobileNo);
 
     User getUserByEmailAddress(String emailAddress);

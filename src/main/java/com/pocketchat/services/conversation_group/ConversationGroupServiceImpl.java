@@ -4,31 +4,37 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
+import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
-import com.pocketchat.models.controllers.request.multimedia.CreateMultimediaRequest;
 import com.pocketchat.models.controllers.request.unread_message.CreateUnreadMessageRequest;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
+import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.conversation_group.*;
+import com.pocketchat.server.exceptions.file.UploadFileException;
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.unread_message.UnreadMessageService;
 import com.pocketchat.services.user_contact.UserContactService;
+import com.pocketchat.utils.file.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -52,16 +58,21 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     private final RabbitMQService rabbitMQService;
 
+    private final FileUtil fileUtil;
+
     private final ObjectMapper objectMapper;
+
+    private final String moduleDirectory = "conversationGroup";
 
     // Avoid Field Injection
     @Autowired
     public ConversationGroupServiceImpl(ConversationGroupRepoService conversationGroupRepoService,
-                                        ChatMessageService chatMessageService,
+                                        @Lazy ChatMessageService chatMessageService,
                                         UserContactService userContactService,
                                         @Lazy UnreadMessageService unreadMessageService,
                                         @Lazy MultimediaService multimediaService,
                                         RabbitMQService rabbitMQService,
+                                        FileUtil fileUtil,
                                         ObjectMapper objectMapper) {
         this.conversationGroupRepoService = conversationGroupRepoService;
         this.chatMessageService = chatMessageService;
@@ -69,6 +80,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         this.unreadMessageService = unreadMessageService;
         this.multimediaService = multimediaService;
         this.rabbitMQService = rabbitMQService;
+        this.fileUtil = fileUtil;
         this.objectMapper = objectMapper;
     }
 
@@ -105,7 +117,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 List<ConversationGroup> personalConversationGroupList = conversationGroupList
                         .stream().filter((ConversationGroup conversationGroup1) ->
                                 conversationGroup1.getConversationGroupType().equals(ConversationGroupType.Personal)
-                                && conversationGroup1.getAdminMemberIds().equals(finalConversationGroup.getAdminMemberIds()))
+                                        && conversationGroup1.getAdminMemberIds().equals(finalConversationGroup.getAdminMemberIds()))
                         .collect(Collectors.toList());
                 // 3. Should found the exact group
                 if (personalConversationGroupList.size() == 1) {
@@ -122,15 +134,42 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         }
 
         createUnreadMessage(conversationGroup, creatorUserContact);
-        createConversationGroupProfilePhoto(conversationGroup);
         sendWelcomeMessage(conversationGroup, message);
 
         return conversationGroup;
     }
 
     @Override
-    public void uploadConversationGroupProfilePhoto(String conversationGroupId, MultipartFile multipartFile) {
+    public MultimediaResponse uploadConversationGroupProfilePhoto(String conversationGroupId, MultipartFile multipartFile) {
+        ConversationGroup conversationGroup = getSingleConversation(conversationGroupId);
 
+        if(StringUtils.hasText(conversationGroup.getGroupPhoto())) {
+            multimediaService.deleteMultimedia(conversationGroup.getGroupPhoto());
+        }
+
+        Multimedia savedMultimedia;
+        try {
+            savedMultimedia = multimediaService.addMultimedia(fileUtil.createMultimedia(multipartFile, moduleDirectory));
+        } catch (IOException ioException) {
+            throw new UploadFileException("Unable to upload Conversation Group Profile Photo to the server! conversationGroupId: " + conversationGroupId + ", message: " + ioException.getMessage());
+        }
+
+        if (ObjectUtils.isEmpty(savedMultimedia)) {
+            throw new UploadFileException("Unable to upload Conversation Group Profile Photo to the server due to savedMultimedia object is empty. conversationGroupId: " + conversationGroupId);
+        }
+
+        conversationGroup.setGroupPhoto(savedMultimedia.getId());
+        conversationGroupRepoService.save(conversationGroup); // Update
+        return multimediaService.multimediaResponseMapper(savedMultimedia);
+    }
+
+    @Override
+    public void deleteConversationGroupProfilePhoto(String conversationGroupId) {
+        ConversationGroup conversationGroup = getSingleConversation(conversationGroupId);
+
+        if(StringUtils.hasText(conversationGroup.getGroupPhoto())) {
+            multimediaService.deleteMultimedia(conversationGroup.getGroupPhoto());
+        }
     }
 
     @Override
@@ -219,6 +258,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     /**
      * Check all user contacts are valid or not.
      * If user contact ID doesn't exist, the UserContactService will throw exception there.
+     *
      * @param userContactIds: List of String with UserObject ID.
      */
     private void checkUserContactsExist(List<String> userContactIds) {
@@ -227,6 +267,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     /**
      * Save the ConversationGroup object(Creation). Before that check normal member and admin member IDs are logical or not.
+     *
      * @param conversationGroup: To be saved ConversationGroup object.
      * @return Saved Conversation Group object.
      */
@@ -245,7 +286,8 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     /**
      * Create UnreadMessage object after created Conversation Group object.
-     * @param conversationGroup: Saved conversationGroup object.
+     *
+     * @param conversationGroup:  Saved conversationGroup object.
      * @param creatorUserContact: UserContact object of the creator.
      */
     private void createUnreadMessage(ConversationGroup conversationGroup, UserContact creatorUserContact) {
@@ -261,21 +303,11 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     }
 
     /**
-     * Create the Multimedia object of the conversation group's Profile Photo.
-     * @param conversationGroup: Saved conversation group.
-     */
-    private void createConversationGroupProfilePhoto(ConversationGroup conversationGroup) {
-        CreateMultimediaRequest createMultimediaRequest = CreateMultimediaRequest.builder()
-                .conversationId(conversationGroup.getId())
-                .build();
-        multimediaService.addMultimedia(createMultimediaRequest);
-    }
-
-    /**
      * Send a ChatMessage object as welcome message, and ConversationGroup object into a WebSocketMessage object
      * to be sent to group members.
+     *
      * @param conversationGroup: Saved ConversationGroup object.
-     * @param message: Welcome Message for the conversation group.
+     * @param message:           Welcome Message for the conversation group.
      */
     private void sendWelcomeMessage(ConversationGroup conversationGroup, String message) {
         CreateChatMessageRequest createChatMessageRequest = CreateChatMessageRequest.builder()

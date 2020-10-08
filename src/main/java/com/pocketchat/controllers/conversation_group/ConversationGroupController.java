@@ -6,14 +6,10 @@ import com.pocketchat.models.controllers.request.conversation_group.UpdateConver
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.io.File;
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +35,11 @@ public class ConversationGroupController {
             @PathVariable String conversationGroupId,
             @RequestParam("file") MultipartFile multipartFile) {
         conversationGroupService.uploadConversationGroupProfilePhoto(conversationGroupId, multipartFile);
+    }
+
+    @DeleteMapping("/{conversationGroupId}/profilePhoto")
+    public void deleteConversationGroupProfilePhoto(@PathVariable String conversationGroupId) {
+        conversationGroupService.deleteConversationGroupProfilePhoto(conversationGroupId);
     }
 
     @PutMapping("")

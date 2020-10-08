@@ -1,14 +1,14 @@
 package com.pocketchat.controllers.multimedia;
 
 import com.pocketchat.db.models.multimedia.Multimedia;
-import com.pocketchat.models.controllers.request.multimedia.CreateMultimediaRequest;
-import com.pocketchat.models.controllers.request.multimedia.UpdateMultimediaRequest;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.services.multimedia.MultimediaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,20 +23,7 @@ public class MultimediaController {
         this.multimediaService = multimediaService;
     }
 
-    @PostMapping("")
-    public MultimediaResponse addMultimedia(@Valid @RequestBody CreateMultimediaRequest multimedia) {
-        return multimediaService.multimediaResponseMapper(multimediaService.addMultimedia(multimedia));
-    }
-
-    @PutMapping("")
-    public MultimediaResponse editMultimedia(@Valid @RequestBody UpdateMultimediaRequest multimedia) {
-        return multimediaService.multimediaResponseMapper(multimediaService.editMultimedia(multimedia));
-    }
-
-    @DeleteMapping("/{multimediaId}")
-    public void deleteMultimedia(@PathVariable String multimediaId) {
-        multimediaService.deleteMultimedia(multimediaId);
-    }
+// CUD will not able to be made in MultimediaController. They have to change it through their own components.
 
     @GetMapping("/{multimediaId}")
     public MultimediaResponse getSingleMultimedia(@PathVariable String multimediaId) {

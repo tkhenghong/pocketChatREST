@@ -12,8 +12,6 @@ public interface SettingsService {
 
     void deleteSettings(String settingsId);
 
-    Settings getSingleSettings(String settingsId);
-
     Settings getUserOwnSettings();
 
     SettingsResponse settingsResponseMapper(Settings settings);

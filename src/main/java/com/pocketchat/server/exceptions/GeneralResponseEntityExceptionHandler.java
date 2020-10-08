@@ -4,13 +4,16 @@ import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundExceptio
 import com.pocketchat.server.exceptions.conversation_group.*;
 import com.pocketchat.server.exceptions.country_code.CountryCodeNotFoundException;
 import com.pocketchat.server.exceptions.encryption.EncryptionErrorException;
+import com.pocketchat.server.exceptions.file.UploadFileException;
 import com.pocketchat.server.exceptions.general.StringEmptyException;
+import com.pocketchat.server.exceptions.general.StringNotEmptyException;
 import com.pocketchat.server.exceptions.mobile_number.MobileNumberNotFoundException;
 import com.pocketchat.server.exceptions.multimedia.MultimediaNotFoundException;
 import com.pocketchat.server.exceptions.otp.MaximumOTPVerificationAttemptReachedException;
 import com.pocketchat.server.exceptions.otp.OTPNotFoundException;
 import com.pocketchat.server.exceptions.otp.WrongOTPException;
 import com.pocketchat.server.exceptions.password.PasswordPolicyNotMeetException;
+import com.pocketchat.server.exceptions.settings.EditSettingsException;
 import com.pocketchat.server.exceptions.settings.SettingsNotFoundException;
 import com.pocketchat.server.exceptions.sms.InvalidSendSMSRequestException;
 import com.pocketchat.server.exceptions.unread_message.UnreadMessageNotFoundException;
@@ -71,9 +74,11 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
     // Handle Not Acceptable exceptions
     @ExceptionHandler({
             StringEmptyException.class,
+            StringNotEmptyException.class,
             UserGoogleAccountIsAlreadyRegisteredException.class,
             UsernameExistException.class,
-            InvalidConversationGroupTypeException.class
+            InvalidConversationGroupTypeException.class,
+            EditSettingsException.class
     })
     public ResponseEntity<ExceptionResponse> handleNotAcceptableExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.NOT_ACCEPTABLE);
@@ -109,7 +114,8 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
             EncryptionErrorException.class,
             InvalidPersonalConversationGroupException.class,
             WebSocketObjectConversionFailedException.class,
-            InvalidSendSMSRequestException.class
+            InvalidSendSMSRequestException.class,
+            UploadFileException.class
     })
     public ResponseEntity<ExceptionResponse> handleServerInternalErrorExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);

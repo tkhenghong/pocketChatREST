@@ -1,13 +1,9 @@
 package com.pocketchat.services.multimedia;
 
-import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.multimedia.Multimedia;
-import com.pocketchat.db.models.user.User;
-import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.repo_services.multimedia.MultimediaRepoService;
-import com.pocketchat.models.controllers.request.multimedia.CreateMultimediaRequest;
-import com.pocketchat.models.controllers.request.multimedia.UpdateMultimediaRequest;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
+import com.pocketchat.server.exceptions.general.StringNotEmptyException;
 import com.pocketchat.server.exceptions.multimedia.MultimediaNotFoundException;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.user.UserService;
@@ -44,27 +40,17 @@ public class MultimediaServiceImpl implements MultimediaService {
 
     @Override
     @Transactional
-    public Multimedia addMultimedia(CreateMultimediaRequest createMultimediaRequest) {
-        Multimedia multimedia = createMultimediaRequestToMultimediaMapper(createMultimediaRequest);
-        Optional<Multimedia> multimediaOptional = Optional.empty();
-
-//        if (isUserMultimedia(multimedia)) {
-//            multimediaOptional = multimediaRepoService.findByUserId(multimedia.getUserId());
-//        } else if (isUserContactMultimedia(multimedia)) {
-//            multimediaOptional = multimediaRepoService.findByUserContactId(multimedia.getUserContactId());
-//        } else if (isGroupPhotoMultimedia(multimedia)) {
-//            multimediaOptional = multimediaRepoService.findGroupPhotoMultimedia(multimedia.getConversationId());
-//        } else if (isMessageMultimedia(multimedia)) {
-//            multimediaOptional = multimediaRepoService.findMessageMultimedia(multimedia.getConversationId(), multimedia.getMessageId());
-//        }
-
-        return multimediaOptional.orElseGet(() -> multimediaRepoService.save(multimedia));
+    public Multimedia addMultimedia(Multimedia multimedia) {
+        if (!StringUtils.isEmpty(multimedia.getId())) {
+            // Prevent multimedia from updated using the wrong method.
+            throw new StringNotEmptyException("Unable to add multimedia that has already exist. multimediaId: " + multimedia.getId());
+        }
+        return multimediaRepoService.save(multimedia);
     }
 
     @Override
     @Transactional
-    public Multimedia editMultimedia(UpdateMultimediaRequest updateMultimediaRequest) {
-        Multimedia multimedia = updateMultimediaRequestToMultimediaMapper(updateMultimediaRequest);
+    public Multimedia editMultimedia(Multimedia multimedia) {
         getSingleMultimedia(multimedia.getId());
         return multimediaRepoService.save(multimedia); // Straight save
     }
@@ -150,54 +136,6 @@ public class MultimediaServiceImpl implements MultimediaService {
 //        }
 //        return multimediaList;
         return null;
-    }
-
-//    boolean isUserMultimedia(Multimedia multimedia) {
-//        return !StringUtils.isEmpty(multimedia.getUserId());
-//    }
-//
-//    boolean isUserContactMultimedia(Multimedia multimedia) {
-//        return !StringUtils.isEmptyOrWhitespace(multimedia.getUserContactId());
-//    }
-//
-//    boolean isGroupPhotoMultimedia(Multimedia multimedia) {
-//        return !StringUtils.isEmptyOrWhitespace(multimedia.getConversationId()) && StringUtils.isEmptyOrWhitespace(multimedia.getMessageId());
-//    }
-//
-//    boolean isMessageMultimedia(Multimedia multimedia) {
-//        return !StringUtils.isEmptyOrWhitespace(multimedia.getConversationId()) && !StringUtils.isEmptyOrWhitespace(multimedia.getMessageId());
-//    }
-
-    @Override
-    public Multimedia createMultimediaRequestToMultimediaMapper(CreateMultimediaRequest createMultimediaRequest) {
-        return Multimedia.builder()
-//                .id(createMultimediaRequest.getId())
-//                .conversationId(createMultimediaRequest.getConversationId())
-//                .localFullFileUrl(createMultimediaRequest.getLocalFullFileUrl())
-//                .localThumbnailUrl(createMultimediaRequest.getLocalThumbnailUrl())
-//                .messageId(createMultimediaRequest.getMessageId())
-//                .remoteFullFileUrl(createMultimediaRequest.getRemoteFullFileUrl())
-//                .remoteThumbnailUrl(createMultimediaRequest.getRemoteThumbnailUrl())
-//                .size(createMultimediaRequest.getFileSize())
-//                .userContactId(createMultimediaRequest.getUserContactId())
-//                .userId(createMultimediaRequest.getUserId())
-                .build();
-    }
-
-    @Override
-    public Multimedia updateMultimediaRequestToMultimediaMapper(UpdateMultimediaRequest updateMultimediaRequest) {
-        return Multimedia.builder()
-//                .id(updateMultimediaRequest.getId())
-//                .conversationId(updateMultimediaRequest.getConversationId())
-//                .localFullFileUrl(updateMultimediaRequest.getLocalFullFileUrl())
-//                .localThumbnailUrl(updateMultimediaRequest.getLocalThumbnailUrl())
-//                .messageId(updateMultimediaRequest.getMessageId())
-//                .remoteFullFileUrl(updateMultimediaRequest.getRemoteFullFileUrl())
-//                .remoteThumbnailUrl(updateMultimediaRequest.getRemoteThumbnailUrl())
-//                .size(updateMultimediaRequest.getFileSize())
-//                .userContactId(updateMultimediaRequest.getUserContactId())
-//                .userId(updateMultimediaRequest.getUserId())
-                .build();
     }
 
     @Override

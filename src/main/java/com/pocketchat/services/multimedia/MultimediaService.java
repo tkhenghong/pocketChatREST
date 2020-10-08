@@ -1,16 +1,14 @@
 package com.pocketchat.services.multimedia;
 
 import com.pocketchat.db.models.multimedia.Multimedia;
-import com.pocketchat.models.controllers.request.multimedia.CreateMultimediaRequest;
-import com.pocketchat.models.controllers.request.multimedia.UpdateMultimediaRequest;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 
 import java.util.List;
 
 public interface MultimediaService {
-    Multimedia addMultimedia(CreateMultimediaRequest multimedia);
+    Multimedia addMultimedia(Multimedia multimedia);
 
-    Multimedia editMultimedia(UpdateMultimediaRequest multimedia);
+    Multimedia editMultimedia(Multimedia multimedia);
 
     void deleteMultimedia(String multimediaId);
 
@@ -27,10 +25,6 @@ public interface MultimediaService {
     Multimedia getMessageMultimedia(String conversationGroupId, String messageId);
 
     List<Multimedia> getMultimediaOfAConversation(String conversationGroupId);
-
-    Multimedia createMultimediaRequestToMultimediaMapper(CreateMultimediaRequest createMultimediaRequest);
-
-    Multimedia updateMultimediaRequestToMultimediaMapper(UpdateMultimediaRequest updateMultimediaRequest);
 
     MultimediaResponse multimediaResponseMapper(Multimedia multimedia);
 }

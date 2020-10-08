@@ -8,26 +8,23 @@ public class UserResponse {
 
     private String realName;
 
-    private String googleAccountId;
-
     private String emailAddress;
 
     private String countryCode;
 
     private String mobileNo;
 
-    UserResponse(String id, String displayName, String realName, String googleAccountId, String emailAddress, String countryCode, String mobileNo) {
-        this.id = id;
-        this.displayName = displayName;
-        this.realName = realName;
-        this.googleAccountId = googleAccountId;
-        this.emailAddress = emailAddress;
-        this.countryCode = countryCode;
-        this.mobileNo = mobileNo;
+    protected UserResponse(UserResponseBuilder<?, ?> b) {
+        this.id = b.id;
+        this.displayName = b.displayName;
+        this.realName = b.realName;
+        this.emailAddress = b.emailAddress;
+        this.countryCode = b.countryCode;
+        this.mobileNo = b.mobileNo;
     }
 
-    public static UserResponseBuilder builder() {
-        return new UserResponseBuilder();
+    public static UserResponseBuilder<?, ?> builder() {
+        return new UserResponseBuilderImpl();
     }
 
     public String getId() {
@@ -40,10 +37,6 @@ public class UserResponse {
 
     public String getRealName() {
         return this.realName;
-    }
-
-    public String getGoogleAccountId() {
-        return this.googleAccountId;
     }
 
     public String getEmailAddress() {
@@ -68,10 +61,6 @@ public class UserResponse {
 
     public void setRealName(String realName) {
         this.realName = realName;
-    }
-
-    public void setGoogleAccountId(String googleAccountId) {
-        this.googleAccountId = googleAccountId;
     }
 
     public void setEmailAddress(String emailAddress) {
@@ -101,10 +90,6 @@ public class UserResponse {
         final Object this$realName = this.getRealName();
         final Object other$realName = other.getRealName();
         if (this$realName == null ? other$realName != null : !this$realName.equals(other$realName)) return false;
-        final Object this$googleAccountId = this.getGoogleAccountId();
-        final Object other$googleAccountId = other.getGoogleAccountId();
-        if (this$googleAccountId == null ? other$googleAccountId != null : !this$googleAccountId.equals(other$googleAccountId))
-            return false;
         final Object this$emailAddress = this.getEmailAddress();
         final Object other$emailAddress = other.getEmailAddress();
         if (this$emailAddress == null ? other$emailAddress != null : !this$emailAddress.equals(other$emailAddress))
@@ -132,8 +117,6 @@ public class UserResponse {
         result = result * PRIME + ($displayName == null ? 43 : $displayName.hashCode());
         final Object $realName = this.getRealName();
         result = result * PRIME + ($realName == null ? 43 : $realName.hashCode());
-        final Object $googleAccountId = this.getGoogleAccountId();
-        result = result * PRIME + ($googleAccountId == null ? 43 : $googleAccountId.hashCode());
         final Object $emailAddress = this.getEmailAddress();
         result = result * PRIME + ($emailAddress == null ? 43 : $emailAddress.hashCode());
         final Object $countryCode = this.getCountryCode();
@@ -144,62 +127,66 @@ public class UserResponse {
     }
 
     public String toString() {
-        return "UserResponse(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", googleAccountId=" + this.getGoogleAccountId() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", mobileNo=" + this.getMobileNo() + ")";
+        return "UserResponse(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", mobileNo=" + this.getMobileNo() + ")";
     }
 
-    public static class UserResponseBuilder {
+    public static abstract class UserResponseBuilder<C extends UserResponse, B extends UserResponse.UserResponseBuilder<C, B>> {
         private String id;
         private String displayName;
         private String realName;
-        private String googleAccountId;
         private String emailAddress;
         private String countryCode;
         private String mobileNo;
 
-        UserResponseBuilder() {
-        }
-
-        public UserResponse.UserResponseBuilder id(String id) {
+        public B id(String id) {
             this.id = id;
-            return this;
+            return self();
         }
 
-        public UserResponse.UserResponseBuilder displayName(String displayName) {
+        public B displayName(String displayName) {
             this.displayName = displayName;
-            return this;
+            return self();
         }
 
-        public UserResponse.UserResponseBuilder realName(String realName) {
+        public B realName(String realName) {
             this.realName = realName;
-            return this;
+            return self();
         }
 
-        public UserResponse.UserResponseBuilder googleAccountId(String googleAccountId) {
-            this.googleAccountId = googleAccountId;
-            return this;
-        }
-
-        public UserResponse.UserResponseBuilder emailAddress(String emailAddress) {
+        public B emailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
-            return this;
+            return self();
         }
 
-        public UserResponse.UserResponseBuilder countryCode(String countryCode) {
+        public B countryCode(String countryCode) {
             this.countryCode = countryCode;
-            return this;
+            return self();
         }
 
-        public UserResponse.UserResponseBuilder mobileNo(String mobileNo) {
+        public B mobileNo(String mobileNo) {
             this.mobileNo = mobileNo;
+            return self();
+        }
+
+        protected abstract B self();
+
+        public abstract C build();
+
+        public String toString() {
+            return "UserResponse.UserResponseBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", mobileNo=" + this.mobileNo + ")";
+        }
+    }
+
+    private static final class UserResponseBuilderImpl extends UserResponseBuilder<UserResponse, UserResponseBuilderImpl> {
+        private UserResponseBuilderImpl() {
+        }
+
+        protected UserResponse.UserResponseBuilderImpl self() {
             return this;
         }
 
         public UserResponse build() {
-            return new UserResponse(id, displayName, realName, googleAccountId, emailAddress, countryCode, mobileNo);
-        }
-
-        public String toString() {
-            return "UserResponse.UserResponseBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", googleAccountId=" + this.googleAccountId + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", mobileNo=" + this.mobileNo + ")";
+            return new UserResponse(this);
         }
     }
 }

@@ -1,87 +1,41 @@
 package com.pocketchat.db.models.multimedia;
 
+import com.pocketchat.models.enums.multimedia_type.MultimediaType;
+import com.pocketchat.models.file.UploadedFile;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "multimedia")
-public class Multimedia {
-    // Image, Video, GIFs, Sticker, Recording, links
+public class Multimedia extends UploadedFile {
     @Id
     private String id;
 
-    private String fileDirectory;
+    private MultimediaType multimediaType;
 
-    // Size of the file in bytes.
-    private Long fileSize;
-
-    // Name of the file format. Picked from the full file name.
-    private String fileExtension;
-
-    // Content type from MultipartFile.getContentType.
-    private String contentType;
-
-    // Name of the file from the MultipartFile, typically comes from the frontend.
-    private String fileName;
-
-    Multimedia(String id, String fileDirectory, Long fileSize, String fileExtension, String contentType, String fileName) {
-        this.id = id;
-        this.fileDirectory = fileDirectory;
-        this.fileSize = fileSize;
-        this.fileExtension = fileExtension;
-        this.contentType = contentType;
-        this.fileName = fileName;
+    protected Multimedia(MultimediaBuilder<?, ?> b) {
+        super(b);
+        this.id = b.id;
+        this.multimediaType = b.multimediaType;
     }
 
-    public static MultimediaBuilder builder() {
-        return new MultimediaBuilder();
+    public static MultimediaBuilder<?, ?> builder() {
+        return new MultimediaBuilderImpl();
     }
 
     public String getId() {
         return this.id;
     }
 
-    public String getFileDirectory() {
-        return this.fileDirectory;
-    }
-
-    public Long getFileSize() {
-        return this.fileSize;
-    }
-
-    public String getFileExtension() {
-        return this.fileExtension;
-    }
-
-    public String getContentType() {
-        return this.contentType;
-    }
-
-    public String getFileName() {
-        return this.fileName;
+    public MultimediaType getMultimediaType() {
+        return this.multimediaType;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public void setFileDirectory(String fileDirectory) {
-        this.fileDirectory = fileDirectory;
-    }
-
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
-
-    public void setFileExtension(String fileExtension) {
-        this.fileExtension = fileExtension;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setMultimediaType(MultimediaType multimediaType) {
+        this.multimediaType = multimediaType;
     }
 
     public boolean equals(final Object o) {
@@ -92,24 +46,10 @@ public class Multimedia {
         final Object this$id = this.getId();
         final Object other$id = other.getId();
         if (this$id == null ? other$id != null : !this$id.equals(other$id)) return false;
-        final Object this$fileDirectory = this.getFileDirectory();
-        final Object other$fileDirectory = other.getFileDirectory();
-        if (this$fileDirectory == null ? other$fileDirectory != null : !this$fileDirectory.equals(other$fileDirectory))
+        final Object this$multimediaType = this.getMultimediaType();
+        final Object other$multimediaType = other.getMultimediaType();
+        if (this$multimediaType == null ? other$multimediaType != null : !this$multimediaType.equals(other$multimediaType))
             return false;
-        final Object this$fileSize = this.getFileSize();
-        final Object other$fileSize = other.getFileSize();
-        if (this$fileSize == null ? other$fileSize != null : !this$fileSize.equals(other$fileSize)) return false;
-        final Object this$fileExtension = this.getFileExtension();
-        final Object other$fileExtension = other.getFileExtension();
-        if (this$fileExtension == null ? other$fileExtension != null : !this$fileExtension.equals(other$fileExtension))
-            return false;
-        final Object this$contentType = this.getContentType();
-        final Object other$contentType = other.getContentType();
-        if (this$contentType == null ? other$contentType != null : !this$contentType.equals(other$contentType))
-            return false;
-        final Object this$fileName = this.getFileName();
-        final Object other$fileName = other.getFileName();
-        if (this$fileName == null ? other$fileName != null : !this$fileName.equals(other$fileName)) return false;
         return true;
     }
 
@@ -122,70 +62,48 @@ public class Multimedia {
         int result = 1;
         final Object $id = this.getId();
         result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-        final Object $fileDirectory = this.getFileDirectory();
-        result = result * PRIME + ($fileDirectory == null ? 43 : $fileDirectory.hashCode());
-        final Object $fileSize = this.getFileSize();
-        result = result * PRIME + ($fileSize == null ? 43 : $fileSize.hashCode());
-        final Object $fileExtension = this.getFileExtension();
-        result = result * PRIME + ($fileExtension == null ? 43 : $fileExtension.hashCode());
-        final Object $contentType = this.getContentType();
-        result = result * PRIME + ($contentType == null ? 43 : $contentType.hashCode());
-        final Object $fileName = this.getFileName();
-        result = result * PRIME + ($fileName == null ? 43 : $fileName.hashCode());
+        final Object $multimediaType = this.getMultimediaType();
+        result = result * PRIME + ($multimediaType == null ? 43 : $multimediaType.hashCode());
         return result;
     }
 
     public String toString() {
-        return "Multimedia(id=" + this.getId() + ", fileDirectory=" + this.getFileDirectory() + ", fileSize=" + this.getFileSize() + ", fileExtension=" + this.getFileExtension() + ", contentType=" + this.getContentType() + ", fileName=" + this.getFileName() + ")";
+        return "Multimedia(id=" + this.getId() + ", multimediaType=" + this.getMultimediaType() + ")";
     }
 
-    public static class MultimediaBuilder {
+    public static abstract class MultimediaBuilder<C extends Multimedia, B extends Multimedia.MultimediaBuilder<C, B>> extends UploadedFileBuilder<C, B> {
         private String id;
-        private String fileDirectory;
-        private Long fileSize;
-        private String fileExtension;
-        private String contentType;
-        private String fileName;
+        private MultimediaType multimediaType;
 
-        MultimediaBuilder() {
-        }
-
-        public Multimedia.MultimediaBuilder id(String id) {
+        public B id(String id) {
             this.id = id;
-            return this;
+            return self();
         }
 
-        public Multimedia.MultimediaBuilder fileDirectory(String fileDirectory) {
-            this.fileDirectory = fileDirectory;
-            return this;
+        public B multimediaType(MultimediaType multimediaType) {
+            this.multimediaType = multimediaType;
+            return self();
         }
 
-        public Multimedia.MultimediaBuilder fileSize(Long fileSize) {
-            this.fileSize = fileSize;
-            return this;
+        protected abstract B self();
+
+        public abstract C build();
+
+        public String toString() {
+            return "Multimedia.MultimediaBuilder(super=" + super.toString() + ", id=" + this.id + ", multimediaType=" + this.multimediaType + ")";
+        }
+    }
+
+    private static final class MultimediaBuilderImpl extends MultimediaBuilder<Multimedia, MultimediaBuilderImpl> {
+        private MultimediaBuilderImpl() {
         }
 
-        public Multimedia.MultimediaBuilder fileExtension(String fileExtension) {
-            this.fileExtension = fileExtension;
-            return this;
-        }
-
-        public Multimedia.MultimediaBuilder contentType(String contentType) {
-            this.contentType = contentType;
-            return this;
-        }
-
-        public Multimedia.MultimediaBuilder fileName(String fileName) {
-            this.fileName = fileName;
+        protected Multimedia.MultimediaBuilderImpl self() {
             return this;
         }
 
         public Multimedia build() {
-            return new Multimedia(id, fileDirectory, fileSize, fileExtension, contentType, fileName);
-        }
-
-        public String toString() {
-            return "Multimedia.MultimediaBuilder(id=" + this.id + ", fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", contentType=" + this.contentType + ", fileName=" + this.fileName + ")";
+            return new Multimedia(this);
         }
     }
 }

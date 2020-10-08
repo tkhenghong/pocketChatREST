@@ -21,6 +21,7 @@ import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.unread_message.UnreadMessageService;
 import com.pocketchat.services.user_contact.UserContactService;
+import com.pocketchat.utils.file.FileUtil;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -127,6 +128,9 @@ class ConversationGroupServiceTests {
     @Mock
     private RabbitMQService rabbitMQService;
 
+    @Mock
+    private FileUtil fileUtil;
+
     @BeforeEach
     void setup() {
         //if we don't call below, we will get NullPointerException
@@ -138,6 +142,7 @@ class ConversationGroupServiceTests {
                 unreadMessageService,
                 multimediaService,
                 rabbitMQService,
+                fileUtil,
                 new ObjectMapper());
     }
 
