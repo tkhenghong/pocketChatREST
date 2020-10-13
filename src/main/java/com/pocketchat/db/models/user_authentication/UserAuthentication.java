@@ -1,6 +1,7 @@
 package com.pocketchat.db.models.user_authentication;
 
 import com.pocketchat.db.models.user_role.UserRole;
+import com.pocketchat.server.configurations.auditing.Auditable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 
 @Document(collection = "user_authentication")
-public class UserAuthentication {
+public class UserAuthentication extends Auditable {
 
     @Id
     private String id;
@@ -18,11 +19,11 @@ public class UserAuthentication {
     @NotBlank
     private String username;
 
-    private String password; // Can be null,
+    private String password; // Can be null.
 
     private Collection<UserRole> userRoles;
 
-    UserAuthentication(String id, String userId, @NotBlank String username, @NotBlank String password, Collection<UserRole> userRoles) {
+    UserAuthentication(String id, String userId, @NotBlank String username, String password, Collection<UserRole> userRoles) {
         this.id = id;
         this.userId = userId;
         this.username = username;
@@ -46,7 +47,7 @@ public class UserAuthentication {
         return this.username;
     }
 
-    public @NotBlank String getPassword() {
+    public String getPassword() {
         return this.password;
     }
 
@@ -66,7 +67,7 @@ public class UserAuthentication {
         this.username = username;
     }
 
-    public void setPassword(@NotBlank String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -125,7 +126,7 @@ public class UserAuthentication {
         private String id;
         private String userId;
         private @NotBlank String username;
-        private @NotBlank String password;
+        private String password;
         private Collection<UserRole> userRoles;
 
         UserAuthenticationBuilder() {
@@ -146,7 +147,7 @@ public class UserAuthentication {
             return this;
         }
 
-        public UserAuthentication.UserAuthenticationBuilder password(@NotBlank String password) {
+        public UserAuthentication.UserAuthenticationBuilder password(String password) {
             this.password = password;
             return this;
         }

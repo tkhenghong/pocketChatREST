@@ -14,17 +14,17 @@ public class UserResponse {
 
     private String mobileNo;
 
-    protected UserResponse(UserResponseBuilder<?, ?> b) {
-        this.id = b.id;
-        this.displayName = b.displayName;
-        this.realName = b.realName;
-        this.emailAddress = b.emailAddress;
-        this.countryCode = b.countryCode;
-        this.mobileNo = b.mobileNo;
+    UserResponse(String id, String displayName, String realName, String emailAddress, String countryCode, String mobileNo) {
+        this.id = id;
+        this.displayName = displayName;
+        this.realName = realName;
+        this.emailAddress = emailAddress;
+        this.countryCode = countryCode;
+        this.mobileNo = mobileNo;
     }
 
-    public static UserResponseBuilder<?, ?> builder() {
-        return new UserResponseBuilderImpl();
+    public static UserResponseBuilder builder() {
+        return new UserResponseBuilder();
     }
 
     public String getId() {
@@ -130,7 +130,7 @@ public class UserResponse {
         return "UserResponse(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", mobileNo=" + this.getMobileNo() + ")";
     }
 
-    public static abstract class UserResponseBuilder<C extends UserResponse, B extends UserResponse.UserResponseBuilder<C, B>> {
+    public static class UserResponseBuilder {
         private String id;
         private String displayName;
         private String realName;
@@ -138,55 +138,45 @@ public class UserResponse {
         private String countryCode;
         private String mobileNo;
 
-        public B id(String id) {
+        UserResponseBuilder() {
+        }
+
+        public UserResponse.UserResponseBuilder id(String id) {
             this.id = id;
-            return self();
+            return this;
         }
 
-        public B displayName(String displayName) {
+        public UserResponse.UserResponseBuilder displayName(String displayName) {
             this.displayName = displayName;
-            return self();
+            return this;
         }
 
-        public B realName(String realName) {
+        public UserResponse.UserResponseBuilder realName(String realName) {
             this.realName = realName;
-            return self();
+            return this;
         }
 
-        public B emailAddress(String emailAddress) {
+        public UserResponse.UserResponseBuilder emailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
-            return self();
+            return this;
         }
 
-        public B countryCode(String countryCode) {
+        public UserResponse.UserResponseBuilder countryCode(String countryCode) {
             this.countryCode = countryCode;
-            return self();
+            return this;
         }
 
-        public B mobileNo(String mobileNo) {
+        public UserResponse.UserResponseBuilder mobileNo(String mobileNo) {
             this.mobileNo = mobileNo;
-            return self();
-        }
-
-        protected abstract B self();
-
-        public abstract C build();
-
-        public String toString() {
-            return "UserResponse.UserResponseBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", mobileNo=" + this.mobileNo + ")";
-        }
-    }
-
-    private static final class UserResponseBuilderImpl extends UserResponseBuilder<UserResponse, UserResponseBuilderImpl> {
-        private UserResponseBuilderImpl() {
-        }
-
-        protected UserResponse.UserResponseBuilderImpl self() {
             return this;
         }
 
         public UserResponse build() {
-            return new UserResponse(this);
+            return new UserResponse(id, displayName, realName, emailAddress, countryCode, mobileNo);
+        }
+
+        public String toString() {
+            return "UserResponse.UserResponseBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", mobileNo=" + this.mobileNo + ")";
         }
     }
 }

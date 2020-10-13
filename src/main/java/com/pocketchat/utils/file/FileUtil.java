@@ -3,8 +3,8 @@ package com.pocketchat.utils.file;
 import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.server.exceptions.general.StringEmptyException;
 import com.pocketchat.utils.server_shutdown.ServerShutdownUtil;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +97,7 @@ public class FileUtil {
 
     /**
      * Get current base directory, based on the OS environment that the app is deployed in.
+     *
      * @return Directory in String value.
      */
     private String getBaseDirectory() {
@@ -108,10 +109,6 @@ public class FileUtil {
             return macOSBaseDirectory;
         }
 
-        logger.info("SystemUtils.IS_OS_WINDOWS: {} ", SystemUtils.IS_OS_WINDOWS);
-        logger.info("SystemUtils.IS_OS_LINUX: {} ", SystemUtils.IS_OS_LINUX);
-        logger.info("SystemUtils.IS_OS_MAC: {} ", SystemUtils.IS_OS_MAC);
-        logger.info("Getting Nothing?????");
         return "";
     }
 
@@ -119,20 +116,20 @@ public class FileUtil {
      * Clone an Multimedia object, with an option to create a directory for the new File.
      *
      * @param existingMultimedia: Multimedia = Original Multimedia object that you want to copy.
-     * @param moduleDirectory:      String = The directory of a module. For example,
-     *                              if you're finding an image in Promotion, your moduleDirectory should be promotion/.
+     * @param moduleDirectory:    String = The directory of a module. For example,
+     *                            if you're finding an image in Promotion, your moduleDirectory should be promotion/.
      * @return new Multimedia object. Different file name with given @param fileDirectory.
      * @throws IOException if getTargetFile() has problem.
      */
     public Multimedia cloneMultimedia(Multimedia existingMultimedia, String moduleDirectory) throws IOException {
-        if(!StringUtils.isEmpty(moduleDirectory)) {
+        if (!StringUtils.isEmpty(moduleDirectory)) {
             throw new StringEmptyException("Module Directory is empty!");
         }
 
         File existingFile = getFileWithAbsolutePath(moduleDirectory, existingMultimedia.getFileDirectory(),
                 existingMultimedia.getFileName());
 
-        Multimedia newMultimedia = Multimedia.builder()
+        Multimedia newMultimedia = Multimedia.multimediaBuilder()
                 .contentType(existingMultimedia.getContentType())
                 .fileDirectory(today)
                 .fileSize(existingMultimedia.getFileSize())
@@ -142,7 +139,7 @@ public class FileUtil {
 
         File newFile = getTargetFile(moduleDirectory, newMultimedia.getFileName());
 
-//        FileUtils.copyFile(existingFile, newFile);
+        FileUtils.copyFile(existingFile, newFile);
 
         return newMultimedia;
     }
@@ -156,9 +153,8 @@ public class FileUtil {
      * @return boolean to the File is deleted or not.
      */
     public boolean deleteFile(Multimedia uploadedFile, String moduleDirectory) throws FileNotFoundException {
-//        File toBeDeleted = getFileWithAbsolutePath(moduleDirectory, uploadedFile.getFileDirectory(), uploadedFile.getFileName());
-//        return FileUtils.deleteQuietly(toBeDeleted);
-        return false;
+        File toBeDeleted = getFileWithAbsolutePath(moduleDirectory, uploadedFile.getFileDirectory(), uploadedFile.getFileName());
+        return FileUtils.deleteQuietly(toBeDeleted);
     }
 
     /**
@@ -174,6 +170,7 @@ public class FileUtil {
 
     /**
      * Get the file's extension.
+     *
      * @param fileName : File name. Typically from multipartFile or Multimedia.getFileName().
      * @return Extension name of the file. For example, XXXX.mp4 (XXXX not included)
      */
@@ -194,7 +191,7 @@ public class FileUtil {
     private Multimedia transferToFile(MultipartFile multipartFile, String moduleDirectory, String fileName) throws IOException {
         File newFile = getTargetFile(moduleDirectory, fileName);
         multipartFile.transferTo(newFile);
-        return Multimedia.builder()
+        return Multimedia.multimediaBuilder()
                 .contentType(multipartFile.getContentType())
                 .fileDirectory(today)
                 .fileName(fileName)
@@ -216,15 +213,15 @@ public class FileUtil {
      * @throws FileNotFoundException If the created File object doesn't exist.
      */
     public File getFileWithAbsolutePath(String moduleDirectory, String fileDirectory, String fileName) throws FileNotFoundException {
-        if(StringUtils.isEmpty(moduleDirectory)) {
+        if (StringUtils.isEmpty(moduleDirectory)) {
             throw new StringEmptyException("moduleDirectory shouldn't be empty");
         }
 
-        if(StringUtils.isEmpty(fileDirectory)) {
+        if (StringUtils.isEmpty(fileDirectory)) {
             throw new StringEmptyException("fileDirectory shouldn't be empty");
         }
 
-        if(StringUtils.isEmpty(fileName)) {
+        if (StringUtils.isEmpty(fileName)) {
             throw new StringEmptyException("fileName shouldn't be empty");
         }
 
@@ -249,11 +246,11 @@ public class FileUtil {
      * @throws IOException If FileUtils.forceMkdir has error such as Permission denied.
      */
     private File getTargetFile(String moduleDirectory, String fileName) throws IOException {
-        if(StringUtils.isEmpty(moduleDirectory)) {
+        if (StringUtils.isEmpty(moduleDirectory)) {
             throw new StringEmptyException("moduleDirectory shouldn't be empty");
         }
 
-        if(StringUtils.isEmpty(fileName)) {
+        if (StringUtils.isEmpty(fileName)) {
             throw new StringEmptyException("fileName shouldn't be empty");
         }
 

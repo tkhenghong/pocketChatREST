@@ -8,7 +8,6 @@ import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.chat_message.ChatMessageRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
-import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
@@ -42,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 
-@Disabled
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ChatMessageServiceTests {
@@ -167,8 +165,6 @@ class ChatMessageServiceTests {
 
     private CreateChatMessageRequest generateChatMessageRequestObject() {
         return CreateChatMessageRequest.builder()
-                .chatMessageType(ChatMessageType.Text)
-                .multimediaId(UUID.randomUUID().toString())
                 .conversationId(UUID.randomUUID().toString())
                 .messageContent(UUID.randomUUID().toString())
                 .build();
@@ -183,7 +179,6 @@ class ChatMessageServiceTests {
                 .name(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(LocalDateTime.now())
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
                 .notificationExpireDate(LocalDateTime.now())
@@ -193,17 +188,16 @@ class ChatMessageServiceTests {
 
     private UserContact generateUserContactObject() {
         return UserContact.builder()
-//                .id(UUID.randomUUID().toString())
-//                .displayName(UUID.randomUUID().toString())
-//                .realName(UUID.randomUUID().toString())
-//                .userId(UUID.randomUUID().toString())
-//                .userIds(new ArrayList<>())
-//                .userId(UUID.randomUUID().toString())
-//                .multimediaId(UUID.randomUUID().toString())
-//                .mobileNo(UUID.randomUUID().toString())
-//                .about(UUID.randomUUID().toString())
-//                .lastSeenDate(LocalDateTime.now())
-//                .block(false)
+                .id(UUID.randomUUID().toString())
+                .userId(UUID.randomUUID().toString())
+                .userIds(new ArrayList<>())
+                .displayName(UUID.randomUUID().toString())
+                .realName(UUID.randomUUID().toString())
+                .countryCode(UUID.randomUUID().toString())
+                .profilePicture(UUID.randomUUID().toString())
+                .mobileNo(UUID.randomUUID().toString())
+                .about(UUID.randomUUID().toString())
+                .block(false)
                 .build();
     }
 

@@ -136,7 +136,7 @@ class JwtUtilTest {
 
         return UserRole.builder()
                 .name(UUID.randomUUID().toString())
-                .privileges(userPrivilegeList)
+                .userPrivileges(userPrivilegeList)
                 .build();
     }
 

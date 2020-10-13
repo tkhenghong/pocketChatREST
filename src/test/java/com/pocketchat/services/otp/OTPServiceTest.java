@@ -17,7 +17,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class OTPServiceTest {
+class OTPServiceTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 //    @Value("${server.otp.maximumAliveMinutes}")
@@ -37,7 +37,7 @@ public class OTPServiceTest {
 
     @Test
     @Disabled
-    public void testGenerateAndGetOTPFromService() {
+    void testGenerateAndGetOTPFromService() {
         OTP otp = generateOTP();
 
         otpService.saveOTPNumber(otp);
@@ -60,13 +60,6 @@ public class OTPServiceTest {
                 .userId(UUID.randomUUID().toString())
                 .otpExpirationDateTime(LocalDateTime.now())
                 .build();
-
-
-//                otpService.generateOtpNumber(GenerateOTPRequest.builder()
-//                .userId(UUID.randomUUID().toString())
-//                .otpAliveMinutes(5)
-//                .otpLength(6)
-//                .build());
 
         logger.info("otp.toString(): {}", otp.toString());
 

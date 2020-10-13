@@ -3,12 +3,14 @@ package com.pocketchat.models.file;
 // Use @Data and @SuperBuilder on all levels.
 // https://www.baeldung.com/lombok-builder-inheritance
 
+import com.pocketchat.server.configurations.auditing.Auditable;
+
 /**
  * An object to hold reference of the File.
  * Inspired by WL's UploadedFile in Juno Rest Project.
  * NOTE: Do not use this file directly to act as reference.
  */
-public class UploadedFile {
+public class UploadedFile extends Auditable {
 
     private String fileDirectory;
 
@@ -24,16 +26,19 @@ public class UploadedFile {
     // Name of the file from the MultipartFile, typically comes from the frontend.
     private String fileName;
 
-    protected UploadedFile(UploadedFileBuilder<?, ?> b) {
-        this.fileDirectory = b.fileDirectory;
-        this.fileSize = b.fileSize;
-        this.fileExtension = b.fileExtension;
-        this.contentType = b.contentType;
-        this.fileName = b.fileName;
+    public UploadedFile() {
     }
 
-    public static UploadedFileBuilder<?, ?> builder() {
-        return new UploadedFileBuilderImpl();
+    public UploadedFile(String fileDirectory, Long fileSize, String fileExtension, String contentType, String fileName) {
+        this.fileDirectory = fileDirectory;
+        this.fileSize = fileSize;
+        this.fileExtension = fileExtension;
+        this.contentType = contentType;
+        this.fileName = fileName;
+    }
+
+    public static UploadedFileBuilder builder() {
+        return new UploadedFileBuilder();
     }
 
     public String getFileDirectory() {
@@ -126,57 +131,47 @@ public class UploadedFile {
         return "UploadedFile(fileDirectory=" + this.getFileDirectory() + ", fileSize=" + this.getFileSize() + ", fileExtension=" + this.getFileExtension() + ", contentType=" + this.getContentType() + ", fileName=" + this.getFileName() + ")";
     }
 
-    public static abstract class UploadedFileBuilder<C extends UploadedFile, B extends UploadedFile.UploadedFileBuilder<C, B>> {
+    public static class UploadedFileBuilder {
         private String fileDirectory;
         private Long fileSize;
         private String fileExtension;
         private String contentType;
         private String fileName;
 
-        public B fileDirectory(String fileDirectory) {
+        UploadedFileBuilder() {
+        }
+
+        public UploadedFile.UploadedFileBuilder fileDirectory(String fileDirectory) {
             this.fileDirectory = fileDirectory;
-            return self();
+            return this;
         }
 
-        public B fileSize(Long fileSize) {
+        public UploadedFile.UploadedFileBuilder fileSize(Long fileSize) {
             this.fileSize = fileSize;
-            return self();
+            return this;
         }
 
-        public B fileExtension(String fileExtension) {
+        public UploadedFile.UploadedFileBuilder fileExtension(String fileExtension) {
             this.fileExtension = fileExtension;
-            return self();
+            return this;
         }
 
-        public B contentType(String contentType) {
+        public UploadedFile.UploadedFileBuilder contentType(String contentType) {
             this.contentType = contentType;
-            return self();
+            return this;
         }
 
-        public B fileName(String fileName) {
+        public UploadedFile.UploadedFileBuilder fileName(String fileName) {
             this.fileName = fileName;
-            return self();
-        }
-
-        protected abstract B self();
-
-        public abstract C build();
-
-        public String toString() {
-            return "UploadedFile.UploadedFileBuilder(fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", contentType=" + this.contentType + ", fileName=" + this.fileName + ")";
-        }
-    }
-
-    private static final class UploadedFileBuilderImpl extends UploadedFileBuilder<UploadedFile, UploadedFileBuilderImpl> {
-        private UploadedFileBuilderImpl() {
-        }
-
-        protected UploadedFile.UploadedFileBuilderImpl self() {
             return this;
         }
 
         public UploadedFile build() {
-            return new UploadedFile(this);
+            return new UploadedFile(fileDirectory, fileSize, fileExtension, contentType, fileName);
+        }
+
+        public String toString() {
+            return "UploadedFile.UploadedFileBuilder(fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", contentType=" + this.contentType + ", fileName=" + this.fileName + ")";
         }
     }
 }

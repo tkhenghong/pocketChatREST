@@ -12,8 +12,9 @@ import com.pocketchat.models.controllers.request.conversation_group.CreateConver
 import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
 import com.pocketchat.models.controllers.request.unread_message.CreateUnreadMessageRequest;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
+import com.pocketchat.models.controllers.response.conversation_group.ConversationPageableResponse;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
-import com.pocketchat.models.enums.chat_message.ChatMessageType;
+import com.pocketchat.models.controllers.response.unread_message.UnreadMessageResponse;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.conversation_group.*;
@@ -28,12 +29,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -62,13 +67,13 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
     private final ObjectMapper objectMapper;
 
-    private final String moduleDirectory = "conversationGroup";
+    private static final String moduleDirectory = "conversationGroup";
 
     // Avoid Field Injection
     @Autowired
     public ConversationGroupServiceImpl(ConversationGroupRepoService conversationGroupRepoService,
                                         @Lazy ChatMessageService chatMessageService,
-                                        UserContactService userContactService,
+                                        @Lazy UserContactService userContactService,
                                         @Lazy UnreadMessageService unreadMessageService,
                                         @Lazy MultimediaService multimediaService,
                                         RabbitMQService rabbitMQService,
@@ -99,7 +104,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
         ConversationGroup conversationGroup = createConversationGroupRequestToConversationGroupMapper(createConversationGroupRequest);
 
-        String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + " on " + conversationGroup.getCreatedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + ".";
 
         conversationGroup.setCreatorUserId(creatorUserContact.getId());
 
@@ -143,7 +148,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     public MultimediaResponse uploadConversationGroupProfilePhoto(String conversationGroupId, MultipartFile multipartFile) {
         ConversationGroup conversationGroup = getSingleConversation(conversationGroupId);
 
-        if(StringUtils.hasText(conversationGroup.getGroupPhoto())) {
+        if (StringUtils.hasText(conversationGroup.getGroupPhoto())) {
             multimediaService.deleteMultimedia(conversationGroup.getGroupPhoto());
         }
 
@@ -164,10 +169,25 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
     }
 
     @Override
+    public File getConversationGroupGroupPhoto(String conversationGroupId) throws FileNotFoundException {
+        UserContact ownUserContact = userContactService.getOwnUserContact();
+        ConversationGroup conversationGroup = getSingleConversation(conversationGroupId);
+
+        boolean isConversationGroupMember = conversationGroup.getMemberIds().contains(ownUserContact.getId());
+
+        if (!isConversationGroupMember) {
+            return null;
+        }
+
+        Multimedia multimedia = multimediaService.getSingleMultimedia(conversationGroup.getGroupPhoto());
+        return fileUtil.getFileWithAbsolutePath(moduleDirectory, multimedia.getFileDirectory(), multimedia.getFileName());
+    }
+
+    @Override
     public void deleteConversationGroupProfilePhoto(String conversationGroupId) {
         ConversationGroup conversationGroup = getSingleConversation(conversationGroupId);
 
-        if(StringUtils.hasText(conversationGroup.getGroupPhoto())) {
+        if (StringUtils.hasText(conversationGroup.getGroupPhoto())) {
             multimediaService.deleteMultimedia(conversationGroup.getGroupPhoto());
         }
     }
@@ -201,10 +221,11 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         return conversationGroupRepoService.findAllByMemberIds(userContact.getId());
     }
 
-    // Not throwing exception if no conversation groups were found
     @Override
-    public List<ConversationGroup> findAllByMemberIds(String userContactId) {
-        return conversationGroupRepoService.findAllByMemberIds(userContactId);
+    public Page<ConversationGroup> getUserOwnConversationGroups(Pageable pageable) {
+        UserContact userContact = userContactService.getOwnUserContact();
+
+        return conversationGroupRepoService.findAllByMemberIds(userContact.getId(), pageable);
     }
 
     @Override
@@ -217,7 +238,6 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .memberIds(createConversationGroupRequest.getMemberIds())
                 .adminMemberIds(createConversationGroupRequest.getAdminMemberIds())
                 .description(createConversationGroupRequest.getDescription())
-                .createdDate(LocalDateTime.now())
                 .creatorUserId(null)
                 .block(false)
                 .build();
@@ -233,7 +253,6 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .creatorUserId(updateConversationGroupRequest.getCreatorUserId())
                 .memberIds(updateConversationGroupRequest.getMemberIds())
                 .description(updateConversationGroupRequest.getDescription())
-                .createdDate(updateConversationGroupRequest.getCreatedDate())
                 .block(updateConversationGroupRequest.isBlock())
                 .adminMemberIds(updateConversationGroupRequest.getAdminMemberIds())
                 .build();
@@ -253,6 +272,11 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .notificationExpireDate(conversationGroup.getNotificationExpireDate())
                 .conversationGroupType(conversationGroup.getConversationGroupType())
                 .build();
+    }
+
+    @Override
+    public Page<ConversationGroupResponse> conversationGroupResponsePageMapper(Page<ConversationGroup> conversationGroups) {
+        return conversationGroups.map(this::conversationGroupResponseMapper);
     }
 
     /**
@@ -311,10 +335,8 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
      */
     private void sendWelcomeMessage(ConversationGroup conversationGroup, String message) {
         CreateChatMessageRequest createChatMessageRequest = CreateChatMessageRequest.builder()
-                .chatMessageType(ChatMessageType.Text)
                 .conversationId(conversationGroup.getId())
                 .messageContent(message)
-                .multimediaId(null)
                 .build();
 
         ChatMessage chatMessage = chatMessageService.addChatMessage(createChatMessageRequest);
@@ -334,5 +356,11 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             throw new WebSocketObjectConversionFailedException("Failed to convert Welcome Chat Message. Message: "
                     + e.getMessage());
         }
+    }
+
+    @Override
+    public ConversationPageableResponse conversationPageableResponseMapper(Page<ConversationGroupResponse> conversationGroupResponses,
+                                                                           Page<UnreadMessageResponse> unreadMessageResponses) {
+        return ConversationPageableResponse.builder().conversationGroupResponses(conversationGroupResponses).unreadMessageResponses(unreadMessageResponses).build();
     }
 }

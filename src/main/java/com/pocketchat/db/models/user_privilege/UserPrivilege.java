@@ -1,10 +1,11 @@
 package com.pocketchat.db.models.user_privilege;
 
+import com.pocketchat.server.configurations.auditing.Auditable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "user_privilege")
-public class UserPrivilege {
+public class UserPrivilege extends Auditable {
 
     @Id
     private String id;
@@ -16,10 +17,9 @@ public class UserPrivilege {
         this.name = name;
     }
 
-    public static PrivilegeBuilder builder() {
-        return new PrivilegeBuilder();
+    public static UserPrivilegeBuilder builder() {
+        return new UserPrivilegeBuilder();
     }
-
 
     public String getId() {
         return this.id;
@@ -66,22 +66,22 @@ public class UserPrivilege {
     }
 
     public String toString() {
-        return "Privilege(id=" + this.getId() + ", name=" + this.getName() + ")";
+        return "UserPrivilege(id=" + this.getId() + ", name=" + this.getName() + ")";
     }
 
-    public static class PrivilegeBuilder {
+    public static class UserPrivilegeBuilder {
         private String id;
         private String name;
 
-        PrivilegeBuilder() {
+        UserPrivilegeBuilder() {
         }
 
-        public UserPrivilege.PrivilegeBuilder id(String id) {
+        public UserPrivilege.UserPrivilegeBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public UserPrivilege.PrivilegeBuilder name(String name) {
+        public UserPrivilege.UserPrivilegeBuilder name(String name) {
             this.name = name;
             return this;
         }
@@ -91,7 +91,7 @@ public class UserPrivilege {
         }
 
         public String toString() {
-            return "Privilege.PrivilegeBuilder(id=" + this.id + ", name=" + this.name + ")";
+            return "UserPrivilege.UserPrivilegeBuilder(id=" + this.id + ", name=" + this.name + ")";
         }
     }
 }

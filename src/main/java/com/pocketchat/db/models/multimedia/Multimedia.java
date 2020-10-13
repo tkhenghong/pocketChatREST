@@ -12,14 +12,18 @@ public class Multimedia extends UploadedFile {
 
     private MultimediaType multimediaType;
 
-    protected Multimedia(MultimediaBuilder<?, ?> b) {
-        super(b);
-        this.id = b.id;
-        this.multimediaType = b.multimediaType;
+    Multimedia(String id, MultimediaType multimediaType, String fileDirectory, Long fileSize, String fileExtension,
+               String contentType, String fileName) {
+        super(fileDirectory, fileSize, fileExtension, contentType, fileName);
+        this.id = id;
+        this.multimediaType = multimediaType;
     }
 
-    public static MultimediaBuilder<?, ?> builder() {
-        return new MultimediaBuilderImpl();
+    public Multimedia() {
+    }
+
+    public static MultimediaBuilder multimediaBuilder() {
+        return new MultimediaBuilder();
     }
 
     public String getId() {
@@ -71,39 +75,59 @@ public class Multimedia extends UploadedFile {
         return "Multimedia(id=" + this.getId() + ", multimediaType=" + this.getMultimediaType() + ")";
     }
 
-    public static abstract class MultimediaBuilder<C extends Multimedia, B extends Multimedia.MultimediaBuilder<C, B>> extends UploadedFileBuilder<C, B> {
+    public static class MultimediaBuilder {
         private String id;
         private MultimediaType multimediaType;
+        private String fileDirectory;
+        private Long fileSize;
+        private String fileExtension;
+        private String contentType;
+        private String fileName;
 
-        public B id(String id) {
+        MultimediaBuilder() {
+        }
+
+        public Multimedia.MultimediaBuilder id(String id) {
             this.id = id;
-            return self();
+            return this;
         }
 
-        public B multimediaType(MultimediaType multimediaType) {
+        public Multimedia.MultimediaBuilder multimediaType(MultimediaType multimediaType) {
             this.multimediaType = multimediaType;
-            return self();
+            return this;
         }
 
-        protected abstract B self();
-
-        public abstract C build();
-
-        public String toString() {
-            return "Multimedia.MultimediaBuilder(super=" + super.toString() + ", id=" + this.id + ", multimediaType=" + this.multimediaType + ")";
-        }
-    }
-
-    private static final class MultimediaBuilderImpl extends MultimediaBuilder<Multimedia, MultimediaBuilderImpl> {
-        private MultimediaBuilderImpl() {
+        public Multimedia.MultimediaBuilder fileDirectory(String fileDirectory) {
+            this.fileDirectory = fileDirectory;
+            return this;
         }
 
-        protected Multimedia.MultimediaBuilderImpl self() {
+        public Multimedia.MultimediaBuilder fileSize(Long fileSize) {
+            this.fileSize = fileSize;
+            return this;
+        }
+
+        public Multimedia.MultimediaBuilder fileExtension(String fileExtension) {
+            this.fileExtension = fileExtension;
+            return this;
+        }
+
+        public Multimedia.MultimediaBuilder contentType(String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        public Multimedia.MultimediaBuilder fileName(String fileName) {
+            this.fileName = fileName;
             return this;
         }
 
         public Multimedia build() {
-            return new Multimedia(this);
+            return new Multimedia(id, multimediaType, fileDirectory, fileSize, fileExtension, contentType, fileName);
+        }
+
+        public String toString() {
+            return "Multimedia.MultimediaBuilder(id=" + this.id + ", multimediaType=" + this.multimediaType + ", fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", contentType=" + this.contentType + ", fileName=" + this.fileName + ")";
         }
     }
 }

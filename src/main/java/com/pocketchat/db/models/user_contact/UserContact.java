@@ -1,5 +1,6 @@
 package com.pocketchat.db.models.user_contact;
 
+import com.pocketchat.server.configurations.auditing.Auditable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,11 +8,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Document(collection = "user_contact")
-public class UserContact {
+public class UserContact extends Auditable {
 
     @Id
     private String id;
@@ -34,7 +34,8 @@ public class UserContact {
     @NotBlank
     private String mobileNo;
 
-    private LocalDateTime lastSeenDate;
+    @NotBlank
+    private String countryCode;
 
     private boolean block;
 
@@ -42,7 +43,7 @@ public class UserContact {
     @NotBlank
     private String profilePicture;
 
-    UserContact(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, LocalDateTime lastSeenDate, boolean block, @NotBlank String profilePicture) {
+    UserContact(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, @NotBlank String countryCode, boolean block, @NotBlank String profilePicture) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -50,7 +51,7 @@ public class UserContact {
         this.userIds = userIds;
         this.userId = userId;
         this.mobileNo = mobileNo;
-        this.lastSeenDate = lastSeenDate;
+        this.countryCode = countryCode;
         this.block = block;
         this.profilePicture = profilePicture;
     }
@@ -87,8 +88,8 @@ public class UserContact {
         return this.mobileNo;
     }
 
-    public LocalDateTime getLastSeenDate() {
-        return this.lastSeenDate;
+    public @NotBlank String getCountryCode() {
+        return this.countryCode;
     }
 
     public boolean isBlock() {
@@ -127,8 +128,8 @@ public class UserContact {
         this.mobileNo = mobileNo;
     }
 
-    public void setLastSeenDate(LocalDateTime lastSeenDate) {
-        this.lastSeenDate = lastSeenDate;
+    public void setCountryCode(@NotBlank String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public void setBlock(boolean block) {
@@ -166,9 +167,9 @@ public class UserContact {
         final Object this$mobileNo = this.getMobileNo();
         final Object other$mobileNo = other.getMobileNo();
         if (this$mobileNo == null ? other$mobileNo != null : !this$mobileNo.equals(other$mobileNo)) return false;
-        final Object this$lastSeenDate = this.getLastSeenDate();
-        final Object other$lastSeenDate = other.getLastSeenDate();
-        if (this$lastSeenDate == null ? other$lastSeenDate != null : !this$lastSeenDate.equals(other$lastSeenDate))
+        final Object this$countryCode = this.getCountryCode();
+        final Object other$countryCode = other.getCountryCode();
+        if (this$countryCode == null ? other$countryCode != null : !this$countryCode.equals(other$countryCode))
             return false;
         if (this.isBlock() != other.isBlock()) return false;
         final Object this$profilePicture = this.getProfilePicture();
@@ -199,8 +200,8 @@ public class UserContact {
         result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
         final Object $mobileNo = this.getMobileNo();
         result = result * PRIME + ($mobileNo == null ? 43 : $mobileNo.hashCode());
-        final Object $lastSeenDate = this.getLastSeenDate();
-        result = result * PRIME + ($lastSeenDate == null ? 43 : $lastSeenDate.hashCode());
+        final Object $countryCode = this.getCountryCode();
+        result = result * PRIME + ($countryCode == null ? 43 : $countryCode.hashCode());
         result = result * PRIME + (this.isBlock() ? 79 : 97);
         final Object $profilePicture = this.getProfilePicture();
         result = result * PRIME + ($profilePicture == null ? 43 : $profilePicture.hashCode());
@@ -208,7 +209,7 @@ public class UserContact {
     }
 
     public String toString() {
-        return "UserContact(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", lastSeenDate=" + this.getLastSeenDate() + ", block=" + this.isBlock() + ", profilePicture=" + this.getProfilePicture() + ")";
+        return "UserContact(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", countryCode=" + this.getCountryCode() + ", block=" + this.isBlock() + ", profilePicture=" + this.getProfilePicture() + ")";
     }
 
     public static class UserContactBuilder {
@@ -219,7 +220,7 @@ public class UserContact {
         private @Valid @NotEmpty @Size(min = 1) List<String> userIds;
         private String userId;
         private @NotBlank String mobileNo;
-        private LocalDateTime lastSeenDate;
+        private @NotBlank String countryCode;
         private boolean block;
         private @NotBlank String profilePicture;
 
@@ -261,8 +262,8 @@ public class UserContact {
             return this;
         }
 
-        public UserContact.UserContactBuilder lastSeenDate(LocalDateTime lastSeenDate) {
-            this.lastSeenDate = lastSeenDate;
+        public UserContact.UserContactBuilder countryCode(@NotBlank String countryCode) {
+            this.countryCode = countryCode;
             return this;
         }
 
@@ -277,11 +278,11 @@ public class UserContact {
         }
 
         public UserContact build() {
-            return new UserContact(id, displayName, realName, about, userIds, userId, mobileNo, lastSeenDate, block, profilePicture);
+            return new UserContact(id, displayName, realName, about, userIds, userId, mobileNo, countryCode, block, profilePicture);
         }
 
         public String toString() {
-            return "UserContact.UserContactBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", lastSeenDate=" + this.lastSeenDate + ", block=" + this.block + ", profilePicture=" + this.profilePicture + ")";
+            return "UserContact.UserContactBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", countryCode=" + this.countryCode + ", block=" + this.block + ", profilePicture=" + this.profilePicture + ")";
         }
     }
 }

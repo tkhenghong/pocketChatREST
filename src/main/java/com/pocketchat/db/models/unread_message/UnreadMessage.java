@@ -1,14 +1,13 @@
 package com.pocketchat.db.models.unread_message;
 
+import com.pocketchat.server.configurations.auditing.Auditable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Document(collection = "unread_message")
-public class UnreadMessage {
+public class UnreadMessage extends Auditable {
 
     @Id
     private String id;
@@ -22,17 +21,13 @@ public class UnreadMessage {
 
     private String lastMessage;
 
-    @NotNull
-    private LocalDateTime date;
-
     private Integer count;
 
-    UnreadMessage(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, @NotNull LocalDateTime date, Integer count) {
+    UnreadMessage(String id, @NotBlank String conversationId, @NotBlank String userId, String lastMessage, Integer count) {
         this.id = id;
         this.conversationId = conversationId;
         this.userId = userId;
         this.lastMessage = lastMessage;
-        this.date = date;
         this.count = count;
     }
 
@@ -56,10 +51,6 @@ public class UnreadMessage {
         return this.lastMessage;
     }
 
-    public @NotNull LocalDateTime getDate() {
-        return this.date;
-    }
-
     public Integer getCount() {
         return this.count;
     }
@@ -78,10 +69,6 @@ public class UnreadMessage {
 
     public void setLastMessage(String lastMessage) {
         this.lastMessage = lastMessage;
-    }
-
-    public void setDate(@NotNull LocalDateTime date) {
-        this.date = date;
     }
 
     public void setCount(Integer count) {
@@ -107,9 +94,6 @@ public class UnreadMessage {
         final Object other$lastMessage = other.getLastMessage();
         if (this$lastMessage == null ? other$lastMessage != null : !this$lastMessage.equals(other$lastMessage))
             return false;
-        final Object this$date = this.getDate();
-        final Object other$date = other.getDate();
-        if (this$date == null ? other$date != null : !this$date.equals(other$date)) return false;
         final Object this$count = this.getCount();
         final Object other$count = other.getCount();
         if (this$count == null ? other$count != null : !this$count.equals(other$count)) return false;
@@ -131,15 +115,13 @@ public class UnreadMessage {
         result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
         final Object $lastMessage = this.getLastMessage();
         result = result * PRIME + ($lastMessage == null ? 43 : $lastMessage.hashCode());
-        final Object $date = this.getDate();
-        result = result * PRIME + ($date == null ? 43 : $date.hashCode());
         final Object $count = this.getCount();
         result = result * PRIME + ($count == null ? 43 : $count.hashCode());
         return result;
     }
 
     public String toString() {
-        return "UnreadMessage(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", userId=" + this.getUserId() + ", lastMessage=" + this.getLastMessage() + ", date=" + this.getDate() + ", count=" + this.getCount() + ")";
+        return "UnreadMessage(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", userId=" + this.getUserId() + ", lastMessage=" + this.getLastMessage() + ", count=" + this.getCount() + ")";
     }
 
     public static class UnreadMessageBuilder {
@@ -147,7 +129,6 @@ public class UnreadMessage {
         private @NotBlank String conversationId;
         private @NotBlank String userId;
         private String lastMessage;
-        private @NotNull LocalDateTime date;
         private Integer count;
 
         UnreadMessageBuilder() {
@@ -173,22 +154,17 @@ public class UnreadMessage {
             return this;
         }
 
-        public UnreadMessage.UnreadMessageBuilder date(@NotNull LocalDateTime date) {
-            this.date = date;
-            return this;
-        }
-
         public UnreadMessage.UnreadMessageBuilder count(Integer count) {
             this.count = count;
             return this;
         }
 
         public UnreadMessage build() {
-            return new UnreadMessage(id, conversationId, userId, lastMessage, date, count);
+            return new UnreadMessage(id, conversationId, userId, lastMessage, count);
         }
 
         public String toString() {
-            return "UnreadMessage.UnreadMessageBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", userId=" + this.userId + ", lastMessage=" + this.lastMessage + ", date=" + this.date + ", count=" + this.count + ")";
+            return "UnreadMessage.UnreadMessageBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", userId=" + this.userId + ", lastMessage=" + this.lastMessage + ", count=" + this.count + ")";
         }
     }
 }

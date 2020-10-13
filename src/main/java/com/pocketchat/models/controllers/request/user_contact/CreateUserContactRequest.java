@@ -29,13 +29,17 @@ public class CreateUserContactRequest {
     @NotBlank
     private String mobileNo;
 
+    // Using ISO-3166 Alpha-2 standard.
+    @NotBlank
+    private String countryCode;
+
     private LocalDateTime lastSeenDate;
 
     private boolean block;
 
     private String multimediaId;
 
-    CreateUserContactRequest(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, LocalDateTime lastSeenDate, boolean block, String multimediaId) {
+    CreateUserContactRequest(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, @NotBlank String countryCode, LocalDateTime lastSeenDate, boolean block, String multimediaId) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -43,6 +47,7 @@ public class CreateUserContactRequest {
         this.userIds = userIds;
         this.userId = userId;
         this.mobileNo = mobileNo;
+        this.countryCode = countryCode;
         this.lastSeenDate = lastSeenDate;
         this.block = block;
         this.multimediaId = multimediaId;
@@ -78,6 +83,10 @@ public class CreateUserContactRequest {
 
     public @NotBlank String getMobileNo() {
         return this.mobileNo;
+    }
+
+    public @NotBlank String getCountryCode() {
+        return this.countryCode;
     }
 
     public LocalDateTime getLastSeenDate() {
@@ -120,6 +129,10 @@ public class CreateUserContactRequest {
         this.mobileNo = mobileNo;
     }
 
+    public void setCountryCode(@NotBlank String countryCode) {
+        this.countryCode = countryCode;
+    }
+
     public void setLastSeenDate(LocalDateTime lastSeenDate) {
         this.lastSeenDate = lastSeenDate;
     }
@@ -160,6 +173,10 @@ public class CreateUserContactRequest {
         final Object this$mobileNo = this.getMobileNo();
         final Object other$mobileNo = other.getMobileNo();
         if (this$mobileNo == null ? other$mobileNo != null : !this$mobileNo.equals(other$mobileNo)) return false;
+        final Object this$countryCode = this.getCountryCode();
+        final Object other$countryCode = other.getCountryCode();
+        if (this$countryCode == null ? other$countryCode != null : !this$countryCode.equals(other$countryCode))
+            return false;
         final Object this$lastSeenDate = this.getLastSeenDate();
         final Object other$lastSeenDate = other.getLastSeenDate();
         if (this$lastSeenDate == null ? other$lastSeenDate != null : !this$lastSeenDate.equals(other$lastSeenDate))
@@ -193,6 +210,8 @@ public class CreateUserContactRequest {
         result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
         final Object $mobileNo = this.getMobileNo();
         result = result * PRIME + ($mobileNo == null ? 43 : $mobileNo.hashCode());
+        final Object $countryCode = this.getCountryCode();
+        result = result * PRIME + ($countryCode == null ? 43 : $countryCode.hashCode());
         final Object $lastSeenDate = this.getLastSeenDate();
         result = result * PRIME + ($lastSeenDate == null ? 43 : $lastSeenDate.hashCode());
         result = result * PRIME + (this.isBlock() ? 79 : 97);
@@ -202,7 +221,7 @@ public class CreateUserContactRequest {
     }
 
     public String toString() {
-        return "CreateUserContactRequest(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", lastSeenDate=" + this.getLastSeenDate() + ", block=" + this.isBlock() + ", multimediaId=" + this.getMultimediaId() + ")";
+        return "CreateUserContactRequest(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", countryCode=" + this.getCountryCode() + ", lastSeenDate=" + this.getLastSeenDate() + ", block=" + this.isBlock() + ", multimediaId=" + this.getMultimediaId() + ")";
     }
 
     public static class CreateUserContactRequestBuilder {
@@ -213,6 +232,7 @@ public class CreateUserContactRequest {
         private @Valid @NotEmpty @Size(min = 1) List<String> userIds;
         private String userId;
         private @NotBlank String mobileNo;
+        private @NotBlank String countryCode;
         private LocalDateTime lastSeenDate;
         private boolean block;
         private String multimediaId;
@@ -255,6 +275,11 @@ public class CreateUserContactRequest {
             return this;
         }
 
+        public CreateUserContactRequest.CreateUserContactRequestBuilder countryCode(@NotBlank String countryCode) {
+            this.countryCode = countryCode;
+            return this;
+        }
+
         public CreateUserContactRequest.CreateUserContactRequestBuilder lastSeenDate(LocalDateTime lastSeenDate) {
             this.lastSeenDate = lastSeenDate;
             return this;
@@ -271,11 +296,11 @@ public class CreateUserContactRequest {
         }
 
         public CreateUserContactRequest build() {
-            return new CreateUserContactRequest(id, displayName, realName, about, userIds, userId, mobileNo, lastSeenDate, block, multimediaId);
+            return new CreateUserContactRequest(id, displayName, realName, about, userIds, userId, mobileNo, countryCode, lastSeenDate, block, multimediaId);
         }
 
         public String toString() {
-            return "CreateUserContactRequest.CreateUserContactRequestBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", lastSeenDate=" + this.lastSeenDate + ", block=" + this.block + ", multimediaId=" + this.multimediaId + ")";
+            return "CreateUserContactRequest.CreateUserContactRequestBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", countryCode=" + this.countryCode + ", lastSeenDate=" + this.lastSeenDate + ", block=" + this.block + ", multimediaId=" + this.multimediaId + ")";
         }
     }
 }

@@ -1,12 +1,13 @@
 package com.pocketchat.db.models.settings;
 
+import com.pocketchat.server.configurations.auditing.Auditable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 
 @Document(collection = "settings")
-public class Settings {
+public class Settings extends Auditable {
 
     @Id
     private String id;
@@ -16,14 +17,10 @@ public class Settings {
 
     private boolean allowNotifications;
 
-
-    public Settings(String id, @NotBlank String userId, boolean allowNotifications) {
+    Settings(String id, @NotBlank String userId, boolean allowNotifications) {
         this.id = id;
         this.userId = userId;
         this.allowNotifications = allowNotifications;
-    }
-
-    public Settings() {
     }
 
     public static SettingsBuilder builder() {

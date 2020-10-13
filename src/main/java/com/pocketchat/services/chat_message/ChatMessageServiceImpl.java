@@ -20,20 +20,28 @@ import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.user_contact.UserContactService;
 import com.pocketchat.utils.file.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ChatMessageServiceImpl implements ChatMessageService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ChatMessageRepoService chatMessageRepoService;
 
@@ -109,9 +117,23 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
+    public File getChatMessageMultimedia(String chatMessageId) throws FileNotFoundException {
+        Multimedia multimedia = multimediaService.getSingleMultimedia(getSingleChatMessage(chatMessageId).getMultimediaId());
+        return fileUtil.getFileWithAbsolutePath(moduleDirectory, multimedia.getFileDirectory(), multimedia.getFileName());
+    }
+
+    @Override
     @Transactional
     public void deleteChatMessage(String messageId) {
-        chatMessageRepoService.delete(getSingleChatMessage(messageId));
+        ChatMessage chatMessage = getSingleChatMessage(messageId);
+
+        if (StringUtils.hasText(chatMessage.getMultimediaId())) {
+            multimediaService.deleteMultimedia(chatMessage.getMultimediaId());
+        }
+
+        // TODO: Send Websocket message and notification to replace the message to "Message removed" to the correct conversation group members.
+
+        chatMessageRepoService.delete(chatMessage);
     }
 
     @Override
@@ -124,21 +146,16 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public List<ChatMessage> getChatMessagesOfAConversation(String conversationGroupId) {
+    public Page<ChatMessage> getChatMessagesOfAConversation(String conversationGroupId, Pageable pageable) {
         conversationGroupService.getSingleConversation(conversationGroupId);
-        List<ChatMessage> chatMessageList = chatMessageRepoService.findAllMessagesByConversationId(conversationGroupId);
-        // rabbitMQService.listenMessagesFromQueue();
-        return chatMessageList;
+        return chatMessageRepoService.findAllMessagesByConversationId(conversationGroupId, pageable);
     }
 
     @Override
     public ChatMessage createChatMessageToChatMessage(CreateChatMessageRequest createChatMessageRequest) {
         return ChatMessage.builder()
-                .chatMessageType(createChatMessageRequest.getChatMessageType())
                 .conversationId(createChatMessageRequest.getConversationId())
                 .messageContent(createChatMessageRequest.getMessageContent())
-                .multimediaId(createChatMessageRequest.getMultimediaId())
-                .createdTime(LocalDateTime.now())
                 .build();
     }
 
@@ -146,7 +163,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     public ChatMessageResponse chatMessageResponseMapper(ChatMessage chatMessage) {
         return ChatMessageResponse.builder()
                 .id(chatMessage.getId())
-                .chatMessageType(chatMessage.getChatMessageType())
                 .chatMessageStatus(chatMessage.getChatMessageStatus())
                 .conversationId(chatMessage.getConversationId())
                 .messageContent(chatMessage.getMessageContent())
@@ -154,9 +170,15 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .senderId(chatMessage.getConversationId())
                 .senderName(chatMessage.getSenderName())
                 .senderMobileNo(chatMessage.getSenderMobileNo())
-                .createdTime(chatMessage.getCreatedTime())
-                .sentTime(chatMessage.getSentTime())
                 .build();
+    }
+
+    // How to map Page<ObjectEntity> to Page<ObjectDTO> in spring-data-rest:
+    // https://stackoverflow.com/questions/39036771
+    // Then, optimized it with lambda reference Java 8
+    @Override
+    public Page<ChatMessageResponse> pageChatMessageResponseMapper(Page<ChatMessage> chatMessages) {
+        return chatMessages.map(this::chatMessageResponseMapper);
     }
 
     private void sendMessageToRabbitMQ(ConversationGroup conversationGroup, ChatMessage chatMessage) {

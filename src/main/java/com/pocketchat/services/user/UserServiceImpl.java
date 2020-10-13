@@ -6,7 +6,6 @@ import com.pocketchat.db.repo_services.user.UserRepoService;
 import com.pocketchat.models.controllers.request.user.CreateUserRequest;
 import com.pocketchat.models.controllers.request.user.UpdateUserRequest;
 import com.pocketchat.models.controllers.response.user.UserResponse;
-import com.pocketchat.server.exceptions.user.UserGoogleAccountIsAlreadyRegisteredException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -36,20 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User addUser(CreateUserRequest createUserRequest) {
-        User user = createUserRequestToUserMapper(createUserRequest);
-
-        checkUserExistingGoogleAccount(user);
-
-        return userRepoService.save(user); // userOptional.isPresent() ? userOptional.get() : userRepoService.save(user)
-    }
-
-    private void checkUserExistingGoogleAccount(User user) {
-//        if (!StringUtils.isEmpty(user.getGoogleAccountId())) {
-//            Optional<User> userOptional = userRepoService.findByGoogleAccountId(user.getGoogleAccountId());
-//            if (userOptional.isPresent()) {
-//                throw new UserGoogleAccountIsAlreadyRegisteredException("Google Account has been already registered. Google Account ID: " + user.getGoogleAccountId());
-//            }
-//        }
+        return userRepoService.save(createUserRequestToUserMapper(createUserRequest));
     }
 
     @Override
@@ -117,25 +102,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUserRequestToUserMapper(UpdateUserRequest updateUserRequest) {
         return User.builder()
-//                .countryCode(updateUserRequest.getCountryCode())
-//                .displayName(updateUserRequest.getDisplayName())
-//                .realName(updateUserRequest.getRealName())
-//                .googleAccountId(updateUserRequest.getGoogleAccountId())
-//                .mobileNo(updateUserRequest.getMobileNo())
-//                .emailAddress(updateUserRequest.getEmailAddress())
+                .countryCode(updateUserRequest.getCountryCode())
+                .displayName(updateUserRequest.getDisplayName())
+                .realName(updateUserRequest.getRealName())
+                .mobileNo(updateUserRequest.getMobileNo())
+                .emailAddress(updateUserRequest.getEmailAddress())
                 .build();
     }
 
     @Override
     public UserResponse userResponseMapper(User user) {
         return UserResponse.builder()
-//                .id(user.getId())
-//                .countryCode(user.getCountryCode())
-//                .realName(user.getRealName())
-//                .mobileNo(user.getMobileNo())
-//                .googleAccountId(user.getGoogleAccountId())
-//                .emailAddress(user.getEmailAddress())
-//                .displayName(user.getDisplayName())
+                .id(user.getId())
+                .countryCode(user.getCountryCode())
+                .realName(user.getRealName())
+                .mobileNo(user.getMobileNo())
+                .emailAddress(user.getEmailAddress())
+                .displayName(user.getDisplayName())
                 .build();
     }
 }

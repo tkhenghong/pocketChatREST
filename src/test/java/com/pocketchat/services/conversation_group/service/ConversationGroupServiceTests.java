@@ -8,7 +8,6 @@ import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoS
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
-import com.pocketchat.models.enums.chat_message.ChatMessageType;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.models.websocket.WebSocketMessage;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupAdminNotInMemberIdListException;
@@ -23,7 +22,10 @@ import com.pocketchat.services.unread_message.UnreadMessageService;
 import com.pocketchat.services.user_contact.UserContactService;
 import com.pocketchat.utils.file.FileUtil;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -44,7 +46,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 
-@Disabled
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ConversationGroupServiceTests {
@@ -344,17 +345,17 @@ class ConversationGroupServiceTests {
 
     private UserContact generateUserContactObject() {
         return UserContact.builder()
-//                .id(UUID.randomUUID().toString())
-//                .displayName(UUID.randomUUID().toString())
-//                .realName(UUID.randomUUID().toString())
-//                .userId(UUID.randomUUID().toString())
-//                .userIds(new ArrayList<>())
-//                .userId(UUID.randomUUID().toString())
-//                .multimediaId(UUID.randomUUID().toString())
-//                .mobileNo(UUID.randomUUID().toString())
-//                .about(UUID.randomUUID().toString())
-//                .lastSeenDate(LocalDateTime.now())
-//                .block(false)
+                .id(UUID.randomUUID().toString())
+                .displayName(UUID.randomUUID().toString())
+                .realName(UUID.randomUUID().toString())
+                .userId(UUID.randomUUID().toString())
+                .userIds(new ArrayList<>())
+                .userId(UUID.randomUUID().toString())
+                .profilePicture(UUID.randomUUID().toString())
+                .mobileNo(UUID.randomUUID().toString())
+                .countryCode(UUID.randomUUID().toString())
+                .about(UUID.randomUUID().toString())
+                .block(false)
                 .build();
     }
 
@@ -365,9 +366,9 @@ class ConversationGroupServiceTests {
                 .id(UUID.randomUUID().toString())
                 .conversationGroupType(ConversationGroupType.Group)
                 .name(UUID.randomUUID().toString())
+                .groupPhoto(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(LocalDateTime.now())
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
                 .notificationExpireDate(LocalDateTime.now())
@@ -378,30 +379,18 @@ class ConversationGroupServiceTests {
     private ChatMessage generateChatMessage() {
         return ChatMessage.builder()
                 .id(UUID.randomUUID().toString())
-                .chatMessageType(ChatMessageType.Text)
                 .conversationId(UUID.randomUUID().toString())
-                .createdTime(LocalDateTime.now())
                 .chatMessageStatus(ChatMessageStatus.Sent)
                 .messageContent(UUID.randomUUID().toString())
                 .multimediaId(UUID.randomUUID().toString())
                 .senderId(UUID.randomUUID().toString())
                 .senderMobileNo(UUID.randomUUID().toString())
                 .senderName(UUID.randomUUID().toString())
-                .sentTime(LocalDateTime.now())
                 .build();
     }
 
     private WebSocketMessage generateWebSocketMessage() {
         return WebSocketMessage.builder().build();
-    }
-
-    private CreateChatMessageRequest generateCreateChatMessageRequest() {
-        return CreateChatMessageRequest.builder()
-                .chatMessageType(ChatMessageType.Text)
-                .conversationId(UUID.randomUUID().toString())
-                .messageContent(UUID.randomUUID().toString())
-                .multimediaId(UUID.randomUUID().toString())
-                .build();
     }
 
     private List<String> generateRandomObjectIds(Integer numberOfObjectIds) {

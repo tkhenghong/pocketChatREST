@@ -1,13 +1,14 @@
 package com.pocketchat.db.models.user_role;
 
 import com.pocketchat.db.models.user_privilege.UserPrivilege;
+import com.pocketchat.server.configurations.auditing.Auditable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Collection;
 
 @Document(collection = "user_role")
-public class UserRole {
+public class UserRole extends Auditable {
     @Id
     private String id;
 
@@ -21,10 +22,9 @@ public class UserRole {
         this.userPrivileges = userPrivileges;
     }
 
-    public static RoleBuilder builder() {
-        return new RoleBuilder();
+    public static UserRoleBuilder builder() {
+        return new UserRoleBuilder();
     }
-
 
     public String getId() {
         return this.id;
@@ -61,9 +61,9 @@ public class UserRole {
         final Object this$name = this.getName();
         final Object other$name = other.getName();
         if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
-        final Object this$privileges = this.getUserPrivileges();
-        final Object other$privileges = other.getUserPrivileges();
-        if (this$privileges == null ? other$privileges != null : !this$privileges.equals(other$privileges))
+        final Object this$userPrivileges = this.getUserPrivileges();
+        final Object other$userPrivileges = other.getUserPrivileges();
+        if (this$userPrivileges == null ? other$userPrivileges != null : !this$userPrivileges.equals(other$userPrivileges))
             return false;
         return true;
     }
@@ -79,34 +79,34 @@ public class UserRole {
         result = result * PRIME + ($id == null ? 43 : $id.hashCode());
         final Object $name = this.getName();
         result = result * PRIME + ($name == null ? 43 : $name.hashCode());
-        final Object $privileges = this.getUserPrivileges();
-        result = result * PRIME + ($privileges == null ? 43 : $privileges.hashCode());
+        final Object $userPrivileges = this.getUserPrivileges();
+        result = result * PRIME + ($userPrivileges == null ? 43 : $userPrivileges.hashCode());
         return result;
     }
 
     public String toString() {
-        return "Role(id=" + this.getId() + ", name=" + this.getName() + ", privileges=" + this.getUserPrivileges() + ")";
+        return "UserRole(id=" + this.getId() + ", name=" + this.getName() + ", userPrivileges=" + this.getUserPrivileges() + ")";
     }
 
-    public static class RoleBuilder {
+    public static class UserRoleBuilder {
         private String id;
         private String name;
         private Collection<UserPrivilege> userPrivileges;
 
-        RoleBuilder() {
+        UserRoleBuilder() {
         }
 
-        public UserRole.RoleBuilder id(String id) {
+        public UserRole.UserRoleBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public UserRole.RoleBuilder name(String name) {
+        public UserRole.UserRoleBuilder name(String name) {
             this.name = name;
             return this;
         }
 
-        public UserRole.RoleBuilder privileges(Collection<UserPrivilege> userPrivileges) {
+        public UserRole.UserRoleBuilder userPrivileges(Collection<UserPrivilege> userPrivileges) {
             this.userPrivileges = userPrivileges;
             return this;
         }
@@ -116,7 +116,7 @@ public class UserRole {
         }
 
         public String toString() {
-            return "Role.RoleBuilder(id=" + this.id + ", name=" + this.name + ", privileges=" + this.userPrivileges + ")";
+            return "UserRole.UserRoleBuilder(id=" + this.id + ", name=" + this.name + ", userPrivileges=" + this.userPrivileges + ")";
         }
     }
 }

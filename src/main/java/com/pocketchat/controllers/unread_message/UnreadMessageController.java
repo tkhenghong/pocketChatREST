@@ -1,12 +1,14 @@
 package com.pocketchat.controllers.unread_message;
 
+import com.pocketchat.db.models.unread_message.UnreadMessage;
 import com.pocketchat.models.controllers.response.unread_message.UnreadMessageResponse;
 import com.pocketchat.services.unread_message.UnreadMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -69,8 +69,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     private final UserContactService userContactService;
 
-    private final MultimediaService multimediaService;
-
     private final SettingsService settingsService;
 
     private final SMSService smsService;
@@ -105,7 +103,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
             UserRoleRepoService userRoleRepoService,
             @Lazy UserService userService,
             @Lazy UserContactService userContactService,
-            @Lazy MultimediaService multimediaService,
             @Lazy SettingsService settingsService,
             SMSService smsService,
             EmailService emailService,
@@ -121,7 +118,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         this.userRoleRepoService = userRoleRepoService;
         this.userService = userService;
         this.userContactService = userContactService;
-        this.multimediaService = multimediaService;
         this.settingsService = settingsService;
         this.smsService = smsService;
         this.emailService = emailService;

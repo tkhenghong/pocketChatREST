@@ -38,7 +38,6 @@ import static org.mockito.ArgumentMatchers.eq;
  * (@InjectMocks will ONLY work when there's no @Value need to be stubbed for the target testing service.)
  * 4. If you perform Mockito.when unnecessary methods in the test cases, it will cause UnnecessaryStubbingException.
  */
-@Disabled
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ConversationGroupRepositoryTests2 {
@@ -75,10 +74,10 @@ class ConversationGroupRepositoryTests2 {
         return ConversationGroup.builder()
                 .conversationGroupType(ConversationGroupType.Group)
                 .name(UUID.randomUUID().toString())
+                .groupPhoto(UUID.randomUUID().toString())
+                .description(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(LocalDateTime.now())
-                .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
                 .notificationExpireDate(LocalDateTime.now())
                 .block(false)

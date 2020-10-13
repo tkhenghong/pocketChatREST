@@ -1,16 +1,14 @@
 package com.pocketchat.db.models.chat_message;
 
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
-import com.pocketchat.models.enums.chat_message.ChatMessageType;
+import com.pocketchat.server.configurations.auditing.Auditable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Document(collection = "chat_message")
-public class ChatMessage {
+public class ChatMessage extends Auditable {
 
     @Id
     private String id;
@@ -27,8 +25,6 @@ public class ChatMessage {
     @NotBlank
     private String senderMobileNo;
 
-    private ChatMessageType chatMessageType;
-
     private ChatMessageStatus chatMessageStatus;
 
     @NotBlank
@@ -36,23 +32,15 @@ public class ChatMessage {
 
     private String multimediaId;
 
-    @NotNull
-    private LocalDateTime createdTime;
-
-    private LocalDateTime sentTime;
-
-    ChatMessage(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, ChatMessageType chatMessageType, ChatMessageStatus chatMessageStatus, @NotBlank String messageContent, String multimediaId, @NotNull LocalDateTime createdTime, LocalDateTime sentTime) {
+    ChatMessage(String id, @NotBlank String conversationId, @NotBlank String senderId, @NotBlank String senderName, @NotBlank String senderMobileNo, ChatMessageStatus chatMessageStatus, @NotBlank String messageContent, String multimediaId) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.senderMobileNo = senderMobileNo;
-        this.chatMessageType = chatMessageType;
         this.chatMessageStatus = chatMessageStatus;
         this.messageContent = messageContent;
         this.multimediaId = multimediaId;
-        this.createdTime = createdTime;
-        this.sentTime = sentTime;
     }
 
     public static ChatMessageBuilder builder() {
@@ -79,10 +67,6 @@ public class ChatMessage {
         return this.senderMobileNo;
     }
 
-    public ChatMessageType getChatMessageType() {
-        return this.chatMessageType;
-    }
-
     public ChatMessageStatus getChatMessageStatus() {
         return this.chatMessageStatus;
     }
@@ -93,14 +77,6 @@ public class ChatMessage {
 
     public String getMultimediaId() {
         return this.multimediaId;
-    }
-
-    public @NotNull LocalDateTime getCreatedTime() {
-        return this.createdTime;
-    }
-
-    public LocalDateTime getSentTime() {
-        return this.sentTime;
     }
 
     public void setId(String id) {
@@ -123,10 +99,6 @@ public class ChatMessage {
         this.senderMobileNo = senderMobileNo;
     }
 
-    public void setChatMessageType(ChatMessageType chatMessageType) {
-        this.chatMessageType = chatMessageType;
-    }
-
     public void setChatMessageStatus(ChatMessageStatus chatMessageStatus) {
         this.chatMessageStatus = chatMessageStatus;
     }
@@ -137,14 +109,6 @@ public class ChatMessage {
 
     public void setMultimediaId(String multimediaId) {
         this.multimediaId = multimediaId;
-    }
-
-    public void setCreatedTime(@NotNull LocalDateTime createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public void setSentTime(LocalDateTime sentTime) {
-        this.sentTime = sentTime;
     }
 
     public boolean equals(final Object o) {
@@ -170,10 +134,6 @@ public class ChatMessage {
         final Object other$senderMobileNo = other.getSenderMobileNo();
         if (this$senderMobileNo == null ? other$senderMobileNo != null : !this$senderMobileNo.equals(other$senderMobileNo))
             return false;
-        final Object this$chatMessageType = this.getChatMessageType();
-        final Object other$chatMessageType = other.getChatMessageType();
-        if (this$chatMessageType == null ? other$chatMessageType != null : !this$chatMessageType.equals(other$chatMessageType))
-            return false;
         final Object this$chatMessageStatus = this.getChatMessageStatus();
         final Object other$chatMessageStatus = other.getChatMessageStatus();
         if (this$chatMessageStatus == null ? other$chatMessageStatus != null : !this$chatMessageStatus.equals(other$chatMessageStatus))
@@ -186,13 +146,6 @@ public class ChatMessage {
         final Object other$multimediaId = other.getMultimediaId();
         if (this$multimediaId == null ? other$multimediaId != null : !this$multimediaId.equals(other$multimediaId))
             return false;
-        final Object this$createdTime = this.getCreatedTime();
-        final Object other$createdTime = other.getCreatedTime();
-        if (this$createdTime == null ? other$createdTime != null : !this$createdTime.equals(other$createdTime))
-            return false;
-        final Object this$sentTime = this.getSentTime();
-        final Object other$sentTime = other.getSentTime();
-        if (this$sentTime == null ? other$sentTime != null : !this$sentTime.equals(other$sentTime)) return false;
         return true;
     }
 
@@ -213,23 +166,17 @@ public class ChatMessage {
         result = result * PRIME + ($senderName == null ? 43 : $senderName.hashCode());
         final Object $senderMobileNo = this.getSenderMobileNo();
         result = result * PRIME + ($senderMobileNo == null ? 43 : $senderMobileNo.hashCode());
-        final Object $chatMessageType = this.getChatMessageType();
-        result = result * PRIME + ($chatMessageType == null ? 43 : $chatMessageType.hashCode());
         final Object $chatMessageStatus = this.getChatMessageStatus();
         result = result * PRIME + ($chatMessageStatus == null ? 43 : $chatMessageStatus.hashCode());
         final Object $messageContent = this.getMessageContent();
         result = result * PRIME + ($messageContent == null ? 43 : $messageContent.hashCode());
         final Object $multimediaId = this.getMultimediaId();
         result = result * PRIME + ($multimediaId == null ? 43 : $multimediaId.hashCode());
-        final Object $createdTime = this.getCreatedTime();
-        result = result * PRIME + ($createdTime == null ? 43 : $createdTime.hashCode());
-        final Object $sentTime = this.getSentTime();
-        result = result * PRIME + ($sentTime == null ? 43 : $sentTime.hashCode());
         return result;
     }
 
     public String toString() {
-        return "ChatMessage(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", chatMessageType=" + this.getChatMessageType() + ", chatMessageStatus=" + this.getChatMessageStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
+        return "ChatMessage(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", chatMessageStatus=" + this.getChatMessageStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ")";
     }
 
     public static class ChatMessageBuilder {
@@ -238,12 +185,9 @@ public class ChatMessage {
         private @NotBlank String senderId;
         private @NotBlank String senderName;
         private @NotBlank String senderMobileNo;
-        private ChatMessageType chatMessageType;
         private ChatMessageStatus chatMessageStatus;
         private @NotBlank String messageContent;
         private String multimediaId;
-        private @NotNull LocalDateTime createdTime;
-        private LocalDateTime sentTime;
 
         ChatMessageBuilder() {
         }
@@ -273,11 +217,6 @@ public class ChatMessage {
             return this;
         }
 
-        public ChatMessage.ChatMessageBuilder chatMessageType(ChatMessageType chatMessageType) {
-            this.chatMessageType = chatMessageType;
-            return this;
-        }
-
         public ChatMessage.ChatMessageBuilder chatMessageStatus(ChatMessageStatus chatMessageStatus) {
             this.chatMessageStatus = chatMessageStatus;
             return this;
@@ -293,22 +232,12 @@ public class ChatMessage {
             return this;
         }
 
-        public ChatMessage.ChatMessageBuilder createdTime(@NotNull LocalDateTime createdTime) {
-            this.createdTime = createdTime;
-            return this;
-        }
-
-        public ChatMessage.ChatMessageBuilder sentTime(LocalDateTime sentTime) {
-            this.sentTime = sentTime;
-            return this;
-        }
-
         public ChatMessage build() {
-            return new ChatMessage(id, conversationId, senderId, senderName, senderMobileNo, chatMessageType, chatMessageStatus, messageContent, multimediaId, createdTime, sentTime);
+            return new ChatMessage(id, conversationId, senderId, senderName, senderMobileNo, chatMessageStatus, messageContent, multimediaId);
         }
 
         public String toString() {
-            return "ChatMessage.ChatMessageBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", chatMessageType=" + this.chatMessageType + ", chatMessageStatus=" + this.chatMessageStatus + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
+            return "ChatMessage.ChatMessageBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", chatMessageStatus=" + this.chatMessageStatus + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ")";
         }
     }
 }

@@ -1,26 +1,39 @@
 package com.pocketchat.services.user_contact;
 
+import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.user_contact.UserContactRepoService;
 import com.pocketchat.models.controllers.request.user_contact.CreateUserContactRequest;
 import com.pocketchat.models.controllers.request.user_contact.UpdateUserContactRequest;
+import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.controllers.response.user_contact.UserContactResponse;
+import com.pocketchat.server.exceptions.file.UploadFileException;
 import com.pocketchat.server.exceptions.user_contact.NotOwnUserContactException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
+import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.user.UserService;
 import com.pocketchat.services.user_authentication.UserAuthenticationService;
+import com.pocketchat.utils.file.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserContactServiceImpl implements UserContactService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final UserContactRepoService userContactRepoService;
 
@@ -28,13 +41,23 @@ public class UserContactServiceImpl implements UserContactService {
 
     private final UserService userService;
 
+    private final MultimediaService multimediaService;
+
+    FileUtil fileUtil;
+
+    private final String moduleDirectory = "userContact";
+
     @Autowired
     public UserContactServiceImpl(UserContactRepoService userContactRepoService,
                                   UserAuthenticationService userAuthenticationService,
-                                  UserService userService) {
+                                  UserService userService,
+                                  MultimediaService multimediaService,
+                                  FileUtil fileUtil) {
         this.userContactRepoService = userContactRepoService;
         this.userAuthenticationService = userAuthenticationService;
         this.userService = userService;
+        this.multimediaService = multimediaService;
+        this.fileUtil = fileUtil;
     }
 
     @Override
@@ -108,9 +131,39 @@ public class UserContactServiceImpl implements UserContactService {
     }
 
     @Override
+    public MultimediaResponse uploadOwnUserContactProfilePhoto(MultipartFile multipartFile) {
+        UserContact ownUserContact = getOwnUserContact();
+        Multimedia savedMultimedia;
+        try {
+            savedMultimedia = multimediaService.addMultimedia(fileUtil.createMultimedia(multipartFile, moduleDirectory));
+        } catch (IOException ioException) {
+            throw new UploadFileException("Unable to upload user contact multimedia to the server! userContactId: " + ownUserContact.getId() + ", message: " + ioException.getMessage());
+        }
+
+        if (ObjectUtils.isEmpty(savedMultimedia)) {
+            throw new UploadFileException("Unable to upload user contact multimedia to the server due to savedMultimedia object is empty! userContactId: " + ownUserContact.getId());
+        }
+
+        return multimediaService.multimediaResponseMapper(savedMultimedia);
+    }
+
+    // Get ProfilePhoto of the UserContact
+    @Override
+    public File getOwnUserContactProfilePhoto() throws FileNotFoundException {
+        Multimedia multimedia = multimediaService.getSingleMultimedia(getOwnUserContact().getProfilePicture());
+        return fileUtil.getFileWithAbsolutePath(moduleDirectory, multimedia.getFileDirectory(), multimedia.getFileName());
+    }
+
+    @Override
+    public void deleteOwnUserContactProfilePhoto() {
+        multimediaService.deleteMultimedia(getOwnUserContact().getProfilePicture());
+    }
+
+    @Override
     @Transactional
-    public void deleteUserContact(String userContactId) {
-        userContactRepoService.delete(getUserContact(userContactId));
+    public void deleteOwnUserContact(String userContactId) {
+        userContactRepoService.delete(getOwnUserContact());
+        deleteOwnUserContactProfilePhoto();
     }
 
     @Override
@@ -124,6 +177,7 @@ public class UserContactServiceImpl implements UserContactService {
 
     /**
      * Find User Contact by using Mobile no.
+     *
      * @param mobileNo: Mobile number of a potential UserContact.
      * @return UserContact which has existing UserContact's information.
      */

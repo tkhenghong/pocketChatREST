@@ -82,7 +82,6 @@ class ConversationGroupRepositoryTests {
                 .name(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(LocalDateTime.now())
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
                 .notificationExpireDate(LocalDateTime.now())

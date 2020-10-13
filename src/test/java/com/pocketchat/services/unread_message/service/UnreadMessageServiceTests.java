@@ -11,9 +11,6 @@ import com.pocketchat.server.exceptions.unread_message.UnreadMessageNotFoundExce
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.unread_message.UnreadMessageService;
 import com.pocketchat.services.unread_message.UnreadMessageServiceImpl;
-import com.pocketchat.services.user.UserService;
-import com.pocketchat.services.user_authentication.UserAuthenticationService;
-import com.pocketchat.services.user_contact.UserContactService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +31,6 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 
-@Disabled
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class UnreadMessageServiceTests {
@@ -47,27 +43,14 @@ class UnreadMessageServiceTests {
     private UnreadMessageRepoService unreadMessageRepoService;
 
     @Mock
-    private UserAuthenticationService userAuthenticationService;
-
-    @Mock
-    private UserContactService userContactService;
-
-    @Mock
     private ConversationGroupService conversationGroupService;
-
-    @Mock
-    private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         unreadMessageService = new UnreadMessageServiceImpl(
                 unreadMessageRepoService,
-                userAuthenticationService,
-                userContactService,
-                conversationGroupService,
-                userService
-        );
+                conversationGroupService);
     }
 
     /**
@@ -329,7 +312,6 @@ class UnreadMessageServiceTests {
                 .name(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(LocalDateTime.now())
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
                 .notificationExpireDate(LocalDateTime.now())
@@ -343,7 +325,6 @@ class UnreadMessageServiceTests {
                 .lastMessage(UUID.randomUUID().toString())
                 .userId(UUID.randomUUID().toString())
                 .count(0)
-                .date(LocalDateTime.now())
                 .build();
     }
 

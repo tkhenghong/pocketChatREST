@@ -4,6 +4,7 @@ import com.pocketchat.controllers.conversation_group.ConversationGroupController
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
+import com.pocketchat.services.unread_message.UnreadMessageService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,18 +45,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         }
 )
 @AutoConfigureMockMvc(addFilters = false)
-public class ConversationGroupControllerTests {
+class ConversationGroupControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     ConversationGroupService conversationGroupService;
 
+    @MockBean
+    UnreadMessageService unreadMessageService;
+
     @Test
     @DisplayName("Test Get Conversation Group API")
     @WithMockUser
-    // @Disabled
-    public void testConversationGroupController() throws Exception {
+        // @Disabled
+    void testConversationGroupController() throws Exception {
         String conversationGroupId = UUID.randomUUID().toString();
         ConversationGroup entity = generateConversationGroupObject();
         String url = "/conversationGroup/" + conversationGroupId;
@@ -79,7 +83,6 @@ public class ConversationGroupControllerTests {
                 .name(UUID.randomUUID().toString())
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
-                .createdDate(LocalDateTime.now())
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
                 .notificationExpireDate(LocalDateTime.now())

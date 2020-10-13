@@ -5,7 +5,10 @@ import com.pocketchat.db.repositories.conversation_group.ConversationGroupReposi
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +40,34 @@ public class ConversationGroupRepoService {
         return conversationGroupRepository.findById(conversationId);
     }
 
-    // Find all conversationGroup objects by their memberIds array has the mentioned userContactId or not
-    // Because 1 User has 1 UserContact, and the memberIds/adminIds of the ConversationGroup are userContactId
+    /**
+     * Find all conversation groups that has the userContactID.
+     * @param userContactId : UserContact ID
+     * @return List of Conversation Group.
+     */
     public List<ConversationGroup> findAllByMemberIds(String userContactId) {
         return conversationGroupRepository.findAllByMemberIds(userContactId);
     }
 
-    // Used for finding conversationGroup that has exact same member
-    // For conversationGroup creation
+    /**
+     * Find all conversation groups that has the userContactID
+     * @param userContactId : UserContact ID
+     * @param pageable: Pageable object for pagination.
+     * @return Page object of Conversation Group with pagination details.
+     */
+    public Page<ConversationGroup> findAllByMemberIds(String userContactId, Pageable pageable) {
+        if(ObjectUtils.isEmpty(pageable)) {
+            pageable = Pageable.unpaged();
+        }
+        return conversationGroupRepository.findAllByMemberIds(userContactId, pageable);
+    }
+
+    /**
+     * Used for finding conversationGroup that has exact same member.
+     * Used during creation of private conversation group.
+     * @param memberIds: List of UserContact ID which represents group members.
+     * @return List of conversation groups.
+     */
     public List<ConversationGroup> findAllByMemberIds(List<String> memberIds) {
         return conversationGroupRepository.findAllByMemberIds(memberIds);
     }

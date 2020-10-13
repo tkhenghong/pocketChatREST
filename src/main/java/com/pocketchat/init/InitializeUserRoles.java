@@ -79,7 +79,7 @@ public class InitializeUserRoles implements ApplicationListener<ContextRefreshed
         if (privilege.isEmpty()) {
             userRole = UserRole.builder()
                     .name(name)
-                    .privileges(userPrivilegeList)
+                    .userPrivileges(userPrivilegeList)
                     .build();
             userRole = userRoleRepoService.save(userRole);
         } else {
