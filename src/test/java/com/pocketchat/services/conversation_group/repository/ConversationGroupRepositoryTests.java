@@ -84,8 +84,6 @@ class ConversationGroupRepositoryTests {
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
-                .notificationExpireDate(LocalDateTime.now())
-                .block(false)
                 .build();
     }
 

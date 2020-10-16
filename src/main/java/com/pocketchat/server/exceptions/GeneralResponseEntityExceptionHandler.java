@@ -2,6 +2,11 @@ package com.pocketchat.server.exceptions;
 
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
 import com.pocketchat.server.exceptions.conversation_group.*;
+import com.pocketchat.server.exceptions.conversation_group_block.BlockConversationGroupException;
+import com.pocketchat.server.exceptions.conversation_group_block.ConversationGroupBlockNotFoundException;
+import com.pocketchat.server.exceptions.conversation_group_block.UnblockConversationGroupException;
+import com.pocketchat.server.exceptions.conversation_group_mute_notification.ConversationGroupMuteNotificationNotFoundException;
+import com.pocketchat.server.exceptions.conversation_group_mute_notification.UnmuteConversationGroupException;
 import com.pocketchat.server.exceptions.country_code.CountryCodeNotFoundException;
 import com.pocketchat.server.exceptions.encryption.EncryptionErrorException;
 import com.pocketchat.server.exceptions.file.UploadFileException;
@@ -65,7 +70,9 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
             UsernameNotFoundException.class,
             UserPrivilegeNotFoundException.class,
             UserRoleNotFoundException.class,
-            ConversationGroupAdminNotInMemberIdListException.class
+            ConversationGroupAdminNotInMemberIdListException.class,
+            ConversationGroupBlockNotFoundException.class,
+            ConversationGroupMuteNotificationNotFoundException.class
     })
     public ResponseEntity<ExceptionResponse> handleNotFoundExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.NOT_FOUND);
@@ -78,7 +85,10 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
             UserGoogleAccountIsAlreadyRegisteredException.class,
             UsernameExistException.class,
             InvalidConversationGroupTypeException.class,
-            EditSettingsException.class
+            EditSettingsException.class,
+            BlockConversationGroupException.class,
+            UnblockConversationGroupException.class,
+            UnmuteConversationGroupException.class
     })
     public ResponseEntity<ExceptionResponse> handleNotAcceptableExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.NOT_ACCEPTABLE);
@@ -88,6 +98,7 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
     @ExceptionHandler({
             PasswordIncorrectException.class,
             WrongOTPException.class,
+            ConversationGroupMemberPermissionException.class
     })
     public ResponseEntity<ExceptionResponse> handleUnauthorizedExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.UNAUTHORIZED);

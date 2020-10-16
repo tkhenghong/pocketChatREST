@@ -1,5 +1,6 @@
 package com.pocketchat.db.repo_services.conversation_group;
 
+import com.mongodb.client.result.UpdateResult;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.repositories.conversation_group.ConversationGroupRepository;
 import org.slf4j.Logger;
@@ -7,6 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -21,9 +27,12 @@ public class ConversationGroupRepoService {
 
     private final ConversationGroupRepository conversationGroupRepository;
 
+    private final MongoTemplate mongoTemplate;
+
     @Autowired
-    public ConversationGroupRepoService(ConversationGroupRepository conversationGroupRepository) {
+    public ConversationGroupRepoService(ConversationGroupRepository conversationGroupRepository, MongoTemplate mongoTemplate) {
         this.conversationGroupRepository = conversationGroupRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public List<ConversationGroup> findAllConversationGroupsByIds(List<String> ids) {
@@ -70,6 +79,24 @@ public class ConversationGroupRepoService {
      */
     public List<ConversationGroup> findAllByMemberIds(List<String> memberIds) {
         return conversationGroupRepository.findAllByMemberIds(memberIds);
+    }
+
+    public ConversationGroup updateConversationGroupName(String conversationGroupId, String name) {
+        Query query = new Query(Criteria.where("id").is(conversationGroupId));
+
+        Update update = new Update();
+        update.set("name", name);
+        FindAndModifyOptions findAndModifyOptions = new FindAndModifyOptions().returnNew(true);
+        return mongoTemplate.findAndModify(query, update, findAndModifyOptions, ConversationGroup.class);
+    }
+
+    public ConversationGroup updateConversationGroupDescription(String conversationGroupId, String description) {
+        Query query = new Query(Criteria.where("id").is(conversationGroupId));
+
+        Update update = new Update();
+        update.set("description", description);
+        FindAndModifyOptions findAndModifyOptions = new FindAndModifyOptions().returnNew(true);
+        return mongoTemplate.findAndModify(query, update, findAndModifyOptions, ConversationGroup.class);
     }
 
     public ConversationGroup save(ConversationGroup conversationGroup) {

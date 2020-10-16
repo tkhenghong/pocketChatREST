@@ -79,8 +79,6 @@ class ConversationGroupRepositoryTests2 {
                 .memberIds(memberIds)
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
                 .creatorUserId(memberIds.get(0))
-                .notificationExpireDate(LocalDateTime.now())
-                .block(false)
                 .build();
     }
 

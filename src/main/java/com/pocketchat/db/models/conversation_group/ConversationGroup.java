@@ -6,7 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Document(collection = "conversation_group")
@@ -26,24 +27,18 @@ public class ConversationGroup extends Auditable {
 
     private String description;
 
-    // @Valid
-    // @NotEmpty
-    // @Size(min = 1) // If 1 of 2 persons group left, that person still can have this group
+    @NotEmpty
+    @Size(min = 1) // If 1 of 2 persons group left, that person still can have this group
     private List<String> memberIds;
 
-    // @Valid
-    // @NotEmpty
-    // @Size(min = 1)
+    @NotEmpty
+    @Size(min = 1)
     private List<String> adminMemberIds;
 
     // Using Multimedia ID.
     private String groupPhoto;
 
-    private boolean block;
-
-    private LocalDateTime notificationExpireDate;
-
-    ConversationGroup(String id, @NotBlank String creatorUserId, @NotBlank String name, @NotBlank ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, String groupPhoto, boolean block, LocalDateTime notificationExpireDate) {
+    ConversationGroup(String id, @NotBlank String creatorUserId, @NotBlank String name, @NotBlank ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, String groupPhoto) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.name = name;
@@ -52,8 +47,6 @@ public class ConversationGroup extends Auditable {
         this.memberIds = memberIds;
         this.adminMemberIds = adminMemberIds;
         this.groupPhoto = groupPhoto;
-        this.block = block;
-        this.notificationExpireDate = notificationExpireDate;
     }
 
     public static ConversationGroupBuilder builder() {
@@ -92,14 +85,6 @@ public class ConversationGroup extends Auditable {
         return this.groupPhoto;
     }
 
-    public boolean isBlock() {
-        return this.block;
-    }
-
-    public LocalDateTime getNotificationExpireDate() {
-        return this.notificationExpireDate;
-    }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -130,14 +115,6 @@ public class ConversationGroup extends Auditable {
 
     public void setGroupPhoto(String groupPhoto) {
         this.groupPhoto = groupPhoto;
-    }
-
-    public void setBlock(boolean block) {
-        this.block = block;
-    }
-
-    public void setNotificationExpireDate(LocalDateTime notificationExpireDate) {
-        this.notificationExpireDate = notificationExpireDate;
     }
 
     public boolean equals(final Object o) {
@@ -174,11 +151,6 @@ public class ConversationGroup extends Auditable {
         final Object other$groupPhoto = other.getGroupPhoto();
         if (this$groupPhoto == null ? other$groupPhoto != null : !this$groupPhoto.equals(other$groupPhoto))
             return false;
-        if (this.isBlock() != other.isBlock()) return false;
-        final Object this$notificationExpireDate = this.getNotificationExpireDate();
-        final Object other$notificationExpireDate = other.getNotificationExpireDate();
-        if (this$notificationExpireDate == null ? other$notificationExpireDate != null : !this$notificationExpireDate.equals(other$notificationExpireDate))
-            return false;
         return true;
     }
 
@@ -205,14 +177,11 @@ public class ConversationGroup extends Auditable {
         result = result * PRIME + ($adminMemberIds == null ? 43 : $adminMemberIds.hashCode());
         final Object $groupPhoto = this.getGroupPhoto();
         result = result * PRIME + ($groupPhoto == null ? 43 : $groupPhoto.hashCode());
-        result = result * PRIME + (this.isBlock() ? 79 : 97);
-        final Object $notificationExpireDate = this.getNotificationExpireDate();
-        result = result * PRIME + ($notificationExpireDate == null ? 43 : $notificationExpireDate.hashCode());
         return result;
     }
 
     public String toString() {
-        return "ConversationGroup(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", name=" + this.getName() + ", conversationGroupType=" + this.getConversationGroupType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", groupPhoto=" + this.getGroupPhoto() + ", block=" + this.isBlock() + ", notificationExpireDate=" + this.getNotificationExpireDate() + ")";
+        return "ConversationGroup(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", name=" + this.getName() + ", conversationGroupType=" + this.getConversationGroupType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", groupPhoto=" + this.getGroupPhoto() + ")";
     }
 
     public static class ConversationGroupBuilder {
@@ -224,8 +193,6 @@ public class ConversationGroup extends Auditable {
         private List<String> memberIds;
         private List<String> adminMemberIds;
         private String groupPhoto;
-        private boolean block;
-        private LocalDateTime notificationExpireDate;
 
         ConversationGroupBuilder() {
         }
@@ -270,22 +237,12 @@ public class ConversationGroup extends Auditable {
             return this;
         }
 
-        public ConversationGroup.ConversationGroupBuilder block(boolean block) {
-            this.block = block;
-            return this;
-        }
-
-        public ConversationGroup.ConversationGroupBuilder notificationExpireDate(LocalDateTime notificationExpireDate) {
-            this.notificationExpireDate = notificationExpireDate;
-            return this;
-        }
-
         public ConversationGroup build() {
-            return new ConversationGroup(id, creatorUserId, name, conversationGroupType, description, memberIds, adminMemberIds, groupPhoto, block, notificationExpireDate);
+            return new ConversationGroup(id, creatorUserId, name, conversationGroupType, description, memberIds, adminMemberIds, groupPhoto);
         }
 
         public String toString() {
-            return "ConversationGroup.ConversationGroupBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", name=" + this.name + ", conversationGroupType=" + this.conversationGroupType + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", groupPhoto=" + this.groupPhoto + ", block=" + this.block + ", notificationExpireDate=" + this.notificationExpireDate + ")";
+            return "ConversationGroup.ConversationGroupBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", name=" + this.name + ", conversationGroupType=" + this.conversationGroupType + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", groupPhoto=" + this.groupPhoto + ")";
         }
     }
 }

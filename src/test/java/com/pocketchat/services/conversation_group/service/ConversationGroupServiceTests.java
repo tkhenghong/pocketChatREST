@@ -5,7 +5,6 @@ import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
-import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
@@ -16,6 +15,8 @@ import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundExceptio
 import com.pocketchat.services.chat_message.ChatMessageService;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.conversation_group.ConversationGroupServiceImpl;
+import com.pocketchat.services.conversation_group_block.ConversationGroupBlockService;
+import com.pocketchat.services.conversation_group_mute_notification.ConversationGroupMuteNotificationService;
 import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.rabbitmq.RabbitMQService;
 import com.pocketchat.services.unread_message.UnreadMessageService;
@@ -34,7 +35,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -112,6 +112,12 @@ class ConversationGroupServiceTests {
     private ConversationGroupService conversationGroupService;
 
     @Mock
+    private ConversationGroupBlockService conversationGroupBlockService;
+
+    @Mock
+    private ConversationGroupMuteNotificationService conversationGroupMuteNotificationService;
+
+    @Mock
     private ConversationGroupRepoService conversationGroupRepoService;
 
     @Mock
@@ -138,6 +144,8 @@ class ConversationGroupServiceTests {
         MockitoAnnotations.initMocks(this);
         conversationGroupService = new ConversationGroupServiceImpl(
                 conversationGroupRepoService,
+                conversationGroupBlockService,
+                conversationGroupMuteNotificationService,
                 chatMessageService,
                 userContactService,
                 unreadMessageService,
@@ -371,8 +379,6 @@ class ConversationGroupServiceTests {
                 .adminMemberIds(Collections.singletonList(memberIds.get(0)))
                 .description(UUID.randomUUID().toString())
                 .creatorUserId(memberIds.get(0))
-                .notificationExpireDate(LocalDateTime.now())
-                .block(false)
                 .build();
     }
 

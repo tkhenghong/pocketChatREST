@@ -22,11 +22,9 @@ public class ConversationGroupResponse {
 
     private List<String> adminMemberIds;
 
-    private boolean block;
+    private String groupPhoto;
 
-    private LocalDateTime notificationExpireDate;
-
-    ConversationGroupResponse(String id, String creatorUserId, LocalDateTime createdDate, String name, ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, boolean block, LocalDateTime notificationExpireDate) {
+    ConversationGroupResponse(String id, String creatorUserId, LocalDateTime createdDate, String name, ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, String groupPhoto) {
         this.id = id;
         this.creatorUserId = creatorUserId;
         this.createdDate = createdDate;
@@ -35,8 +33,7 @@ public class ConversationGroupResponse {
         this.description = description;
         this.memberIds = memberIds;
         this.adminMemberIds = adminMemberIds;
-        this.block = block;
-        this.notificationExpireDate = notificationExpireDate;
+        this.groupPhoto = groupPhoto;
     }
 
     public static ConversationGroupResponseBuilder builder() {
@@ -75,12 +72,8 @@ public class ConversationGroupResponse {
         return this.adminMemberIds;
     }
 
-    public boolean isBlock() {
-        return this.block;
-    }
-
-    public LocalDateTime getNotificationExpireDate() {
-        return this.notificationExpireDate;
+    public String getGroupPhoto() {
+        return this.groupPhoto;
     }
 
     public void setId(String id) {
@@ -115,12 +108,8 @@ public class ConversationGroupResponse {
         this.adminMemberIds = adminMemberIds;
     }
 
-    public void setBlock(boolean block) {
-        this.block = block;
-    }
-
-    public void setNotificationExpireDate(LocalDateTime notificationExpireDate) {
-        this.notificationExpireDate = notificationExpireDate;
+    public void setGroupPhoto(String groupPhoto) {
+        this.groupPhoto = groupPhoto;
     }
 
     public boolean equals(final Object o) {
@@ -158,10 +147,9 @@ public class ConversationGroupResponse {
         final Object other$adminMemberIds = other.getAdminMemberIds();
         if (this$adminMemberIds == null ? other$adminMemberIds != null : !this$adminMemberIds.equals(other$adminMemberIds))
             return false;
-        if (this.isBlock() != other.isBlock()) return false;
-        final Object this$notificationExpireDate = this.getNotificationExpireDate();
-        final Object other$notificationExpireDate = other.getNotificationExpireDate();
-        if (this$notificationExpireDate == null ? other$notificationExpireDate != null : !this$notificationExpireDate.equals(other$notificationExpireDate))
+        final Object this$groupPhoto = this.getGroupPhoto();
+        final Object other$groupPhoto = other.getGroupPhoto();
+        if (this$groupPhoto == null ? other$groupPhoto != null : !this$groupPhoto.equals(other$groupPhoto))
             return false;
         return true;
     }
@@ -189,14 +177,13 @@ public class ConversationGroupResponse {
         result = result * PRIME + ($memberIds == null ? 43 : $memberIds.hashCode());
         final Object $adminMemberIds = this.getAdminMemberIds();
         result = result * PRIME + ($adminMemberIds == null ? 43 : $adminMemberIds.hashCode());
-        result = result * PRIME + (this.isBlock() ? 79 : 97);
-        final Object $notificationExpireDate = this.getNotificationExpireDate();
-        result = result * PRIME + ($notificationExpireDate == null ? 43 : $notificationExpireDate.hashCode());
+        final Object $groupPhoto = this.getGroupPhoto();
+        result = result * PRIME + ($groupPhoto == null ? 43 : $groupPhoto.hashCode());
         return result;
     }
 
     public String toString() {
-        return "ConversationGroupResponse(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", createdDate=" + this.getCreatedDate() + ", name=" + this.getName() + ", conversationGroupType=" + this.getConversationGroupType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", block=" + this.isBlock() + ", notificationExpireDate=" + this.getNotificationExpireDate() + ")";
+        return "ConversationGroupResponse(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", createdDate=" + this.getCreatedDate() + ", name=" + this.getName() + ", conversationGroupType=" + this.getConversationGroupType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", groupPhoto=" + this.getGroupPhoto() + ")";
     }
 
     public static class ConversationGroupResponseBuilder {
@@ -208,8 +195,7 @@ public class ConversationGroupResponse {
         private String description;
         private List<String> memberIds;
         private List<String> adminMemberIds;
-        private boolean block;
-        private LocalDateTime notificationExpireDate;
+        private String groupPhoto;
 
         ConversationGroupResponseBuilder() {
         }
@@ -254,22 +240,17 @@ public class ConversationGroupResponse {
             return this;
         }
 
-        public ConversationGroupResponse.ConversationGroupResponseBuilder block(boolean block) {
-            this.block = block;
-            return this;
-        }
-
-        public ConversationGroupResponse.ConversationGroupResponseBuilder notificationExpireDate(LocalDateTime notificationExpireDate) {
-            this.notificationExpireDate = notificationExpireDate;
+        public ConversationGroupResponse.ConversationGroupResponseBuilder groupPhoto(String groupPhoto) {
+            this.groupPhoto = groupPhoto;
             return this;
         }
 
         public ConversationGroupResponse build() {
-            return new ConversationGroupResponse(id, creatorUserId, createdDate, name, conversationGroupType, description, memberIds, adminMemberIds, block, notificationExpireDate);
+            return new ConversationGroupResponse(id, creatorUserId, createdDate, name, conversationGroupType, description, memberIds, adminMemberIds, groupPhoto);
         }
 
         public String toString() {
-            return "ConversationGroupResponse.ConversationGroupResponseBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", createdDate=" + this.createdDate + ", name=" + this.name + ", conversationGroupType=" + this.conversationGroupType + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", block=" + this.block + ", notificationExpireDate=" + this.notificationExpireDate + ")";
+            return "ConversationGroupResponse.ConversationGroupResponseBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", createdDate=" + this.createdDate + ", name=" + this.name + ", conversationGroupType=" + this.conversationGroupType + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", groupPhoto=" + this.groupPhoto + ")";
         }
     }
 }

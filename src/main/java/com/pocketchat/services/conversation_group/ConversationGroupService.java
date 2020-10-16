@@ -1,10 +1,13 @@
 package com.pocketchat.services.conversation_group;
 
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
-import com.pocketchat.models.controllers.request.conversation_group.CreateConversationGroupRequest;
-import com.pocketchat.models.controllers.request.conversation_group.UpdateConversationGroupRequest;
+import com.pocketchat.db.models.conversation_group_block.ConversationGroupBlock;
+import com.pocketchat.db.models.conversation_group_mute_notification.ConversationGroupMuteNotification;
+import com.pocketchat.models.controllers.request.conversation_group.*;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationGroupResponse;
 import com.pocketchat.models.controllers.response.conversation_group.ConversationPageableResponse;
+import com.pocketchat.models.controllers.response.conversation_group_block.ConversationGroupBlockResponse;
+import com.pocketchat.models.controllers.response.conversation_group_mute_notification.ConversationGroupMuteNotificationResponse;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.controllers.response.unread_message.UnreadMessageResponse;
 import org.springframework.data.domain.Page;
@@ -18,13 +21,33 @@ import java.util.List;
 public interface ConversationGroupService {
     ConversationGroup addConversation(CreateConversationGroupRequest createConversationGroupRequest);
 
-    MultimediaResponse uploadConversationGroupProfilePhoto(String conversationGroupId, MultipartFile multipartFile);
+    MultimediaResponse uploadConversationGroupGroupPhoto(String conversationGroupId, MultipartFile multipartFile);
 
     File getConversationGroupGroupPhoto(String conversationGroupId) throws FileNotFoundException;
 
     void deleteConversationGroupProfilePhoto(String conversationGroupId);
 
-    ConversationGroup editConversation(UpdateConversationGroupRequest updateConversationGroupRequest);
+    ConversationGroup editConversationGroup(UpdateConversationGroupRequest updateConversationGroupRequest);
+
+    ConversationGroup addConversationGroupMember(String conversationGroupId, AddConversationGroupMemberRequest addConversationGroupMemberRequest);
+
+    ConversationGroup removeConversationGroupMember(String conversationGroupId, RemoveConversationGroupMemberRequest removeConversationGroupMemberRequest);
+
+    ConversationGroup addConversationGroupAdmin(String conversationGroupId, AddConversationGroupAdminRequest addConversationGroupAdminRequest);
+
+    ConversationGroup removeConversationGroupAdmin(String conversationGroupId, RemoveConversationGroupAdminRequest removeConversationGroupAdminRequest);
+
+    ConversationGroup leaveConversationGroup(String conversationGroupId);
+
+    ConversationGroupBlock blockConversationGroup(String conversationGroupId);
+
+    void unblockConversationGroup(String conversationGroupId, UnblockConversationGroupRequest unblockConversationGroupRequest);
+
+    ConversationGroupMuteNotification muteConversationGroupNotification(String conversationGroupId, MuteConversationGroupNotificationRequest muteConversationGroupNotificationRequest);
+
+    void unmuteConversationGroupNotification(String conversationGroupId, UnmuteConversationGroupNotificationRequest unmuteConversationGroupNotificationRequest);
+
+    ConversationGroup joinConversationGroup(JoinConversationGroupRequest joinConversationGroupRequest);
 
     void deleteConversation(String conversationId);
 
@@ -44,4 +67,8 @@ public interface ConversationGroupService {
 
     ConversationPageableResponse conversationPageableResponseMapper(Page<ConversationGroupResponse> conversationGroupResponses,
                                                                     Page<UnreadMessageResponse> unreadMessageResponses);
+
+    ConversationGroupBlockResponse conversationGroupBlockResponseMapper(ConversationGroupBlock conversationGroupBlock);
+
+    ConversationGroupMuteNotificationResponse conversationGroupMuteNotificationResponseMapper(ConversationGroupMuteNotification conversationGroupMuteNotification);
 }

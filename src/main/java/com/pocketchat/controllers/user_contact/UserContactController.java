@@ -67,11 +67,6 @@ public class UserContactController {
         userContactService.deleteOwnUserContactProfilePhoto();
     }
 
-    @DeleteMapping("/{userContactId}")
-    public void deleteUserContact(@PathVariable String userContactId) {
-        userContactService.deleteOwnUserContact(userContactId);
-    }
-
     @GetMapping("/{userContactId}")
     public UserContactResponse getUserContact(@PathVariable String userContactId) {
         return userContactService.userContactResponseMapper(userContactService.getUserContact(userContactId));

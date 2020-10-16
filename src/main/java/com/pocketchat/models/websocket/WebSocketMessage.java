@@ -7,8 +7,10 @@ import com.pocketchat.db.models.settings.Settings;
 import com.pocketchat.db.models.unread_message.UnreadMessage;
 import com.pocketchat.db.models.user.User;
 import com.pocketchat.db.models.user_contact.UserContact;
+import com.pocketchat.models.enums.websocket.WebSocketEvent;
 
 public class WebSocketMessage {
+    private WebSocketEvent webSocketEvent;
     private ConversationGroup conversationGroup;
     private ChatMessage chatMessage;
     private Multimedia multimedia;
@@ -17,7 +19,8 @@ public class WebSocketMessage {
     private User user;
     private UserContact userContact;
 
-    WebSocketMessage(ConversationGroup conversationGroup, ChatMessage chatMessage, Multimedia multimedia, Settings settings, UnreadMessage unreadMessage, User user, UserContact userContact) {
+    WebSocketMessage(WebSocketEvent webSocketEvent, ConversationGroup conversationGroup, ChatMessage chatMessage, Multimedia multimedia, Settings settings, UnreadMessage unreadMessage, User user, UserContact userContact) {
+        this.webSocketEvent = webSocketEvent;
         this.conversationGroup = conversationGroup;
         this.chatMessage = chatMessage;
         this.multimedia = multimedia;
@@ -29,6 +32,10 @@ public class WebSocketMessage {
 
     public static WebSocketMessageBuilder builder() {
         return new WebSocketMessageBuilder();
+    }
+
+    public WebSocketEvent getWebSocketEvent() {
+        return this.webSocketEvent;
     }
 
     public ConversationGroup getConversationGroup() {
@@ -57,6 +64,10 @@ public class WebSocketMessage {
 
     public UserContact getUserContact() {
         return this.userContact;
+    }
+
+    public void setWebSocketEvent(WebSocketEvent webSocketEvent) {
+        this.webSocketEvent = webSocketEvent;
     }
 
     public void setConversationGroup(ConversationGroup conversationGroup) {
@@ -92,6 +103,10 @@ public class WebSocketMessage {
         if (!(o instanceof WebSocketMessage)) return false;
         final WebSocketMessage other = (WebSocketMessage) o;
         if (!other.canEqual((Object) this)) return false;
+        final Object this$webSocketEvent = this.getWebSocketEvent();
+        final Object other$webSocketEvent = other.getWebSocketEvent();
+        if (this$webSocketEvent == null ? other$webSocketEvent != null : !this$webSocketEvent.equals(other$webSocketEvent))
+            return false;
         final Object this$conversationGroup = this.getConversationGroup();
         final Object other$conversationGroup = other.getConversationGroup();
         if (this$conversationGroup == null ? other$conversationGroup != null : !this$conversationGroup.equals(other$conversationGroup))
@@ -128,6 +143,8 @@ public class WebSocketMessage {
     public int hashCode() {
         final int PRIME = 59;
         int result = 1;
+        final Object $webSocketEvent = this.getWebSocketEvent();
+        result = result * PRIME + ($webSocketEvent == null ? 43 : $webSocketEvent.hashCode());
         final Object $conversationGroup = this.getConversationGroup();
         result = result * PRIME + ($conversationGroup == null ? 43 : $conversationGroup.hashCode());
         final Object $chatMessage = this.getChatMessage();
@@ -146,10 +163,11 @@ public class WebSocketMessage {
     }
 
     public String toString() {
-        return "WebSocketMessage(conversationGroup=" + this.getConversationGroup() + ", chatMessage=" + this.getChatMessage() + ", multimedia=" + this.getMultimedia() + ", settings=" + this.getSettings() + ", unreadMessage=" + this.getUnreadMessage() + ", user=" + this.getUser() + ", userContact=" + this.getUserContact() + ")";
+        return "WebSocketMessage(webSocketEvent=" + this.getWebSocketEvent() + ", conversationGroup=" + this.getConversationGroup() + ", chatMessage=" + this.getChatMessage() + ", multimedia=" + this.getMultimedia() + ", settings=" + this.getSettings() + ", unreadMessage=" + this.getUnreadMessage() + ", user=" + this.getUser() + ", userContact=" + this.getUserContact() + ")";
     }
 
     public static class WebSocketMessageBuilder {
+        private WebSocketEvent webSocketEvent;
         private ConversationGroup conversationGroup;
         private ChatMessage chatMessage;
         private Multimedia multimedia;
@@ -159,6 +177,11 @@ public class WebSocketMessage {
         private UserContact userContact;
 
         WebSocketMessageBuilder() {
+        }
+
+        public WebSocketMessage.WebSocketMessageBuilder webSocketEvent(WebSocketEvent webSocketEvent) {
+            this.webSocketEvent = webSocketEvent;
+            return this;
         }
 
         public WebSocketMessage.WebSocketMessageBuilder conversationGroup(ConversationGroup conversationGroup) {
@@ -197,11 +220,11 @@ public class WebSocketMessage {
         }
 
         public WebSocketMessage build() {
-            return new WebSocketMessage(conversationGroup, chatMessage, multimedia, settings, unreadMessage, user, userContact);
+            return new WebSocketMessage(webSocketEvent, conversationGroup, chatMessage, multimedia, settings, unreadMessage, user, userContact);
         }
 
         public String toString() {
-            return "WebSocketMessage.WebSocketMessageBuilder(conversationGroup=" + this.conversationGroup + ", chatMessage=" + this.chatMessage + ", multimedia=" + this.multimedia + ", settings=" + this.settings + ", unreadMessage=" + this.unreadMessage + ", user=" + this.user + ", userContact=" + this.userContact + ")";
+            return "WebSocketMessage.WebSocketMessageBuilder(webSocketEvent=" + this.webSocketEvent + ", conversationGroup=" + this.conversationGroup + ", chatMessage=" + this.chatMessage + ", multimedia=" + this.multimedia + ", settings=" + this.settings + ", unreadMessage=" + this.unreadMessage + ", user=" + this.user + ", userContact=" + this.userContact + ")";
         }
     }
 }
