@@ -155,7 +155,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         }
 
         createUnreadMessage(conversationGroup, creatorUserContact);
-        sendMessage(conversationGroup, creatorUserContact, WebSocketEvent.ADDED_TO_THE_CONVERSATION_GROUP, message);
+        sendMessage(conversationGroup, creatorUserContact, WebSocketEvent.JOINED_CONVERSATION_GROUP, message);
 
         return conversationGroup;
     }
@@ -362,7 +362,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         existingConversationGroup.setMemberIds(existingConversationGroupMembers);
         existingConversationGroup.setAdminMemberIds(existingConversationGroupAdmins);
         String messageContent = "has left the conversation group.";
-        sendMessage(existingConversationGroup, ownUserContact, WebSocketEvent.LEAVED_CONVERSATION_GROUP, messageContent);
+        sendMessage(existingConversationGroup, ownUserContact, WebSocketEvent.LEFT_CONVERSATION_GROUP, messageContent);
 
         return conversationGroupRepoService.save(existingConversationGroup);
     }

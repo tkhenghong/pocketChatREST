@@ -11,12 +11,19 @@ import com.pocketchat.models.enums.websocket.WebSocketEvent;
 
 public class WebSocketMessage {
     private WebSocketEvent webSocketEvent;
+
     private ConversationGroup conversationGroup;
+
     private ChatMessage chatMessage;
+
     private Multimedia multimedia;
+
     private Settings settings;
+
     private UnreadMessage unreadMessage;
+
     private User user;
+
     private UserContact userContact;
 
     WebSocketMessage(WebSocketEvent webSocketEvent, ConversationGroup conversationGroup, ChatMessage chatMessage, Multimedia multimedia, Settings settings, UnreadMessage unreadMessage, User user, UserContact userContact) {

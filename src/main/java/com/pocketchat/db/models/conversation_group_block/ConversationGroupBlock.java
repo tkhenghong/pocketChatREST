@@ -1,5 +1,6 @@
 package com.pocketchat.db.models.conversation_group_block;
 
+import com.pocketchat.server.configurations.auditing.Auditable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *
  */
 @Document(collection = "conversation_group_block")
-public class ConversationGroupBlock {
+public class ConversationGroupBlock extends Auditable {
     @Id
     private String id;
 
