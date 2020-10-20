@@ -22,11 +22,17 @@ public class ChatMessageResponse {
 
     private String multimediaId;
 
-    private LocalDateTime createdTime;
+    private String createdBy;
 
-    private LocalDateTime sentTime;
+    private LocalDateTime createdDate;
 
-    ChatMessageResponse(String id, String conversationId, String senderId, String senderName, String senderMobileNo, ChatMessageStatus chatMessageStatus, String messageContent, String multimediaId, LocalDateTime createdTime, LocalDateTime sentTime) {
+    private String lastModifiedBy;
+
+    private LocalDateTime lastModifiedDate;
+
+    private Long version;
+
+    ChatMessageResponse(String id, String conversationId, String senderId, String senderName, String senderMobileNo, ChatMessageStatus chatMessageStatus, String messageContent, String multimediaId, String createdBy, LocalDateTime createdDate, String lastModifiedBy, LocalDateTime lastModifiedDate, Long version) {
         this.id = id;
         this.conversationId = conversationId;
         this.senderId = senderId;
@@ -35,8 +41,11 @@ public class ChatMessageResponse {
         this.chatMessageStatus = chatMessageStatus;
         this.messageContent = messageContent;
         this.multimediaId = multimediaId;
-        this.createdTime = createdTime;
-        this.sentTime = sentTime;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedDate = lastModifiedDate;
+        this.version = version;
     }
 
     public static ChatMessageResponseBuilder builder() {
@@ -75,12 +84,24 @@ public class ChatMessageResponse {
         return this.multimediaId;
     }
 
-    public LocalDateTime getCreatedTime() {
-        return this.createdTime;
+    public String getCreatedBy() {
+        return this.createdBy;
     }
 
-    public LocalDateTime getSentTime() {
-        return this.sentTime;
+    public LocalDateTime getCreatedDate() {
+        return this.createdDate;
+    }
+
+    public String getLastModifiedBy() {
+        return this.lastModifiedBy;
+    }
+
+    public LocalDateTime getLastModifiedDate() {
+        return this.lastModifiedDate;
+    }
+
+    public Long getVersion() {
+        return this.version;
     }
 
     public void setId(String id) {
@@ -115,12 +136,24 @@ public class ChatMessageResponse {
         this.multimediaId = multimediaId;
     }
 
-    public void setCreatedTime(LocalDateTime createdTime) {
-        this.createdTime = createdTime;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public void setSentTime(LocalDateTime sentTime) {
-        this.sentTime = sentTime;
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public boolean equals(final Object o) {
@@ -158,13 +191,24 @@ public class ChatMessageResponse {
         final Object other$multimediaId = other.getMultimediaId();
         if (this$multimediaId == null ? other$multimediaId != null : !this$multimediaId.equals(other$multimediaId))
             return false;
-        final Object this$createdTime = this.getCreatedTime();
-        final Object other$createdTime = other.getCreatedTime();
-        if (this$createdTime == null ? other$createdTime != null : !this$createdTime.equals(other$createdTime))
+        final Object this$createdBy = this.getCreatedBy();
+        final Object other$createdBy = other.getCreatedBy();
+        if (this$createdBy == null ? other$createdBy != null : !this$createdBy.equals(other$createdBy)) return false;
+        final Object this$createdDate = this.getCreatedDate();
+        final Object other$createdDate = other.getCreatedDate();
+        if (this$createdDate == null ? other$createdDate != null : !this$createdDate.equals(other$createdDate))
             return false;
-        final Object this$sentTime = this.getSentTime();
-        final Object other$sentTime = other.getSentTime();
-        if (this$sentTime == null ? other$sentTime != null : !this$sentTime.equals(other$sentTime)) return false;
+        final Object this$lastModifiedBy = this.getLastModifiedBy();
+        final Object other$lastModifiedBy = other.getLastModifiedBy();
+        if (this$lastModifiedBy == null ? other$lastModifiedBy != null : !this$lastModifiedBy.equals(other$lastModifiedBy))
+            return false;
+        final Object this$lastModifiedDate = this.getLastModifiedDate();
+        final Object other$lastModifiedDate = other.getLastModifiedDate();
+        if (this$lastModifiedDate == null ? other$lastModifiedDate != null : !this$lastModifiedDate.equals(other$lastModifiedDate))
+            return false;
+        final Object this$version = this.getVersion();
+        final Object other$version = other.getVersion();
+        if (this$version == null ? other$version != null : !this$version.equals(other$version)) return false;
         return true;
     }
 
@@ -191,15 +235,21 @@ public class ChatMessageResponse {
         result = result * PRIME + ($messageContent == null ? 43 : $messageContent.hashCode());
         final Object $multimediaId = this.getMultimediaId();
         result = result * PRIME + ($multimediaId == null ? 43 : $multimediaId.hashCode());
-        final Object $createdTime = this.getCreatedTime();
-        result = result * PRIME + ($createdTime == null ? 43 : $createdTime.hashCode());
-        final Object $sentTime = this.getSentTime();
-        result = result * PRIME + ($sentTime == null ? 43 : $sentTime.hashCode());
+        final Object $createdBy = this.getCreatedBy();
+        result = result * PRIME + ($createdBy == null ? 43 : $createdBy.hashCode());
+        final Object $createdDate = this.getCreatedDate();
+        result = result * PRIME + ($createdDate == null ? 43 : $createdDate.hashCode());
+        final Object $lastModifiedBy = this.getLastModifiedBy();
+        result = result * PRIME + ($lastModifiedBy == null ? 43 : $lastModifiedBy.hashCode());
+        final Object $lastModifiedDate = this.getLastModifiedDate();
+        result = result * PRIME + ($lastModifiedDate == null ? 43 : $lastModifiedDate.hashCode());
+        final Object $version = this.getVersion();
+        result = result * PRIME + ($version == null ? 43 : $version.hashCode());
         return result;
     }
 
     public String toString() {
-        return "ChatMessageResponse(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", chatMessageStatus=" + this.getChatMessageStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdTime=" + this.getCreatedTime() + ", sentTime=" + this.getSentTime() + ")";
+        return "ChatMessageResponse(id=" + this.getId() + ", conversationId=" + this.getConversationId() + ", senderId=" + this.getSenderId() + ", senderName=" + this.getSenderName() + ", senderMobileNo=" + this.getSenderMobileNo() + ", chatMessageStatus=" + this.getChatMessageStatus() + ", messageContent=" + this.getMessageContent() + ", multimediaId=" + this.getMultimediaId() + ", createdBy=" + this.getCreatedBy() + ", createdDate=" + this.getCreatedDate() + ", lastModifiedBy=" + this.getLastModifiedBy() + ", lastModifiedDate=" + this.getLastModifiedDate() + ", version=" + this.getVersion() + ")";
     }
 
     public static class ChatMessageResponseBuilder {
@@ -211,8 +261,11 @@ public class ChatMessageResponse {
         private ChatMessageStatus chatMessageStatus;
         private String messageContent;
         private String multimediaId;
-        private LocalDateTime createdTime;
-        private LocalDateTime sentTime;
+        private String createdBy;
+        private LocalDateTime createdDate;
+        private String lastModifiedBy;
+        private LocalDateTime lastModifiedDate;
+        private Long version;
 
         ChatMessageResponseBuilder() {
         }
@@ -257,22 +310,37 @@ public class ChatMessageResponse {
             return this;
         }
 
-        public ChatMessageResponse.ChatMessageResponseBuilder createdTime(LocalDateTime createdTime) {
-            this.createdTime = createdTime;
+        public ChatMessageResponse.ChatMessageResponseBuilder createdBy(String createdBy) {
+            this.createdBy = createdBy;
             return this;
         }
 
-        public ChatMessageResponse.ChatMessageResponseBuilder sentTime(LocalDateTime sentTime) {
-            this.sentTime = sentTime;
+        public ChatMessageResponse.ChatMessageResponseBuilder createdDate(LocalDateTime createdDate) {
+            this.createdDate = createdDate;
+            return this;
+        }
+
+        public ChatMessageResponse.ChatMessageResponseBuilder lastModifiedBy(String lastModifiedBy) {
+            this.lastModifiedBy = lastModifiedBy;
+            return this;
+        }
+
+        public ChatMessageResponse.ChatMessageResponseBuilder lastModifiedDate(LocalDateTime lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
+            return this;
+        }
+
+        public ChatMessageResponse.ChatMessageResponseBuilder version(Long version) {
+            this.version = version;
             return this;
         }
 
         public ChatMessageResponse build() {
-            return new ChatMessageResponse(id, conversationId, senderId, senderName, senderMobileNo, chatMessageStatus, messageContent, multimediaId, createdTime, sentTime);
+            return new ChatMessageResponse(id, conversationId, senderId, senderName, senderMobileNo, chatMessageStatus, messageContent, multimediaId, createdBy, createdDate, lastModifiedBy, lastModifiedDate, version);
         }
 
         public String toString() {
-            return "ChatMessageResponse.ChatMessageResponseBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", chatMessageStatus=" + this.chatMessageStatus + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdTime=" + this.createdTime + ", sentTime=" + this.sentTime + ")";
+            return "ChatMessageResponse.ChatMessageResponseBuilder(id=" + this.id + ", conversationId=" + this.conversationId + ", senderId=" + this.senderId + ", senderName=" + this.senderName + ", senderMobileNo=" + this.senderMobileNo + ", chatMessageStatus=" + this.chatMessageStatus + ", messageContent=" + this.messageContent + ", multimediaId=" + this.multimediaId + ", createdBy=" + this.createdBy + ", createdDate=" + this.createdDate + ", lastModifiedBy=" + this.lastModifiedBy + ", lastModifiedDate=" + this.lastModifiedDate + ", version=" + this.version + ")";
         }
     }
 }

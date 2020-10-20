@@ -2,6 +2,8 @@ package com.pocketchat.models.controllers.response.multimedia;
 
 import com.pocketchat.models.enums.multimedia_type.MultimediaType;
 
+import java.time.LocalDateTime;
+
 public class MultimediaResponse {
     private String id;
 
@@ -9,19 +11,25 @@ public class MultimediaResponse {
 
     private String fileDirectory;
 
-    // Size of the file in bytes.
     private Long fileSize;
 
-    // Name of the file format. Picked from the full file name.
     private String fileExtension;
 
-    // Content type from MultipartFile.getContentType.
     private String contentType;
 
-    // Name of the file from the MultipartFile, typically comes from the frontend.
     private String fileName;
 
-    MultimediaResponse(String id, MultimediaType multimediaType, String fileDirectory, Long fileSize, String fileExtension, String contentType, String fileName) {
+    private String createdBy;
+
+    private LocalDateTime createdDate;
+
+    private String lastModifiedBy;
+
+    private LocalDateTime lastModifiedDate;
+
+    private Long version;
+
+    MultimediaResponse(String id, MultimediaType multimediaType, String fileDirectory, Long fileSize, String fileExtension, String contentType, String fileName, String createdBy, LocalDateTime createdDate, String lastModifiedBy, LocalDateTime lastModifiedDate, Long version) {
         this.id = id;
         this.multimediaType = multimediaType;
         this.fileDirectory = fileDirectory;
@@ -29,6 +37,11 @@ public class MultimediaResponse {
         this.fileExtension = fileExtension;
         this.contentType = contentType;
         this.fileName = fileName;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedDate = lastModifiedDate;
+        this.version = version;
     }
 
     public static MultimediaResponseBuilder builder() {
@@ -63,6 +76,26 @@ public class MultimediaResponse {
         return this.fileName;
     }
 
+    public String getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return this.createdDate;
+    }
+
+    public String getLastModifiedBy() {
+        return this.lastModifiedBy;
+    }
+
+    public LocalDateTime getLastModifiedDate() {
+        return this.lastModifiedDate;
+    }
+
+    public Long getVersion() {
+        return this.version;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -89,6 +122,26 @@ public class MultimediaResponse {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public boolean equals(final Object o) {
@@ -121,6 +174,24 @@ public class MultimediaResponse {
         final Object this$fileName = this.getFileName();
         final Object other$fileName = other.getFileName();
         if (this$fileName == null ? other$fileName != null : !this$fileName.equals(other$fileName)) return false;
+        final Object this$createdBy = this.getCreatedBy();
+        final Object other$createdBy = other.getCreatedBy();
+        if (this$createdBy == null ? other$createdBy != null : !this$createdBy.equals(other$createdBy)) return false;
+        final Object this$createdDate = this.getCreatedDate();
+        final Object other$createdDate = other.getCreatedDate();
+        if (this$createdDate == null ? other$createdDate != null : !this$createdDate.equals(other$createdDate))
+            return false;
+        final Object this$lastModifiedBy = this.getLastModifiedBy();
+        final Object other$lastModifiedBy = other.getLastModifiedBy();
+        if (this$lastModifiedBy == null ? other$lastModifiedBy != null : !this$lastModifiedBy.equals(other$lastModifiedBy))
+            return false;
+        final Object this$lastModifiedDate = this.getLastModifiedDate();
+        final Object other$lastModifiedDate = other.getLastModifiedDate();
+        if (this$lastModifiedDate == null ? other$lastModifiedDate != null : !this$lastModifiedDate.equals(other$lastModifiedDate))
+            return false;
+        final Object this$version = this.getVersion();
+        final Object other$version = other.getVersion();
+        if (this$version == null ? other$version != null : !this$version.equals(other$version)) return false;
         return true;
     }
 
@@ -145,11 +216,21 @@ public class MultimediaResponse {
         result = result * PRIME + ($contentType == null ? 43 : $contentType.hashCode());
         final Object $fileName = this.getFileName();
         result = result * PRIME + ($fileName == null ? 43 : $fileName.hashCode());
+        final Object $createdBy = this.getCreatedBy();
+        result = result * PRIME + ($createdBy == null ? 43 : $createdBy.hashCode());
+        final Object $createdDate = this.getCreatedDate();
+        result = result * PRIME + ($createdDate == null ? 43 : $createdDate.hashCode());
+        final Object $lastModifiedBy = this.getLastModifiedBy();
+        result = result * PRIME + ($lastModifiedBy == null ? 43 : $lastModifiedBy.hashCode());
+        final Object $lastModifiedDate = this.getLastModifiedDate();
+        result = result * PRIME + ($lastModifiedDate == null ? 43 : $lastModifiedDate.hashCode());
+        final Object $version = this.getVersion();
+        result = result * PRIME + ($version == null ? 43 : $version.hashCode());
         return result;
     }
 
     public String toString() {
-        return "MultimediaResponse(id=" + this.getId() + ", multimediaType=" + this.getMultimediaType() + ", fileDirectory=" + this.getFileDirectory() + ", fileSize=" + this.getFileSize() + ", fileExtension=" + this.getFileExtension() + ", contentType=" + this.getContentType() + ", fileName=" + this.getFileName() + ")";
+        return "MultimediaResponse(id=" + this.getId() + ", multimediaType=" + this.getMultimediaType() + ", fileDirectory=" + this.getFileDirectory() + ", fileSize=" + this.getFileSize() + ", fileExtension=" + this.getFileExtension() + ", contentType=" + this.getContentType() + ", fileName=" + this.getFileName() + ", createdBy=" + this.getCreatedBy() + ", createdDate=" + this.getCreatedDate() + ", lastModifiedBy=" + this.getLastModifiedBy() + ", lastModifiedDate=" + this.getLastModifiedDate() + ", version=" + this.getVersion() + ")";
     }
 
     public static class MultimediaResponseBuilder {
@@ -160,6 +241,11 @@ public class MultimediaResponse {
         private String fileExtension;
         private String contentType;
         private String fileName;
+        private String createdBy;
+        private LocalDateTime createdDate;
+        private String lastModifiedBy;
+        private LocalDateTime lastModifiedDate;
+        private Long version;
 
         MultimediaResponseBuilder() {
         }
@@ -199,12 +285,37 @@ public class MultimediaResponse {
             return this;
         }
 
+        public MultimediaResponse.MultimediaResponseBuilder createdBy(String createdBy) {
+            this.createdBy = createdBy;
+            return this;
+        }
+
+        public MultimediaResponse.MultimediaResponseBuilder createdDate(LocalDateTime createdDate) {
+            this.createdDate = createdDate;
+            return this;
+        }
+
+        public MultimediaResponse.MultimediaResponseBuilder lastModifiedBy(String lastModifiedBy) {
+            this.lastModifiedBy = lastModifiedBy;
+            return this;
+        }
+
+        public MultimediaResponse.MultimediaResponseBuilder lastModifiedDate(LocalDateTime lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
+            return this;
+        }
+
+        public MultimediaResponse.MultimediaResponseBuilder version(Long version) {
+            this.version = version;
+            return this;
+        }
+
         public MultimediaResponse build() {
-            return new MultimediaResponse(id, multimediaType, fileDirectory, fileSize, fileExtension, contentType, fileName);
+            return new MultimediaResponse(id, multimediaType, fileDirectory, fileSize, fileExtension, contentType, fileName, createdBy, createdDate, lastModifiedBy, lastModifiedDate, version);
         }
 
         public String toString() {
-            return "MultimediaResponse.MultimediaResponseBuilder(id=" + this.id + ", multimediaType=" + this.multimediaType + ", fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", contentType=" + this.contentType + ", fileName=" + this.fileName + ")";
+            return "MultimediaResponse.MultimediaResponseBuilder(id=" + this.id + ", multimediaType=" + this.multimediaType + ", fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", contentType=" + this.contentType + ", fileName=" + this.fileName + ", createdBy=" + this.createdBy + ", createdDate=" + this.createdDate + ", lastModifiedBy=" + this.lastModifiedBy + ", lastModifiedDate=" + this.lastModifiedDate + ", version=" + this.version + ")";
         }
     }
 }

@@ -9,7 +9,6 @@ import com.pocketchat.models.controllers.request.user_contact.UpdateUserContactR
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.controllers.response.user_contact.UserContactResponse;
 import com.pocketchat.server.exceptions.file.UploadFileException;
-import com.pocketchat.server.exceptions.user_contact.NotOwnUserContactException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.user.UserService;
@@ -121,13 +120,12 @@ public class UserContactServiceImpl implements UserContactService {
     @Override
     @Transactional
     public UserContact editOwnUserContact(UpdateUserContactRequest updateUserContactRequest) {
-        getUserContact(updateUserContactRequest.getId());
         UserContact ownUserContact = getOwnUserContact();
-        if (!updateUserContactRequest.getId().equals(ownUserContact.getId())) {
-            throw new NotOwnUserContactException("Unable to edit UserContact due to not user's own UserContact. userContactId: " + updateUserContactRequest.getId());
-        }
 
-        return userContactRepoService.save(updateUserContactRequestToUserContactMapper(updateUserContactRequest));
+        UserContact updatedUserContact = updateUserContactRequestToUserContactMapper(updateUserContactRequest);
+        updatedUserContact.setId(ownUserContact.getId());
+
+        return userContactRepoService.save(updatedUserContact);
     }
 
     @Override
@@ -213,48 +211,44 @@ public class UserContactServiceImpl implements UserContactService {
     @Override
     public UserContact createUserContactRequestToUserContactMapper(CreateUserContactRequest createUserContactRequest) {
         return UserContact.builder()
-//                .id(createUserContactRequest.getId())
-//                .displayName(createUserContactRequest.getDisplayName())
-//                .about(createUserContactRequest.getAbout())
-//                .block(createUserContactRequest.isBlock())
-//                .lastSeenDate(createUserContactRequest.getLastSeenDate())
-//                .mobileNo(createUserContactRequest.getMobileNo())
-//                .multimediaId(createUserContactRequest.getMultimediaId())
-//                .realName(createUserContactRequest.getRealName())
-//                .userId(createUserContactRequest.getUserId())
-//                .userIds(createUserContactRequest.getUserIds())
+                .displayName(createUserContactRequest.getDisplayName())
+                .about(createUserContactRequest.getAbout())
+                .mobileNo(createUserContactRequest.getMobileNo())
+                .countryCode(createUserContactRequest.getCountryCode())
+                .profilePicture(createUserContactRequest.getProfilePhoto())
+                .realName(createUserContactRequest.getRealName())
+                .userId(createUserContactRequest.getUserId())
+                .userIds(createUserContactRequest.getUserIds())
                 .build();
     }
 
     @Override
     public UserContact updateUserContactRequestToUserContactMapper(UpdateUserContactRequest updateUserContactRequest) {
         return UserContact.builder()
-//                .id(updateUserContactRequest.getId())
-//                .displayName(updateUserContactRequest.getDisplayName())
-//                .about(updateUserContactRequest.getAbout())
-//                .block(updateUserContactRequest.isBlock())
-//                .lastSeenDate(updateUserContactRequest.getLastSeenDate())
-//                .mobileNo(updateUserContactRequest.getMobileNo())
-//                .multimediaId(updateUserContactRequest.getMultimediaId())
-//                .realName(updateUserContactRequest.getRealName())
-//                .userId(updateUserContactRequest.getUserId())
-//                .userIds(updateUserContactRequest.getUserIds())
+                .displayName(updateUserContactRequest.getDisplayName())
+                .about(updateUserContactRequest.getAbout())
+                .realName(updateUserContactRequest.getRealName())
+                .profilePicture(updateUserContactRequest.getProfilePhoto())
                 .build();
     }
 
     @Override
     public UserContactResponse userContactResponseMapper(UserContact userContact) {
         return UserContactResponse.builder()
-//                .id(userContact.getId())
-//                .displayName(userContact.getDisplayName())
-//                .realName(userContact.getRealName())
-//                .about(userContact.getAbout())
-//                .block(userContact.isBlock())
-//                .mobileNo(userContact.getMobileNo())
-//                .multimediaId(userContact.getMultimediaId())
-//                .userIds(userContact.getUserIds())
-//                .userId(userContact.getUserId())
-//                .lastSeenDate(userContact.getLastSeenDate())
+                .id(userContact.getId())
+                .displayName(userContact.getDisplayName())
+                .realName(userContact.getRealName())
+                .about(userContact.getAbout())
+                .mobileNo(userContact.getMobileNo())
+                .countryCode(userContact.getCountryCode())
+                .profilePicture(userContact.getProfilePicture())
+                .userIds(userContact.getUserIds())
+                .userId(userContact.getUserId())
+                .createdBy(userContact.getCreatedBy())
+                .createdDate(userContact.getCreatedDate())
+                .lastModifiedBy(userContact.getLastModifiedBy())
+                .lastModifiedDate(userContact.getLastModifiedDate())
+                .version(userContact.getVersion())
                 .build();
     }
 }

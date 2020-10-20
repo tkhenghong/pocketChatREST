@@ -1,5 +1,7 @@
 package com.pocketchat.models.controllers.response.user;
 
+import java.time.LocalDateTime;
+
 public class UserResponse {
 
     private String id;
@@ -14,13 +16,28 @@ public class UserResponse {
 
     private String mobileNo;
 
-    UserResponse(String id, String displayName, String realName, String emailAddress, String countryCode, String mobileNo) {
+    private String createdBy;
+
+    private LocalDateTime createdDate;
+
+    private String lastModifiedBy;
+
+    private LocalDateTime lastModifiedDate;
+
+    private Long version;
+
+    UserResponse(String id, String displayName, String realName, String emailAddress, String countryCode, String mobileNo, String createdBy, LocalDateTime createdDate, String lastModifiedBy, LocalDateTime lastModifiedDate, Long version) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
         this.emailAddress = emailAddress;
         this.countryCode = countryCode;
         this.mobileNo = mobileNo;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedDate = lastModifiedDate;
+        this.version = version;
     }
 
     public static UserResponseBuilder builder() {
@@ -51,6 +68,26 @@ public class UserResponse {
         return this.mobileNo;
     }
 
+    public String getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return this.createdDate;
+    }
+
+    public String getLastModifiedBy() {
+        return this.lastModifiedBy;
+    }
+
+    public LocalDateTime getLastModifiedDate() {
+        return this.lastModifiedDate;
+    }
+
+    public Long getVersion() {
+        return this.version;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -73,6 +110,26 @@ public class UserResponse {
 
     public void setMobileNo(String mobileNo) {
         this.mobileNo = mobileNo;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public boolean equals(final Object o) {
@@ -101,6 +158,24 @@ public class UserResponse {
         final Object this$mobileNo = this.getMobileNo();
         final Object other$mobileNo = other.getMobileNo();
         if (this$mobileNo == null ? other$mobileNo != null : !this$mobileNo.equals(other$mobileNo)) return false;
+        final Object this$createdBy = this.getCreatedBy();
+        final Object other$createdBy = other.getCreatedBy();
+        if (this$createdBy == null ? other$createdBy != null : !this$createdBy.equals(other$createdBy)) return false;
+        final Object this$createdDate = this.getCreatedDate();
+        final Object other$createdDate = other.getCreatedDate();
+        if (this$createdDate == null ? other$createdDate != null : !this$createdDate.equals(other$createdDate))
+            return false;
+        final Object this$lastModifiedBy = this.getLastModifiedBy();
+        final Object other$lastModifiedBy = other.getLastModifiedBy();
+        if (this$lastModifiedBy == null ? other$lastModifiedBy != null : !this$lastModifiedBy.equals(other$lastModifiedBy))
+            return false;
+        final Object this$lastModifiedDate = this.getLastModifiedDate();
+        final Object other$lastModifiedDate = other.getLastModifiedDate();
+        if (this$lastModifiedDate == null ? other$lastModifiedDate != null : !this$lastModifiedDate.equals(other$lastModifiedDate))
+            return false;
+        final Object this$version = this.getVersion();
+        final Object other$version = other.getVersion();
+        if (this$version == null ? other$version != null : !this$version.equals(other$version)) return false;
         return true;
     }
 
@@ -123,11 +198,21 @@ public class UserResponse {
         result = result * PRIME + ($countryCode == null ? 43 : $countryCode.hashCode());
         final Object $mobileNo = this.getMobileNo();
         result = result * PRIME + ($mobileNo == null ? 43 : $mobileNo.hashCode());
+        final Object $createdBy = this.getCreatedBy();
+        result = result * PRIME + ($createdBy == null ? 43 : $createdBy.hashCode());
+        final Object $createdDate = this.getCreatedDate();
+        result = result * PRIME + ($createdDate == null ? 43 : $createdDate.hashCode());
+        final Object $lastModifiedBy = this.getLastModifiedBy();
+        result = result * PRIME + ($lastModifiedBy == null ? 43 : $lastModifiedBy.hashCode());
+        final Object $lastModifiedDate = this.getLastModifiedDate();
+        result = result * PRIME + ($lastModifiedDate == null ? 43 : $lastModifiedDate.hashCode());
+        final Object $version = this.getVersion();
+        result = result * PRIME + ($version == null ? 43 : $version.hashCode());
         return result;
     }
 
     public String toString() {
-        return "UserResponse(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", mobileNo=" + this.getMobileNo() + ")";
+        return "UserResponse(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", emailAddress=" + this.getEmailAddress() + ", countryCode=" + this.getCountryCode() + ", mobileNo=" + this.getMobileNo() + ", createdBy=" + this.getCreatedBy() + ", createdDate=" + this.getCreatedDate() + ", lastModifiedBy=" + this.getLastModifiedBy() + ", lastModifiedDate=" + this.getLastModifiedDate() + ", version=" + this.getVersion() + ")";
     }
 
     public static class UserResponseBuilder {
@@ -137,6 +222,11 @@ public class UserResponse {
         private String emailAddress;
         private String countryCode;
         private String mobileNo;
+        private String createdBy;
+        private LocalDateTime createdDate;
+        private String lastModifiedBy;
+        private LocalDateTime lastModifiedDate;
+        private Long version;
 
         UserResponseBuilder() {
         }
@@ -171,12 +261,37 @@ public class UserResponse {
             return this;
         }
 
+        public UserResponse.UserResponseBuilder createdBy(String createdBy) {
+            this.createdBy = createdBy;
+            return this;
+        }
+
+        public UserResponse.UserResponseBuilder createdDate(LocalDateTime createdDate) {
+            this.createdDate = createdDate;
+            return this;
+        }
+
+        public UserResponse.UserResponseBuilder lastModifiedBy(String lastModifiedBy) {
+            this.lastModifiedBy = lastModifiedBy;
+            return this;
+        }
+
+        public UserResponse.UserResponseBuilder lastModifiedDate(LocalDateTime lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
+            return this;
+        }
+
+        public UserResponse.UserResponseBuilder version(Long version) {
+            this.version = version;
+            return this;
+        }
+
         public UserResponse build() {
-            return new UserResponse(id, displayName, realName, emailAddress, countryCode, mobileNo);
+            return new UserResponse(id, displayName, realName, emailAddress, countryCode, mobileNo, createdBy, createdDate, lastModifiedBy, lastModifiedDate, version);
         }
 
         public String toString() {
-            return "UserResponse.UserResponseBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", mobileNo=" + this.mobileNo + ")";
+            return "UserResponse.UserResponseBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", emailAddress=" + this.emailAddress + ", countryCode=" + this.countryCode + ", mobileNo=" + this.mobileNo + ", createdBy=" + this.createdBy + ", createdDate=" + this.createdDate + ", lastModifiedBy=" + this.lastModifiedBy + ", lastModifiedDate=" + this.lastModifiedDate + ", version=" + this.version + ")";
         }
     }
 }

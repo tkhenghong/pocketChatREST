@@ -6,17 +6,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ConversationGroupResponse {
+
     private String id;
 
     private String creatorUserId;
-
-    private LocalDateTime createdDate;
 
     private String name;
 
     private ConversationGroupType conversationGroupType;
 
-    String description;
+    private String description;
 
     private List<String> memberIds;
 
@@ -24,16 +23,30 @@ public class ConversationGroupResponse {
 
     private String groupPhoto;
 
-    ConversationGroupResponse(String id, String creatorUserId, LocalDateTime createdDate, String name, ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, String groupPhoto) {
+    private String createdBy;
+
+    private LocalDateTime createdDate;
+
+    private String lastModifiedBy;
+
+    private LocalDateTime lastModifiedDate;
+
+    private Long version;
+
+    ConversationGroupResponse(String id, String creatorUserId, String name, ConversationGroupType conversationGroupType, String description, List<String> memberIds, List<String> adminMemberIds, String groupPhoto, String createdBy, LocalDateTime createdDate, String lastModifiedBy, LocalDateTime lastModifiedDate, Long version) {
         this.id = id;
         this.creatorUserId = creatorUserId;
-        this.createdDate = createdDate;
         this.name = name;
         this.conversationGroupType = conversationGroupType;
         this.description = description;
         this.memberIds = memberIds;
         this.adminMemberIds = adminMemberIds;
         this.groupPhoto = groupPhoto;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedDate = lastModifiedDate;
+        this.version = version;
     }
 
     public static ConversationGroupResponseBuilder builder() {
@@ -46,10 +59,6 @@ public class ConversationGroupResponse {
 
     public String getCreatorUserId() {
         return this.creatorUserId;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return this.createdDate;
     }
 
     public String getName() {
@@ -76,16 +85,32 @@ public class ConversationGroupResponse {
         return this.groupPhoto;
     }
 
+    public String getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return this.createdDate;
+    }
+
+    public String getLastModifiedBy() {
+        return this.lastModifiedBy;
+    }
+
+    public LocalDateTime getLastModifiedDate() {
+        return this.lastModifiedDate;
+    }
+
+    public Long getVersion() {
+        return this.version;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
 
     public void setCreatorUserId(String creatorUserId) {
         this.creatorUserId = creatorUserId;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
     }
 
     public void setName(String name) {
@@ -112,6 +137,26 @@ public class ConversationGroupResponse {
         this.groupPhoto = groupPhoto;
     }
 
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     public boolean equals(final Object o) {
         if (o == this) return true;
         if (!(o instanceof ConversationGroupResponse))
@@ -124,10 +169,6 @@ public class ConversationGroupResponse {
         final Object this$creatorUserId = this.getCreatorUserId();
         final Object other$creatorUserId = other.getCreatorUserId();
         if (this$creatorUserId == null ? other$creatorUserId != null : !this$creatorUserId.equals(other$creatorUserId))
-            return false;
-        final Object this$createdDate = this.getCreatedDate();
-        final Object other$createdDate = other.getCreatedDate();
-        if (this$createdDate == null ? other$createdDate != null : !this$createdDate.equals(other$createdDate))
             return false;
         final Object this$name = this.getName();
         final Object other$name = other.getName();
@@ -151,6 +192,24 @@ public class ConversationGroupResponse {
         final Object other$groupPhoto = other.getGroupPhoto();
         if (this$groupPhoto == null ? other$groupPhoto != null : !this$groupPhoto.equals(other$groupPhoto))
             return false;
+        final Object this$createdBy = this.getCreatedBy();
+        final Object other$createdBy = other.getCreatedBy();
+        if (this$createdBy == null ? other$createdBy != null : !this$createdBy.equals(other$createdBy)) return false;
+        final Object this$createdDate = this.getCreatedDate();
+        final Object other$createdDate = other.getCreatedDate();
+        if (this$createdDate == null ? other$createdDate != null : !this$createdDate.equals(other$createdDate))
+            return false;
+        final Object this$lastModifiedBy = this.getLastModifiedBy();
+        final Object other$lastModifiedBy = other.getLastModifiedBy();
+        if (this$lastModifiedBy == null ? other$lastModifiedBy != null : !this$lastModifiedBy.equals(other$lastModifiedBy))
+            return false;
+        final Object this$lastModifiedDate = this.getLastModifiedDate();
+        final Object other$lastModifiedDate = other.getLastModifiedDate();
+        if (this$lastModifiedDate == null ? other$lastModifiedDate != null : !this$lastModifiedDate.equals(other$lastModifiedDate))
+            return false;
+        final Object this$version = this.getVersion();
+        final Object other$version = other.getVersion();
+        if (this$version == null ? other$version != null : !this$version.equals(other$version)) return false;
         return true;
     }
 
@@ -165,8 +224,6 @@ public class ConversationGroupResponse {
         result = result * PRIME + ($id == null ? 43 : $id.hashCode());
         final Object $creatorUserId = this.getCreatorUserId();
         result = result * PRIME + ($creatorUserId == null ? 43 : $creatorUserId.hashCode());
-        final Object $createdDate = this.getCreatedDate();
-        result = result * PRIME + ($createdDate == null ? 43 : $createdDate.hashCode());
         final Object $name = this.getName();
         result = result * PRIME + ($name == null ? 43 : $name.hashCode());
         final Object $conversationGroupType = this.getConversationGroupType();
@@ -179,23 +236,37 @@ public class ConversationGroupResponse {
         result = result * PRIME + ($adminMemberIds == null ? 43 : $adminMemberIds.hashCode());
         final Object $groupPhoto = this.getGroupPhoto();
         result = result * PRIME + ($groupPhoto == null ? 43 : $groupPhoto.hashCode());
+        final Object $createdBy = this.getCreatedBy();
+        result = result * PRIME + ($createdBy == null ? 43 : $createdBy.hashCode());
+        final Object $createdDate = this.getCreatedDate();
+        result = result * PRIME + ($createdDate == null ? 43 : $createdDate.hashCode());
+        final Object $lastModifiedBy = this.getLastModifiedBy();
+        result = result * PRIME + ($lastModifiedBy == null ? 43 : $lastModifiedBy.hashCode());
+        final Object $lastModifiedDate = this.getLastModifiedDate();
+        result = result * PRIME + ($lastModifiedDate == null ? 43 : $lastModifiedDate.hashCode());
+        final Object $version = this.getVersion();
+        result = result * PRIME + ($version == null ? 43 : $version.hashCode());
         return result;
     }
 
     public String toString() {
-        return "ConversationGroupResponse(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", createdDate=" + this.getCreatedDate() + ", name=" + this.getName() + ", conversationGroupType=" + this.getConversationGroupType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", groupPhoto=" + this.getGroupPhoto() + ")";
+        return "ConversationGroupResponse(id=" + this.getId() + ", creatorUserId=" + this.getCreatorUserId() + ", name=" + this.getName() + ", conversationGroupType=" + this.getConversationGroupType() + ", description=" + this.getDescription() + ", memberIds=" + this.getMemberIds() + ", adminMemberIds=" + this.getAdminMemberIds() + ", groupPhoto=" + this.getGroupPhoto() + ", createdBy=" + this.getCreatedBy() + ", createdDate=" + this.getCreatedDate() + ", lastModifiedBy=" + this.getLastModifiedBy() + ", lastModifiedDate=" + this.getLastModifiedDate() + ", version=" + this.getVersion() + ")";
     }
 
     public static class ConversationGroupResponseBuilder {
         private String id;
         private String creatorUserId;
-        private LocalDateTime createdDate;
         private String name;
         private ConversationGroupType conversationGroupType;
         private String description;
         private List<String> memberIds;
         private List<String> adminMemberIds;
         private String groupPhoto;
+        private String createdBy;
+        private LocalDateTime createdDate;
+        private String lastModifiedBy;
+        private LocalDateTime lastModifiedDate;
+        private Long version;
 
         ConversationGroupResponseBuilder() {
         }
@@ -207,11 +278,6 @@ public class ConversationGroupResponse {
 
         public ConversationGroupResponse.ConversationGroupResponseBuilder creatorUserId(String creatorUserId) {
             this.creatorUserId = creatorUserId;
-            return this;
-        }
-
-        public ConversationGroupResponse.ConversationGroupResponseBuilder createdDate(LocalDateTime createdDate) {
-            this.createdDate = createdDate;
             return this;
         }
 
@@ -245,12 +311,37 @@ public class ConversationGroupResponse {
             return this;
         }
 
+        public ConversationGroupResponse.ConversationGroupResponseBuilder createdBy(String createdBy) {
+            this.createdBy = createdBy;
+            return this;
+        }
+
+        public ConversationGroupResponse.ConversationGroupResponseBuilder createdDate(LocalDateTime createdDate) {
+            this.createdDate = createdDate;
+            return this;
+        }
+
+        public ConversationGroupResponse.ConversationGroupResponseBuilder lastModifiedBy(String lastModifiedBy) {
+            this.lastModifiedBy = lastModifiedBy;
+            return this;
+        }
+
+        public ConversationGroupResponse.ConversationGroupResponseBuilder lastModifiedDate(LocalDateTime lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
+            return this;
+        }
+
+        public ConversationGroupResponse.ConversationGroupResponseBuilder version(Long version) {
+            this.version = version;
+            return this;
+        }
+
         public ConversationGroupResponse build() {
-            return new ConversationGroupResponse(id, creatorUserId, createdDate, name, conversationGroupType, description, memberIds, adminMemberIds, groupPhoto);
+            return new ConversationGroupResponse(id, creatorUserId, name, conversationGroupType, description, memberIds, adminMemberIds, groupPhoto, createdBy, createdDate, lastModifiedBy, lastModifiedDate, version);
         }
 
         public String toString() {
-            return "ConversationGroupResponse.ConversationGroupResponseBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", createdDate=" + this.createdDate + ", name=" + this.name + ", conversationGroupType=" + this.conversationGroupType + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", groupPhoto=" + this.groupPhoto + ")";
+            return "ConversationGroupResponse.ConversationGroupResponseBuilder(id=" + this.id + ", creatorUserId=" + this.creatorUserId + ", name=" + this.name + ", conversationGroupType=" + this.conversationGroupType + ", description=" + this.description + ", memberIds=" + this.memberIds + ", adminMemberIds=" + this.adminMemberIds + ", groupPhoto=" + this.groupPhoto + ", createdBy=" + this.createdBy + ", createdDate=" + this.createdDate + ", lastModifiedBy=" + this.lastModifiedBy + ", lastModifiedDate=" + this.lastModifiedDate + ", version=" + this.version + ")";
         }
     }
 }

@@ -119,6 +119,11 @@ public class UserServiceImpl implements UserService {
                 .mobileNo(user.getMobileNo())
                 .emailAddress(user.getEmailAddress())
                 .displayName(user.getDisplayName())
+                .createdBy(user.getCreatedBy())
+                .createdDate(user.getCreatedDate())
+                .lastModifiedBy(user.getLastModifiedBy())
+                .lastModifiedDate(user.getLastModifiedDate())
+                .version(user.getVersion())
                 .build();
     }
 }

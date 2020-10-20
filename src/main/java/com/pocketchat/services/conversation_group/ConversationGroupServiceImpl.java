@@ -511,13 +511,17 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         return ConversationGroupResponse.builder()
                 .id(conversationGroup.getId())
                 .adminMemberIds(conversationGroup.getAdminMemberIds())
-                .createdDate(conversationGroup.getCreatedDate())
                 .creatorUserId(conversationGroup.getCreatorUserId())
                 .description(conversationGroup.getDescription())
                 .memberIds(conversationGroup.getMemberIds())
                 .name(conversationGroup.getName())
                 .conversationGroupType(conversationGroup.getConversationGroupType())
                 .groupPhoto(conversationGroup.getGroupPhoto())
+                .createdBy(conversationGroup.getCreatedBy())
+                .createdDate(conversationGroup.getCreatedDate())
+                .lastModifiedBy(conversationGroup.getLastModifiedBy())
+                .lastModifiedDate(conversationGroup.getLastModifiedDate())
+                .version(conversationGroup.getVersion())
                 .build();
     }
 

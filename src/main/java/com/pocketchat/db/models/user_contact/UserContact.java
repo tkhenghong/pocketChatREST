@@ -37,13 +37,11 @@ public class UserContact extends Auditable {
     @NotBlank
     private String countryCode;
 
-    private boolean block;
-
     // Using Multimedia ID.
     @NotBlank
     private String profilePicture;
 
-    UserContact(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, @NotBlank String countryCode, boolean block, @NotBlank String profilePicture) {
+    UserContact(String id, @NotBlank String displayName, @NotBlank String realName, String about, @Valid @NotEmpty @Size(min = 1) List<String> userIds, String userId, @NotBlank String mobileNo, @NotBlank String countryCode, @NotBlank String profilePicture) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -52,7 +50,6 @@ public class UserContact extends Auditable {
         this.userId = userId;
         this.mobileNo = mobileNo;
         this.countryCode = countryCode;
-        this.block = block;
         this.profilePicture = profilePicture;
     }
 
@@ -92,10 +89,6 @@ public class UserContact extends Auditable {
         return this.countryCode;
     }
 
-    public boolean isBlock() {
-        return this.block;
-    }
-
     public @NotBlank String getProfilePicture() {
         return this.profilePicture;
     }
@@ -130,10 +123,6 @@ public class UserContact extends Auditable {
 
     public void setCountryCode(@NotBlank String countryCode) {
         this.countryCode = countryCode;
-    }
-
-    public void setBlock(boolean block) {
-        this.block = block;
     }
 
     public void setProfilePicture(@NotBlank String profilePicture) {
@@ -171,7 +160,6 @@ public class UserContact extends Auditable {
         final Object other$countryCode = other.getCountryCode();
         if (this$countryCode == null ? other$countryCode != null : !this$countryCode.equals(other$countryCode))
             return false;
-        if (this.isBlock() != other.isBlock()) return false;
         final Object this$profilePicture = this.getProfilePicture();
         final Object other$profilePicture = other.getProfilePicture();
         if (this$profilePicture == null ? other$profilePicture != null : !this$profilePicture.equals(other$profilePicture))
@@ -202,14 +190,13 @@ public class UserContact extends Auditable {
         result = result * PRIME + ($mobileNo == null ? 43 : $mobileNo.hashCode());
         final Object $countryCode = this.getCountryCode();
         result = result * PRIME + ($countryCode == null ? 43 : $countryCode.hashCode());
-        result = result * PRIME + (this.isBlock() ? 79 : 97);
         final Object $profilePicture = this.getProfilePicture();
         result = result * PRIME + ($profilePicture == null ? 43 : $profilePicture.hashCode());
         return result;
     }
 
     public String toString() {
-        return "UserContact(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", countryCode=" + this.getCountryCode() + ", block=" + this.isBlock() + ", profilePicture=" + this.getProfilePicture() + ")";
+        return "UserContact(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", countryCode=" + this.getCountryCode() + ", profilePicture=" + this.getProfilePicture() + ")";
     }
 
     public static class UserContactBuilder {
@@ -221,7 +208,6 @@ public class UserContact extends Auditable {
         private String userId;
         private @NotBlank String mobileNo;
         private @NotBlank String countryCode;
-        private boolean block;
         private @NotBlank String profilePicture;
 
         UserContactBuilder() {
@@ -267,22 +253,17 @@ public class UserContact extends Auditable {
             return this;
         }
 
-        public UserContact.UserContactBuilder block(boolean block) {
-            this.block = block;
-            return this;
-        }
-
         public UserContact.UserContactBuilder profilePicture(@NotBlank String profilePicture) {
             this.profilePicture = profilePicture;
             return this;
         }
 
         public UserContact build() {
-            return new UserContact(id, displayName, realName, about, userIds, userId, mobileNo, countryCode, block, profilePicture);
+            return new UserContact(id, displayName, realName, about, userIds, userId, mobileNo, countryCode, profilePicture);
         }
 
         public String toString() {
-            return "UserContact.UserContactBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", countryCode=" + this.countryCode + ", block=" + this.block + ", profilePicture=" + this.profilePicture + ")";
+            return "UserContact.UserContactBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", countryCode=" + this.countryCode + ", profilePicture=" + this.profilePicture + ")";
         }
     }
 }

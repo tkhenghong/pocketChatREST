@@ -88,6 +88,11 @@ public class SettingsServiceImpl implements SettingsService {
                 .id(settings.getId())
                 .allowNotifications(settings.isAllowNotifications())
                 .userId(settings.getUserId())
+                .createdBy(settings.getCreatedBy())
+                .createdDate(settings.getCreatedDate())
+                .lastModifiedBy(settings.getLastModifiedBy())
+                .lastModifiedDate(settings.getLastModifiedDate())
+                .version(settings.getVersion())
                 .build();
     }
 }

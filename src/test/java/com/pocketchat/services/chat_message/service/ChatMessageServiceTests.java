@@ -195,7 +195,6 @@ class ChatMessageServiceTests {
                 .profilePicture(UUID.randomUUID().toString())
                 .mobileNo(UUID.randomUUID().toString())
                 .about(UUID.randomUUID().toString())
-                .block(false)
                 .build();
     }
 

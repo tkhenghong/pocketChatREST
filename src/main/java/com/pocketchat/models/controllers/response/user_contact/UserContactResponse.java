@@ -19,13 +19,21 @@ public class UserContactResponse {
 
     private String mobileNo;
 
-    private LocalDateTime lastSeenDate;
+    private String countryCode;
 
-    private boolean block;
+    private String profilePicture;
 
-    private String multimediaId;
+    private String createdBy;
 
-    UserContactResponse(String id, String displayName, String realName, String about, List<String> userIds, String userId, String mobileNo, LocalDateTime lastSeenDate, boolean block, String multimediaId) {
+    private LocalDateTime createdDate;
+
+    private String lastModifiedBy;
+
+    private LocalDateTime lastModifiedDate;
+
+    private Long version;
+
+    UserContactResponse(String id, String displayName, String realName, String about, List<String> userIds, String userId, String mobileNo, String countryCode, String profilePicture, String createdBy, LocalDateTime createdDate, String lastModifiedBy, LocalDateTime lastModifiedDate, Long version) {
         this.id = id;
         this.displayName = displayName;
         this.realName = realName;
@@ -33,9 +41,13 @@ public class UserContactResponse {
         this.userIds = userIds;
         this.userId = userId;
         this.mobileNo = mobileNo;
-        this.lastSeenDate = lastSeenDate;
-        this.block = block;
-        this.multimediaId = multimediaId;
+        this.countryCode = countryCode;
+        this.profilePicture = profilePicture;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedDate = lastModifiedDate;
+        this.version = version;
     }
 
     public static UserContactResponseBuilder builder() {
@@ -70,16 +82,32 @@ public class UserContactResponse {
         return this.mobileNo;
     }
 
-    public LocalDateTime getLastSeenDate() {
-        return this.lastSeenDate;
+    public String getCountryCode() {
+        return this.countryCode;
     }
 
-    public boolean isBlock() {
-        return this.block;
+    public String getProfilePicture() {
+        return this.profilePicture;
     }
 
-    public String getMultimediaId() {
-        return this.multimediaId;
+    public String getCreatedBy() {
+        return this.createdBy;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return this.createdDate;
+    }
+
+    public String getLastModifiedBy() {
+        return this.lastModifiedBy;
+    }
+
+    public LocalDateTime getLastModifiedDate() {
+        return this.lastModifiedDate;
+    }
+
+    public Long getVersion() {
+        return this.version;
     }
 
     public void setId(String id) {
@@ -110,16 +138,32 @@ public class UserContactResponse {
         this.mobileNo = mobileNo;
     }
 
-    public void setLastSeenDate(LocalDateTime lastSeenDate) {
-        this.lastSeenDate = lastSeenDate;
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
-    public void setBlock(boolean block) {
-        this.block = block;
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
-    public void setMultimediaId(String multimediaId) {
-        this.multimediaId = multimediaId;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public boolean equals(final Object o) {
@@ -149,15 +193,32 @@ public class UserContactResponse {
         final Object this$mobileNo = this.getMobileNo();
         final Object other$mobileNo = other.getMobileNo();
         if (this$mobileNo == null ? other$mobileNo != null : !this$mobileNo.equals(other$mobileNo)) return false;
-        final Object this$lastSeenDate = this.getLastSeenDate();
-        final Object other$lastSeenDate = other.getLastSeenDate();
-        if (this$lastSeenDate == null ? other$lastSeenDate != null : !this$lastSeenDate.equals(other$lastSeenDate))
+        final Object this$countryCode = this.getCountryCode();
+        final Object other$countryCode = other.getCountryCode();
+        if (this$countryCode == null ? other$countryCode != null : !this$countryCode.equals(other$countryCode))
             return false;
-        if (this.isBlock() != other.isBlock()) return false;
-        final Object this$multimediaId = this.getMultimediaId();
-        final Object other$multimediaId = other.getMultimediaId();
-        if (this$multimediaId == null ? other$multimediaId != null : !this$multimediaId.equals(other$multimediaId))
+        final Object this$profilePicture = this.getProfilePicture();
+        final Object other$profilePicture = other.getProfilePicture();
+        if (this$profilePicture == null ? other$profilePicture != null : !this$profilePicture.equals(other$profilePicture))
             return false;
+        final Object this$createdBy = this.getCreatedBy();
+        final Object other$createdBy = other.getCreatedBy();
+        if (this$createdBy == null ? other$createdBy != null : !this$createdBy.equals(other$createdBy)) return false;
+        final Object this$createdDate = this.getCreatedDate();
+        final Object other$createdDate = other.getCreatedDate();
+        if (this$createdDate == null ? other$createdDate != null : !this$createdDate.equals(other$createdDate))
+            return false;
+        final Object this$lastModifiedBy = this.getLastModifiedBy();
+        final Object other$lastModifiedBy = other.getLastModifiedBy();
+        if (this$lastModifiedBy == null ? other$lastModifiedBy != null : !this$lastModifiedBy.equals(other$lastModifiedBy))
+            return false;
+        final Object this$lastModifiedDate = this.getLastModifiedDate();
+        final Object other$lastModifiedDate = other.getLastModifiedDate();
+        if (this$lastModifiedDate == null ? other$lastModifiedDate != null : !this$lastModifiedDate.equals(other$lastModifiedDate))
+            return false;
+        final Object this$version = this.getVersion();
+        final Object other$version = other.getVersion();
+        if (this$version == null ? other$version != null : !this$version.equals(other$version)) return false;
         return true;
     }
 
@@ -182,16 +243,25 @@ public class UserContactResponse {
         result = result * PRIME + ($userId == null ? 43 : $userId.hashCode());
         final Object $mobileNo = this.getMobileNo();
         result = result * PRIME + ($mobileNo == null ? 43 : $mobileNo.hashCode());
-        final Object $lastSeenDate = this.getLastSeenDate();
-        result = result * PRIME + ($lastSeenDate == null ? 43 : $lastSeenDate.hashCode());
-        result = result * PRIME + (this.isBlock() ? 79 : 97);
-        final Object $multimediaId = this.getMultimediaId();
-        result = result * PRIME + ($multimediaId == null ? 43 : $multimediaId.hashCode());
+        final Object $countryCode = this.getCountryCode();
+        result = result * PRIME + ($countryCode == null ? 43 : $countryCode.hashCode());
+        final Object $profilePicture = this.getProfilePicture();
+        result = result * PRIME + ($profilePicture == null ? 43 : $profilePicture.hashCode());
+        final Object $createdBy = this.getCreatedBy();
+        result = result * PRIME + ($createdBy == null ? 43 : $createdBy.hashCode());
+        final Object $createdDate = this.getCreatedDate();
+        result = result * PRIME + ($createdDate == null ? 43 : $createdDate.hashCode());
+        final Object $lastModifiedBy = this.getLastModifiedBy();
+        result = result * PRIME + ($lastModifiedBy == null ? 43 : $lastModifiedBy.hashCode());
+        final Object $lastModifiedDate = this.getLastModifiedDate();
+        result = result * PRIME + ($lastModifiedDate == null ? 43 : $lastModifiedDate.hashCode());
+        final Object $version = this.getVersion();
+        result = result * PRIME + ($version == null ? 43 : $version.hashCode());
         return result;
     }
 
     public String toString() {
-        return "UserContactResponse(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", lastSeenDate=" + this.getLastSeenDate() + ", block=" + this.isBlock() + ", multimediaId=" + this.getMultimediaId() + ")";
+        return "UserContactResponse(id=" + this.getId() + ", displayName=" + this.getDisplayName() + ", realName=" + this.getRealName() + ", about=" + this.getAbout() + ", userIds=" + this.getUserIds() + ", userId=" + this.getUserId() + ", mobileNo=" + this.getMobileNo() + ", countryCode=" + this.getCountryCode() + ", profilePicture=" + this.getProfilePicture() + ", createdBy=" + this.getCreatedBy() + ", createdDate=" + this.getCreatedDate() + ", lastModifiedBy=" + this.getLastModifiedBy() + ", lastModifiedDate=" + this.getLastModifiedDate() + ", version=" + this.getVersion() + ")";
     }
 
     public static class UserContactResponseBuilder {
@@ -202,9 +272,13 @@ public class UserContactResponse {
         private List<String> userIds;
         private String userId;
         private String mobileNo;
-        private LocalDateTime lastSeenDate;
-        private boolean block;
-        private String multimediaId;
+        private String countryCode;
+        private String profilePicture;
+        private String createdBy;
+        private LocalDateTime createdDate;
+        private String lastModifiedBy;
+        private LocalDateTime lastModifiedDate;
+        private Long version;
 
         UserContactResponseBuilder() {
         }
@@ -244,27 +318,47 @@ public class UserContactResponse {
             return this;
         }
 
-        public UserContactResponse.UserContactResponseBuilder lastSeenDate(LocalDateTime lastSeenDate) {
-            this.lastSeenDate = lastSeenDate;
+        public UserContactResponse.UserContactResponseBuilder countryCode(String countryCode) {
+            this.countryCode = countryCode;
             return this;
         }
 
-        public UserContactResponse.UserContactResponseBuilder block(boolean block) {
-            this.block = block;
+        public UserContactResponse.UserContactResponseBuilder profilePicture(String profilePicture) {
+            this.profilePicture = profilePicture;
             return this;
         }
 
-        public UserContactResponse.UserContactResponseBuilder multimediaId(String multimediaId) {
-            this.multimediaId = multimediaId;
+        public UserContactResponse.UserContactResponseBuilder createdBy(String createdBy) {
+            this.createdBy = createdBy;
+            return this;
+        }
+
+        public UserContactResponse.UserContactResponseBuilder createdDate(LocalDateTime createdDate) {
+            this.createdDate = createdDate;
+            return this;
+        }
+
+        public UserContactResponse.UserContactResponseBuilder lastModifiedBy(String lastModifiedBy) {
+            this.lastModifiedBy = lastModifiedBy;
+            return this;
+        }
+
+        public UserContactResponse.UserContactResponseBuilder lastModifiedDate(LocalDateTime lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
+            return this;
+        }
+
+        public UserContactResponse.UserContactResponseBuilder version(Long version) {
+            this.version = version;
             return this;
         }
 
         public UserContactResponse build() {
-            return new UserContactResponse(id, displayName, realName, about, userIds, userId, mobileNo, lastSeenDate, block, multimediaId);
+            return new UserContactResponse(id, displayName, realName, about, userIds, userId, mobileNo, countryCode, profilePicture, createdBy, createdDate, lastModifiedBy, lastModifiedDate, version);
         }
 
         public String toString() {
-            return "UserContactResponse.UserContactResponseBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", lastSeenDate=" + this.lastSeenDate + ", block=" + this.block + ", multimediaId=" + this.multimediaId + ")";
+            return "UserContactResponse.UserContactResponseBuilder(id=" + this.id + ", displayName=" + this.displayName + ", realName=" + this.realName + ", about=" + this.about + ", userIds=" + this.userIds + ", userId=" + this.userId + ", mobileNo=" + this.mobileNo + ", countryCode=" + this.countryCode + ", profilePicture=" + this.profilePicture + ", createdBy=" + this.createdBy + ", createdDate=" + this.createdDate + ", lastModifiedBy=" + this.lastModifiedBy + ", lastModifiedDate=" + this.lastModifiedDate + ", version=" + this.version + ")";
         }
     }
 }

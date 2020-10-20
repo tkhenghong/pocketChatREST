@@ -151,7 +151,7 @@ public class ConversationGroupController {
      * @return ConversationGroupBlockResponse for the reference.
      */
     @PutMapping("{conversationGroupId}/block")
-    public ConversationGroupBlockResponse blockConversationGroupNotifications(@PathVariable String conversationGroupId) {
+    public ConversationGroupBlockResponse blockConversationGroup(@PathVariable String conversationGroupId) {
         return conversationGroupService.conversationGroupBlockResponseMapper(conversationGroupService.blockConversationGroup(conversationGroupId));
     }
 
@@ -168,7 +168,8 @@ public class ConversationGroupController {
 
     /**
      * Mute a conversation group's notifications.
-     * @param conversationGroupId: ID of the ConversationGroup object.
+     *
+     * @param conversationGroupId:                      ID of the ConversationGroup object.
      * @param muteConversationGroupNotificationRequest: MuteConversationGroupNotificationRequest object. It states the expiry date of the mute conversation group record.
      * @return ConversationGroupMuteNotificationResponse for reference.
      */
@@ -179,17 +180,19 @@ public class ConversationGroupController {
 
     /**
      * Unmute a conversation group's notification.
-     * @param conversationGroupId: ID of the ConversationGroup object.
-     * @param unblockConversationGroupRequest: UnblockConversationGroupRequest object. It contains the ID of the ConversationGroupMuteNotification object.
+     *
+     * @param conversationGroupId:                        ID of the ConversationGroup object.
+     * @param unmuteConversationGroupNotificationRequest: UnmuteConversationGroupNotificationRequest object. It contains the ID of the UnmuteConversationGroupNotification object.
      */
     @PutMapping("{conversationGroupId}/notification/unmute")
-    public void unmuteConversationGroupNotification(@PathVariable String conversationGroupId, @Valid @RequestBody UnblockConversationGroupRequest unblockConversationGroupRequest) {
-        conversationGroupService.unblockConversationGroup(conversationGroupId, unblockConversationGroupRequest);
+    public void unmuteConversationGroupNotification(@PathVariable String conversationGroupId, @Valid @RequestBody UnmuteConversationGroupNotificationRequest unmuteConversationGroupNotificationRequest) {
+        conversationGroupService.unmuteConversationGroupNotification(conversationGroupId, unmuteConversationGroupNotificationRequest);
     }
 
     /**
      * TODO: To be implemented.
      * Join a conversation group using a QR code
+     *
      * @param joinConversationGroupRequest: JoinConversationGroupRequest object. Contains the details of the conversation group invitation details.
      * @return ConversationGroupBlockResponse for reference.
      */
@@ -224,7 +227,7 @@ public class ConversationGroupController {
      * @return content type in String. For example: application/octet-stream
      */
     // https://dzone.com/articles/java-springboot-rest-api-to-uploaddownload-file-on
-    String determineFileContentType(HttpServletRequest httpServletRequest, File file) {
+    private String determineFileContentType(HttpServletRequest httpServletRequest, File file) {
         String contentType = httpServletRequest.getServletContext().getMimeType(file.getAbsolutePath());
 
         if (StringUtils.isEmpty(contentType)) {

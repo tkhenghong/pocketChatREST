@@ -363,7 +363,6 @@ class ConversationGroupServiceTests {
                 .mobileNo(UUID.randomUUID().toString())
                 .countryCode(UUID.randomUUID().toString())
                 .about(UUID.randomUUID().toString())
-                .block(false)
                 .build();
     }
 

@@ -64,6 +64,11 @@ public class MultimediaServiceImpl implements MultimediaService {
                 .fileExtension(multimedia.getFileExtension())
                 .fileSize(multimedia.getFileSize())
                 .multimediaType(multimedia.getMultimediaType())
+                .createdBy(multimedia.getCreatedBy())
+                .createdDate(multimedia.getCreatedDate())
+                .lastModifiedBy(multimedia.getLastModifiedBy())
+                .lastModifiedDate(multimedia.getLastModifiedDate())
+                .version(multimedia.getVersion())
                 .build();
     }
 }

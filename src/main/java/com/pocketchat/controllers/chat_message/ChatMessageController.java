@@ -89,7 +89,7 @@ public class ChatMessageController {
      * @return content type in String. For example: application/octet-stream
      */
     // https://dzone.com/articles/java-springboot-rest-api-to-uploaddownload-file-on
-    String determineFileContentType(HttpServletRequest httpServletRequest, File file) {
+    private String determineFileContentType(HttpServletRequest httpServletRequest, File file) {
         String contentType = httpServletRequest.getServletContext().getMimeType(file.getAbsolutePath());
 
         if (StringUtils.isEmpty(contentType)) {

@@ -170,6 +170,11 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .senderId(chatMessage.getConversationId())
                 .senderName(chatMessage.getSenderName())
                 .senderMobileNo(chatMessage.getSenderMobileNo())
+                .createdBy(chatMessage.getCreatedBy())
+                .createdDate(chatMessage.getCreatedDate())
+                .lastModifiedBy(chatMessage.getLastModifiedBy())
+                .lastModifiedDate(chatMessage.getLastModifiedDate())
+                .version(chatMessage.getVersion())
                 .build();
     }
 
