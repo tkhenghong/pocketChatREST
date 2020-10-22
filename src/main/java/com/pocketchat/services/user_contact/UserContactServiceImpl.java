@@ -145,10 +145,28 @@ public class UserContactServiceImpl implements UserContactService {
         return multimediaService.multimediaResponseMapper(savedMultimedia);
     }
 
-    // Get ProfilePhoto of the UserContact
+    /**
+     * Get own UserContact Profile Photo, without need to provide userContactId.
+     *
+     * @return File object.
+     * @throws FileNotFoundException: Throws the exception when the file is not physically on the server.
+     */
     @Override
     public File getOwnUserContactProfilePhoto() throws FileNotFoundException {
         Multimedia multimedia = multimediaService.getSingleMultimedia(getOwnUserContact().getProfilePicture());
+        return fileUtil.getFileWithAbsolutePath(moduleDirectory, multimedia.getFileDirectory(), multimedia.getFileName());
+    }
+
+    /**
+     * Get own UserContact Profile Photo, without need to provide userContactId.
+     *
+     * @param userContactId: ID of the UserContact object.
+     * @return File object.
+     * @throws FileNotFoundException: Throws the exception when the file is not physically on the server.
+     */
+    @Override
+    public File getUserContactProfilePhoto(String userContactId) throws FileNotFoundException {
+        Multimedia multimedia = multimediaService.getSingleMultimedia(getUserContact(userContactId).getProfilePicture());
         return fileUtil.getFileWithAbsolutePath(moduleDirectory, multimedia.getFileDirectory(), multimedia.getFileName());
     }
 

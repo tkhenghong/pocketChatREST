@@ -20,6 +20,8 @@ public interface UserContactService {
 
     File getOwnUserContactProfilePhoto() throws FileNotFoundException;
 
+    File getUserContactProfilePhoto(String userContactId) throws FileNotFoundException;
+
     void deleteOwnUserContactProfilePhoto();
 
     void deleteOwnUserContact(String userContactId);

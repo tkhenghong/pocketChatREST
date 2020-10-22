@@ -44,6 +44,13 @@ public class UserContactController {
         return userContactService.uploadOwnUserContactProfilePhoto(multipartFile);
     }
 
+
+    /**
+     * This is used for getting own profile photo without UserContact's ID.
+     * Typically used to load profile pictures of the group members of the conversation.
+     * @param httpServletRequest: HttpServletRequest auto instantiated by Spring Boot Web.
+     * @return Resource object as Server Response.
+     */
     // https://bezkoder.com/spring-boot-upload-multiple-files
     // https://dzone.com/articles/java-springboot-rest-api-to-uploaddownload-file-on
     @GetMapping("/profilePhoto")
@@ -52,6 +59,29 @@ public class UserContactController {
         Resource resource;
         try {
             file = userContactService.getOwnUserContactProfilePhoto();
+            resource = new UrlResource(file.toURI());
+        } catch (FileNotFoundException | MalformedURLException exception) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(determineFileContentType(httpServletRequest, file)))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
+    }
+
+    /**
+     * This is used for getting anyone's profile photo with UserContact's ID.
+     * Typically used to load profile pictures of the group members of the conversation.
+     * @param userContactId: ID of the UserContact object.
+     * @param httpServletRequest: HttpServletRequest auto instantiated by Spring Boot Web.
+     * @return Resource object as Server Response.
+     */
+    @GetMapping("{userContactId}/profilePhoto")
+    public ResponseEntity<Resource> getUserContactProfilePhoto(@PathVariable String userContactId, HttpServletRequest httpServletRequest) {
+        File file;
+        Resource resource;
+        try {
+            file = userContactService.getUserContactProfilePhoto(userContactId);
             resource = new UrlResource(file.toURI());
         } catch (FileNotFoundException | MalformedURLException exception) {
             return ResponseEntity.notFound().build();
