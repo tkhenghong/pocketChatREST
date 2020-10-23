@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,6 +53,11 @@ public class MultimediaServiceImpl implements MultimediaService {
             throw new MultimediaNotFoundException("Unable to find multimedia with multimediaId: " + multimediaId);
         }
         return multimediaOptional.get();
+    }
+
+    @Override
+    public List<Multimedia> getMultipleMultimedia(List<String> multimediaList) {
+        return multimediaRepoService.findByIdList(multimediaList);
     }
 
     @Override

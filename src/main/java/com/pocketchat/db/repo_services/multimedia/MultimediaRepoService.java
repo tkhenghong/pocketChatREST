@@ -5,7 +5,12 @@ import com.pocketchat.db.repositories.multimedia.MultimediaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class MultimediaRepoService {
@@ -19,6 +24,17 @@ public class MultimediaRepoService {
 
     public Optional<Multimedia> findById(String multimediaId) {
         return multimediaRepository.findById(multimediaId);
+    }
+
+    public List<Multimedia> findByIdList(List<String> multimediaIds) {
+
+        // List to Iterable.
+        // https://stackoverflow.com/questions/10335662
+        Iterable<Multimedia> multimediaIterable = multimediaRepository.findAllById(multimediaIds);
+
+        // Iterable<?> to List with Java 8 Stream.
+        // https://www.baeldung.com/java-iterable-to-collection
+        return StreamSupport.stream(multimediaIterable.spliterator(), false).collect(Collectors.toList());
     }
 
     public Multimedia save(Multimedia conversationGroup) {
