@@ -78,7 +78,6 @@ public class SettingsServiceImpl implements SettingsService {
         return Settings.builder()
                 .id(updateSettingsRequest.getId())
                 .allowNotifications(updateSettingsRequest.isAllowNotifications())
-                .userId(updateSettingsRequest.getUserId())
                 .build();
     }
 
