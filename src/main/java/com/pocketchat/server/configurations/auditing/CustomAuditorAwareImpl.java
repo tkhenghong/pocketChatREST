@@ -3,6 +3,7 @@ package com.pocketchat.server.configurations.auditing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
@@ -17,7 +18,17 @@ public class CustomAuditorAwareImpl implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = null;
+        AnonymousAuthenticationToken anonymousAuthenticationToken = null;
+        try {
+            usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        } catch (ClassCastException classCastException) {
+            logger.warn("Coming from unauthenticated APIs.");
+            // Means if there's a REST call but the call is from unauthenticated APIs(such as UserAuthentication)
+            anonymousAuthenticationToken = (AnonymousAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+            return Optional.of(anonymousAuthenticationToken.getName());
+        }
+
         if(ObjectUtils.isEmpty(usernamePasswordAuthenticationToken)) {
             String defaultSystemUserName = "PocketChatSystem";
             logger.info("No authenticated user for auditing for now, using {} for now.", defaultSystemUserName);
