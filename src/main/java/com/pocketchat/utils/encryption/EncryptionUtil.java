@@ -1,7 +1,7 @@
 package com.pocketchat.utils.encryption;
 
-import com.pocketchat.server.exceptions.encryption.EncryptionErrorException;
 import com.pocketchat.models.enums.utils.encryption.DigitalSignatureAlgorithm;
+import com.pocketchat.server.exceptions.encryption.EncryptionErrorException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

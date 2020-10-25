@@ -25,7 +25,6 @@ import com.pocketchat.server.exceptions.otp.WrongOTPException;
 import com.pocketchat.server.exceptions.user.UserNotFoundException;
 import com.pocketchat.server.exceptions.user_role.UserRoleNotFoundException;
 import com.pocketchat.services.email.EmailService;
-import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.otp.OTPService;
 import com.pocketchat.services.settings.SettingsService;
 import com.pocketchat.services.sms.SMSService;

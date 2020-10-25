@@ -1,6 +1,5 @@
 package com.pocketchat.db.repo_services.conversation_group;
 
-import com.mongodb.client.result.UpdateResult;
 import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.repositories.conversation_group.ConversationGroupRepository;
 import org.slf4j.Logger;
@@ -51,6 +50,7 @@ public class ConversationGroupRepoService {
 
     /**
      * Find all conversation groups that has the userContactID.
+     *
      * @param userContactId : UserContact ID
      * @return List of Conversation Group.
      */
@@ -60,12 +60,13 @@ public class ConversationGroupRepoService {
 
     /**
      * Find all conversation groups that has the userContactID
+     *
      * @param userContactId : UserContact ID
-     * @param pageable: Pageable object for pagination.
+     * @param pageable:     Pageable object for pagination.
      * @return Page object of Conversation Group with pagination details.
      */
     public Page<ConversationGroup> findAllByMemberIds(String userContactId, Pageable pageable) {
-        if(ObjectUtils.isEmpty(pageable)) {
+        if (ObjectUtils.isEmpty(pageable)) {
             pageable = Pageable.unpaged();
         }
         return conversationGroupRepository.findAllByMemberIds(userContactId, pageable);
@@ -74,6 +75,7 @@ public class ConversationGroupRepoService {
     /**
      * Used for finding conversationGroup that has exact same member.
      * Used during creation of private conversation group.
+     *
      * @param memberIds: List of UserContact ID which represents group members.
      * @return List of conversation groups.
      */
