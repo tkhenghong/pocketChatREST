@@ -11,10 +11,12 @@ import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.controllers.response.unread_message.UnreadMessageResponse;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.unread_message.UnreadMessageService;
+import com.pocketchat.utils.pagination.PaginationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +36,16 @@ public class ConversationGroupController {
 
     private final ConversationGroupService conversationGroupService;
     private final UnreadMessageService unreadMessageService;
+    private final PaginationUtil paginationUtil;
 
     // Avoid Field Injection
     @Autowired
     public ConversationGroupController(ConversationGroupService conversationGroupService,
-                                       UnreadMessageService unreadMessageService) {
+                                       UnreadMessageService unreadMessageService,
+                                       PaginationUtil paginationUtil) {
         this.conversationGroupService = conversationGroupService;
         this.unreadMessageService = unreadMessageService;
+        this.paginationUtil = paginationUtil;
     }
 
     @PostMapping("")
@@ -213,7 +218,8 @@ public class ConversationGroupController {
 
     @PostMapping("/user")
     public ConversationPageableResponse getUserOwnConversationGroups(@Valid @RequestBody GetConversationGroupsRequest getConversationGroupsRequest) {
-        Page<ConversationGroup> conversationGroupList = conversationGroupService.getUserOwnConversationGroups(getConversationGroupsRequest.getPageable());
+        Pageable pageable = paginationUtil.convertPageableImplToPageable(getConversationGroupsRequest.getPageable());
+        Page<ConversationGroup> conversationGroupList = conversationGroupService.getUserOwnConversationGroups(pageable);
         Page<ConversationGroupResponse> conversationGroupResponses = conversationGroupService.conversationGroupResponsePageMapper(conversationGroupList);
         Page<UnreadMessage> unreadMessagePage = unreadMessageService.getUnreadMessagesFromConversationGroupsWithPageable(conversationGroupList);
         Page<UnreadMessageResponse> unreadMessageResponses = unreadMessageService.unreadMessageResponsePageMapper(unreadMessagePage);

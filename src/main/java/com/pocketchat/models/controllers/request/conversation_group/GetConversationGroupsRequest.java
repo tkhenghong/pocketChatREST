@@ -1,6 +1,6 @@
 package com.pocketchat.models.controllers.request.conversation_group;
 
-import org.springframework.data.domain.Pageable;
+import com.pocketchat.models.pagination.PageableImpl;
 
 import javax.validation.constraints.NotNull;
 
@@ -8,7 +8,7 @@ public class GetConversationGroupsRequest {
     private String conversationGroupName;
 
     @NotNull
-    private Pageable pageable;
+    private PageableImpl pageable;
 
     public GetConversationGroupsRequest() {
     }
@@ -17,7 +17,7 @@ public class GetConversationGroupsRequest {
         return this.conversationGroupName;
     }
 
-    public Pageable getPageable() {
+    public @NotNull PageableImpl getPageable() {
         return this.pageable;
     }
 
@@ -25,7 +25,7 @@ public class GetConversationGroupsRequest {
         this.conversationGroupName = conversationGroupName;
     }
 
-    public void setPageable(Pageable pageable) {
+    public void setPageable(@NotNull PageableImpl pageable) {
         this.pageable = pageable;
     }
 

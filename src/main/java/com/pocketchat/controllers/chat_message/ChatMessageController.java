@@ -4,14 +4,14 @@ import com.pocketchat.db.models.chat_message.ChatMessage;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
+import com.pocketchat.models.pagination.PageableImpl;
 import com.pocketchat.services.chat_message.ChatMessageService;
+import com.pocketchat.utils.pagination.PaginationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +30,13 @@ import java.net.MalformedURLException;
 public class ChatMessageController {
 
     private final ChatMessageService chatMessageService;
+    private final PaginationUtil paginationUtil;
 
     @Autowired
-    public ChatMessageController(ChatMessageService chatMessageService) {
+    public ChatMessageController(ChatMessageService chatMessageService,
+                                 PaginationUtil paginationUtil) {
         this.chatMessageService = chatMessageService;
+        this.paginationUtil = paginationUtil;
     }
 
     @PostMapping("")
@@ -75,11 +78,11 @@ public class ChatMessageController {
     }
 
     // Get messages with Pageable. https://reflectoring.io/spring-boot-paging/
-    @GetMapping("/conversation/{conversationGroupId}")
+    @PostMapping("/conversation/{conversationGroupId}")
     public Page<ChatMessageResponse> getChatMessagesOfAConversation(@PathVariable String conversationGroupId,
-                                                                    @PageableDefault(page = 0, size = 20)
-                                                                    @SortDefault() Pageable pageable) {
-        Page<ChatMessage> chatMessagesList = chatMessageService.getChatMessagesOfAConversation(conversationGroupId, pageable);
+                                                                    @Valid @RequestBody PageableImpl pageable) {
+        Pageable pageable1 = paginationUtil.convertPageableImplToPageable(pageable);
+        Page<ChatMessage> chatMessagesList = chatMessageService.getChatMessagesOfAConversation(conversationGroupId, pageable1);
         return chatMessageService.pageChatMessageResponseMapper(chatMessagesList);
     }
 

@@ -5,6 +5,7 @@ import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.unread_message.UnreadMessageService;
+import com.pocketchat.utils.pagination.PaginationUtil;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,9 @@ class ConversationGroupControllerTests {
 
     @MockBean
     UnreadMessageService unreadMessageService;
+
+    @MockBean
+    PaginationUtil paginationUtil;
 
     @Test
     @DisplayName("Test Get Conversation Group API")
