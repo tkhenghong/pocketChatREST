@@ -1,13 +1,17 @@
 package com.pocketchat.controllers.user_contact;
 
 import com.pocketchat.db.models.user_contact.UserContact;
+import com.pocketchat.models.controllers.request.user_contact.GetUserOwnUserContactsRequest;
 import com.pocketchat.models.controllers.request.user_contact.UpdateUserContactRequest;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.controllers.response.user_contact.UserContactResponse;
 import com.pocketchat.services.user_contact.UserContactService;
+import com.pocketchat.utils.pagination.PaginationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +33,12 @@ public class UserContactController {
 
     private final UserContactService userContactService;
 
+    private final PaginationUtil paginationUtil;
+
     @Autowired
-    public UserContactController(UserContactService userContactService) {
+    public UserContactController(UserContactService userContactService, PaginationUtil paginationUtil) {
         this.userContactService = userContactService;
+        this.paginationUtil = paginationUtil;
     }
 
     @PutMapping("")
@@ -43,7 +50,6 @@ public class UserContactController {
     public MultimediaResponse uploadOwnUserContactProfilePhoto(@RequestParam("file") MultipartFile multipartFile) {
         return userContactService.uploadOwnUserContactProfilePhoto(multipartFile);
     }
-
 
     /**
      * This is used for getting own profile photo without UserContact's ID.
@@ -112,11 +118,16 @@ public class UserContactController {
         return userContactService.userContactResponseMapper(userContactService.getOwnUserContact());
     }
 
-    // Get all UserContacts of the signed in user, including yourself.
+    /**
+     * Get user contacts with pagination.
+     * @param getUserOwnUserContactsRequest: GetUserOwnUserContactsRequest object, which contains search term, which is get either name or mobile number of the user contact.
+     * @return Page of UserContact object.
+     */
     @GetMapping("/user")
-    public List<UserContactResponse> getUserContactsOfAUser() {
-        List<UserContact> userContactList = userContactService.getUserContactsOfAUser();
-        return userContactList.stream().map(userContactService::userContactResponseMapper).collect(Collectors.toList());
+    public Page<UserContactResponse> getUserContactsOfAUser(@Valid @RequestBody GetUserOwnUserContactsRequest getUserOwnUserContactsRequest) {
+        Pageable pageable = paginationUtil.convertPageableImplToPageable(getUserOwnUserContactsRequest.getPageable());
+        Page<UserContact> userContacts = userContactService.getUserContactsOfAUser(getUserOwnUserContactsRequest.getSearchTerm(), pageable);
+        return userContactService.userContactPageResponseMapper(userContacts);
     }
 
     /**

@@ -5,22 +5,31 @@ import com.pocketchat.db.repo_services.multimedia.MultimediaRepoService;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.server.exceptions.general.StringNotEmptyException;
 import com.pocketchat.server.exceptions.multimedia.MultimediaNotFoundException;
+import com.pocketchat.utils.file.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MultimediaServiceImpl implements MultimediaService {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final MultimediaRepoService multimediaRepoService;
 
+    private final FileUtil fileUtil;
+
     @Autowired
-    public MultimediaServiceImpl(MultimediaRepoService multimediaRepoService) {
+    public MultimediaServiceImpl(MultimediaRepoService multimediaRepoService, FileUtil fileUtil) {
         this.multimediaRepoService = multimediaRepoService;
+        this.fileUtil = fileUtil;
     }
 
     @Override
@@ -42,8 +51,14 @@ public class MultimediaServiceImpl implements MultimediaService {
 
     @Override
     @Transactional
-    public void deleteMultimedia(String multimediaId) {
-        multimediaRepoService.delete(getSingleMultimedia(multimediaId));
+    public void deleteMultimedia(String multimediaId, String moduleDirectory) {
+        Multimedia multimedia = getSingleMultimedia(multimediaId);
+        try {
+            fileUtil.deleteFile(multimedia, moduleDirectory);
+        } catch (FileNotFoundException fileNotFoundException) {
+            logger.info("File not found for multimedia ID: {}", multimedia.getId());
+        }
+        multimediaRepoService.delete(multimedia);
     }
 
     @Override

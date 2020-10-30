@@ -17,6 +17,8 @@ import com.pocketchat.utils.file.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -132,6 +134,11 @@ public class UserContactServiceImpl implements UserContactService {
     public MultimediaResponse uploadOwnUserContactProfilePhoto(MultipartFile multipartFile) {
         UserContact ownUserContact = getOwnUserContact();
         Multimedia savedMultimedia;
+
+        if (StringUtils.hasText(ownUserContact.getProfilePicture())) {
+            multimediaService.deleteMultimedia(ownUserContact.getProfilePicture(), moduleDirectory);
+        }
+
         try {
             savedMultimedia = multimediaService.addMultimedia(fileUtil.createMultimedia(multipartFile, moduleDirectory));
         } catch (IOException ioException) {
@@ -172,7 +179,7 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     public void deleteOwnUserContactProfilePhoto() {
-        multimediaService.deleteMultimedia(getOwnUserContact().getProfilePicture());
+        multimediaService.deleteMultimedia(getOwnUserContact().getProfilePicture(), moduleDirectory);
     }
 
     @Override
@@ -221,9 +228,9 @@ public class UserContactServiceImpl implements UserContactService {
     }
 
     @Override
-    public List<UserContact> getUserContactsOfAUser() {
+    public Page<UserContact> getUserContactsOfAUser(String searchTerm, Pageable pageable) {
         UserAuthentication userAuthentication = userAuthenticationService.getOwnUserAuthentication();
-        return userContactRepoService.findByUserIds(userAuthentication.getUserId());
+        return userContactRepoService.findByUserIds(userAuthentication.getUserId(), searchTerm, pageable);
     }
 
     @Override
@@ -268,5 +275,10 @@ public class UserContactServiceImpl implements UserContactService {
                 .lastModifiedDate(userContact.getLastModifiedDate())
                 .version(userContact.getVersion())
                 .build();
+    }
+
+    @Override
+    public Page<UserContactResponse> userContactPageResponseMapper(Page<UserContact> userContacts) {
+        return userContacts.map(this::userContactResponseMapper);
     }
 }

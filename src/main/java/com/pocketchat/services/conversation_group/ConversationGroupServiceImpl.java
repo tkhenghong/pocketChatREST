@@ -167,7 +167,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         boolean groupPhotoReplacement = false;
 
         if (StringUtils.hasText(conversationGroup.getGroupPhoto())) {
-            multimediaService.deleteMultimedia(conversationGroup.getGroupPhoto());
+            multimediaService.deleteMultimedia(conversationGroup.getGroupPhoto(), moduleDirectory);
             groupPhotoReplacement = true;
         }
 
@@ -218,7 +218,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         ConversationGroup conversationGroup = getSingleConversation(conversationGroupId);
 
         if (StringUtils.hasText(conversationGroup.getGroupPhoto())) {
-            multimediaService.deleteMultimedia(conversationGroup.getGroupPhoto());
+            multimediaService.deleteMultimedia(conversationGroup.getGroupPhoto(), moduleDirectory);
         }
 
         String messageContent = "has deleted the group photo.";

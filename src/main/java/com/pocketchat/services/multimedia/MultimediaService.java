@@ -10,7 +10,7 @@ public interface MultimediaService {
 
     Multimedia editMultimedia(Multimedia multimedia);
 
-    void deleteMultimedia(String multimediaId);
+    void deleteMultimedia(String multimediaId, String moduleDirectory);
 
     Multimedia getSingleMultimedia(String multimediaId);
 

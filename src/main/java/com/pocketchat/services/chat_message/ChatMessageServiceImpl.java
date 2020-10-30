@@ -127,7 +127,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         ChatMessage chatMessage = getSingleChatMessage(messageId);
 
         if (StringUtils.hasText(chatMessage.getMultimediaId())) {
-            multimediaService.deleteMultimedia(chatMessage.getMultimediaId());
+            multimediaService.deleteMultimedia(chatMessage.getMultimediaId(), moduleDirectory);
         }
 
         // TODO: Send Websocket message and notification to replace the message to "Message removed" to the correct conversation group members.

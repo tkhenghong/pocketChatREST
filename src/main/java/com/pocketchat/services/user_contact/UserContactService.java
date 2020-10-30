@@ -5,6 +5,8 @@ import com.pocketchat.models.controllers.request.user_contact.CreateUserContactR
 import com.pocketchat.models.controllers.request.user_contact.UpdateUserContactRequest;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.controllers.response.user_contact.UserContactResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -32,11 +34,13 @@ public interface UserContactService {
 
     UserContact getOwnUserContact();
 
-    List<UserContact> getUserContactsOfAUser();
+    Page<UserContact> getUserContactsOfAUser(String searchTerm, Pageable pageable);
 
     UserContact createUserContactRequestToUserContactMapper(CreateUserContactRequest createUserContactRequest);
 
     UserContact updateUserContactRequestToUserContactMapper(UpdateUserContactRequest updateUserContactRequest);
 
     UserContactResponse userContactResponseMapper(UserContact userContact);
+
+    Page<UserContactResponse> userContactPageResponseMapper(Page<UserContact> userContacts);
 }
