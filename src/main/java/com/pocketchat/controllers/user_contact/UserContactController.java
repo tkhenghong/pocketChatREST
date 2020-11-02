@@ -54,6 +54,7 @@ public class UserContactController {
     /**
      * This is used for getting own profile photo without UserContact's ID.
      * Typically used to load profile pictures of the group members of the conversation.
+     *
      * @param httpServletRequest: HttpServletRequest auto instantiated by Spring Boot Web.
      * @return Resource object as Server Response.
      */
@@ -78,7 +79,8 @@ public class UserContactController {
     /**
      * This is used for getting anyone's profile photo with UserContact's ID.
      * Typically used to load profile pictures of the group members of the conversation.
-     * @param userContactId: ID of the UserContact object.
+     *
+     * @param userContactId:      ID of the UserContact object.
      * @param httpServletRequest: HttpServletRequest auto instantiated by Spring Boot Web.
      * @return Resource object as Server Response.
      */
@@ -113,6 +115,12 @@ public class UserContactController {
         return userContactService.userContactResponseMapper(userContactService.getUserContactByMobileNo(mobileNo));
     }
 
+    @GetMapping("/conversationGroup/{conversationGroupId}")
+    public List<UserContactResponse> getUserContactsByConversationGroup(@PathVariable String conversationGroupId) {
+        return userContactService.getUserContactsByConversationGroup(conversationGroupId)
+                .stream().map(userContactService::userContactResponseMapper).collect(Collectors.toList());
+    }
+
     @GetMapping("")
     public UserContactResponse getOwnUserContact() {
         return userContactService.userContactResponseMapper(userContactService.getOwnUserContact());
@@ -120,6 +128,7 @@ public class UserContactController {
 
     /**
      * Get user contacts with pagination.
+     *
      * @param getUserOwnUserContactsRequest: GetUserOwnUserContactsRequest object, which contains search term, which is get either name or mobile number of the user contact.
      * @return Page of UserContact object.
      */

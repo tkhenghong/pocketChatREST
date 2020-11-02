@@ -1,5 +1,6 @@
 package com.pocketchat.services.user_contact;
 
+import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.multimedia.Multimedia;
 import com.pocketchat.db.models.user_authentication.UserAuthentication;
 import com.pocketchat.db.models.user_contact.UserContact;
@@ -10,6 +11,7 @@ import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.controllers.response.user_contact.UserContactResponse;
 import com.pocketchat.server.exceptions.file.UploadFileException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
+import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.multimedia.MultimediaService;
 import com.pocketchat.services.user.UserService;
 import com.pocketchat.services.user_authentication.UserAuthenticationService;
@@ -44,6 +46,8 @@ public class UserContactServiceImpl implements UserContactService {
 
     private final MultimediaService multimediaService;
 
+    private final ConversationGroupService conversationGroupService;
+
     FileUtil fileUtil;
 
     private final String moduleDirectory = "userContact";
@@ -53,11 +57,13 @@ public class UserContactServiceImpl implements UserContactService {
                                   UserAuthenticationService userAuthenticationService,
                                   UserService userService,
                                   MultimediaService multimediaService,
+                                  ConversationGroupService conversationGroupService,
                                   FileUtil fileUtil) {
         this.userContactRepoService = userContactRepoService;
         this.userAuthenticationService = userAuthenticationService;
         this.userService = userService;
         this.multimediaService = multimediaService;
+        this.conversationGroupService = conversationGroupService;
         this.fileUtil = fileUtil;
     }
 
@@ -213,6 +219,24 @@ public class UserContactServiceImpl implements UserContactService {
             throw new UserContactNotFoundException("UserContact not found: " + mobileNo);
         }
         return userContact;
+    }
+
+    /**
+     * Get a conversation group's user contacts.
+     * NOTE: There are no pagination in UserContacts, because the whole list is already inside Conversation Group object itself.
+     * @param conversationGroupId: ID of a ConversationGroup object.
+     * @return A list of UserContact objects, for latest reference.
+     */
+    @Override
+    public List<UserContact> getUserContactsByConversationGroup(String conversationGroupId) {
+        ConversationGroup conversationGroup = conversationGroupService.getSingleConversation(conversationGroupId);
+        List<UserContact> groupMemberUserContacts = userContactRepoService.findByUserIdIn(conversationGroup.getMemberIds());
+        if(groupMemberUserContacts.size() != conversationGroup.getMemberIds().size()) {
+            logger.warn("Result userContacts list length doesn't equal to the finding length of userContact IDs.");
+        } else {
+            logger.info("Result userContacts list length equal to the finding length of userContact IDs.");
+        }
+        return groupMemberUserContacts;
     }
 
     @Override

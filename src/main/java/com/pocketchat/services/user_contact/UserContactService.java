@@ -32,6 +32,8 @@ public interface UserContactService {
 
     UserContact getUserContactByMobileNo(String mobileNo);
 
+    List<UserContact> getUserContactsByConversationGroup(String conversationGroupId);
+
     UserContact getOwnUserContact();
 
     Page<UserContact> getUserContactsOfAUser(String searchTerm, Pageable pageable);
