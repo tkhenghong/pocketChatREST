@@ -8,3 +8,5 @@ https://stackoverflow.com/questions/52980370/how-to-convert-p12-to-crt-file
 openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out myCertificate.crt
 
 Put your .jks/.p12 format keystore file here.
+
+NOTE: Give the frontend with .cer file format, not .p12 file.
