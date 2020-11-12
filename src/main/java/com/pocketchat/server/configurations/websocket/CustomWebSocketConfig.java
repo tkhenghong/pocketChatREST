@@ -1,5 +1,7 @@
 package com.pocketchat.server.configurations.websocket;
 
+import com.pocketchat.db.models.user_contact.UserContact;
+import com.pocketchat.services.user_contact.UserContactService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
@@ -19,15 +21,24 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final UserContactService userContactService;
+
     private final WebSocketSessionManager webSocketSessionManager;
 
+    private final WebSocketMessageSender webSocketMessageSender;
+
     @Autowired
-    CustomWebSocketConfig(WebSocketSessionManager webSocketSessionManager) {
+    CustomWebSocketConfig(UserContactService userContactService, WebSocketSessionManager webSocketSessionManager, WebSocketMessageSender webSocketMessageSender) {
+        this.userContactService = userContactService;
         this.webSocketSessionManager = webSocketSessionManager;
+        this.webSocketMessageSender = webSocketMessageSender;
     }
 
     // STOMP over WebSocket
@@ -63,25 +74,30 @@ public class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     // NOTE: Unauthenticated/authenticated users will trigger this method.
                     @Override
                     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) session.getPrincipal();
-                        if (StringUtils.hasText(usernamePasswordAuthenticationToken.getName())) {
-                            logger.info("Incoming connection for usernamePasswordAuthenticationToken.getName(): {}", usernamePasswordAuthenticationToken.getName());
+                        if (!ObjectUtils.isEmpty(usernamePasswordAuthenticationToken)) {
+                            logger.info("Incoming connection for {}", usernamePasswordAuthenticationToken.getName());
+                            UserContact ownUserContact = userContactService.getOwnUserContact();
+
+                            webSocketSessionManager.addWebSocketSession(ownUserContact.getId(), session);
+                            List<WebSocketSession> webSocketSessionList = webSocketSessionManager.getWebSocketSessions(ownUserContact.getId());
+                            webSocketMessageSender.sendMessage(ownUserContact.getId(), webSocketSessionList);
                         }
 
-                        webSocketSessionManager.addWebSocketSession(usernamePasswordAuthenticationToken.getName(), session);
-                        // TODO: Send messages through Websocket
                         super.afterConnectionEstablished(session);
                     }
 
                     @Override
                     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) session.getPrincipal();
-                        if (StringUtils.hasText(usernamePasswordAuthenticationToken.getName())) {
+                        if (!ObjectUtils.isEmpty(usernamePasswordAuthenticationToken)) {
                             logger.info("Closing connection for usernamePasswordAuthenticationToken.getName(): {}", usernamePasswordAuthenticationToken.getName());
+
+                            UserContact ownUserContact = userContactService.getOwnUserContact();
+
+                            webSocketSessionManager.removeWebSocketSession(ownUserContact.getId(), session);
                         }
 
-                        webSocketSessionManager.removeWebSocketSession(usernamePasswordAuthenticationToken.getName(), session);
                         super.afterConnectionClosed(session, closeStatus);
                     }
                 };

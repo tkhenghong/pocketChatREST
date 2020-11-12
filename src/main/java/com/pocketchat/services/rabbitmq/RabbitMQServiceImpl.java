@@ -1,6 +1,8 @@
 package com.pocketchat.services.rabbitmq;
 
 import com.rabbitmq.client.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.Connection;
@@ -8,6 +10,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.SimpleMessageConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +19,18 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 public class RabbitMQServiceImpl implements RabbitMQService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${rabbitmq.connection.factory.username}")
-    String username;
+    private final String username;
 
-    @Value("${rabbitmq.connection.factory.password}")
-    String password;
+    private final String password;
+
+    @Autowired
+    RabbitMQServiceImpl(@Value("${rabbitmq.connection.factory.username}") String username,
+                        @Value("${rabbitmq.connection.factory.password}") String password) {
+        this.username = username;
+        this.password = password;
+    }
 
     // Types of messages with format:
     // When sending,
@@ -49,15 +58,29 @@ public class RabbitMQServiceImpl implements RabbitMQService {
 
     }
 
+    /**
+     * Send message into RabbitMQ queue.
+     * @param queueName: Name of the queue. Typically an UserContact ID.
+     * @param exchangeName: Name of the exchange. Typically an ConversationGroup ID.
+     * @param routingKey: A string used to filter which type of message should be retrieved.
+     * @param message: A JSON message converted from object. Typically a WebSocketMessage object.
+     */
     @Override
     public void addMessageToQueue(String queueName, String exchangeName, String routingKey, String message) {
         createAmqpAdmin(queueName, exchangeName, routingKey); // Create exchanges with it's binding if needed.
         sendRabbitMQMessageOld(exchangeName, routingKey, message);
     }
 
+    /**
+     * Get messages from RabbitMQ queue.
+     * @param queueName: Name of the queue. Typically an UserContact ID.
+     * @param exchangeName: Name of the exchange. Typically an ConversationGroup ID.
+     * @param routingKey: A string used to filter which type of message should be retrieved.
+     * @param consumerTag: Consumer ID to be identified in RabbitMQ. This is needee to identify the user when consuming RabbitMQ.
+     */
     @Override
     public void listenMessagesFromQueue(String queueName, String exchangeName, String routingKey, String consumerTag) {
-//        createAmqpAdmin(queueName, exchangeName, routingKey); // Create exchanges with it's binding if needed.
+        // createAmqpAdmin(queueName, exchangeName, routingKey); // Create exchanges with it's binding if needed.
         // this.listenRabbitMQMessagesOld(queueName);
         listenRabbitMQMessagesNew(queueName, exchangeName, routingKey, consumerTag);
     }
@@ -73,7 +96,7 @@ public class RabbitMQServiceImpl implements RabbitMQService {
     /**
      * Comprehensive way to listen to RabbitMQ message.
      *
-     * @param queueName:    Name of the queue. Normally is user ID.
+     * @param queueName:    Name of the queue. Normally is UserContact ID.
      * @param exchangeName: Name of the exchange. Normally is conversation group ID.
      * @param routingKey:   Routing key. Normally it means type of message wish to receive.
      * @param consumerTag:  Consumer tag. Normally it's the ID of the user. It will help to differentiate consumers that listen the messages from the exchange.
@@ -89,6 +112,7 @@ public class RabbitMQServiceImpl implements RabbitMQService {
      *                      9. When delivery tag is same with remaining message count(finish reading the queue's messages), close the connection.
      */
     private void listenRabbitMQMessagesNew(String queueName, String exchangeName, String routingKey, String consumerTag) {
+        logger.info("Getting {} messages in Kafka.", queueName);
 
         ConnectionFactory connectionFactory = connectionFactory();
         Connection connection = connectionFactory.createConnection();
@@ -98,23 +122,23 @@ public class RabbitMQServiceImpl implements RabbitMQService {
             AMQP.Exchange.DeclareOk exchangeDeclareOkResponse = channel.exchangeDeclare(exchangeName, "topic", true);
             AMQP.Queue.BindOk queueBindOkResponse = channel.queueBind(queueName, exchangeName, routingKey);
 
-            Integer remainingMessageCount = queueDeclareOkResponse.getMessageCount();
+            int remainingMessageCount = queueDeclareOkResponse.getMessageCount();
 
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                    System.out.println("handleDelivery()");
+                    logger.info("handleDelivery()");
                     String routingKey = envelope.getRoutingKey();
-                    System.out.println("routingKey: " + routingKey);
+                    logger.info("routingKey: {}", routingKey);
                     String contentType = properties.getContentType();
-                    System.out.println("contenttype: " + contentType);
+                    logger.info("contenttype: {}", contentType);
                     long deliveryTag = envelope.getDeliveryTag();
-                    System.out.println("deliveryTag: " + deliveryTag);
+                    logger.info("deliveryTag: {}", deliveryTag);
 
                     String message = new String(body);
 
-                    System.out.println("The message: " + message);
-                    System.out.println("Remaining messages when in listener CHECK: " + queueDeclareOkResponse.getMessageCount());
+                    logger.info("The message: {}", message);
+                    logger.info("Remaining message count from queue {}: {}", queueName, queueDeclareOkResponse.getMessageCount());
 
                     // Send to websocket for each message
                     // Not recommend to gather all messages first
@@ -125,7 +149,7 @@ public class RabbitMQServiceImpl implements RabbitMQService {
 
                     // Else, not acknowledge this message, so this message will be redelivered again next time.
 
-                    System.out.println("Acknowledged the message.");
+                    logger.info("Acknowledged the message.");
 
                     if (remainingMessageCount == deliveryTag) {
                         System.out.println("if (remainingMessageCount == deliveryTag)");
@@ -143,7 +167,7 @@ public class RabbitMQServiceImpl implements RabbitMQService {
 
             channel.basicConsume(queueName, false, consumerTag, consumer);
 
-            System.out.println("Done received messages.");
+            logger.info("Done received messages.");
             // If no messages at all
             if (remainingMessageCount == 0) {
                 closeChannelAndConnection(connection, channel, consumerTag);
@@ -153,24 +177,37 @@ public class RabbitMQServiceImpl implements RabbitMQService {
         }
     }
 
+    /**
+     * Close RabbitMQ connection.
+     * @param connection: Connection object created from within @method listenRabbitMQMessagesNew().
+     * @param channel: Channel object created from within @method listenRabbitMQMessagesNew().
+     * @param consumerTag: An ID for the RabbitMQ consumer. RabbitMQ requires a name from the consumer when using RabbitMQ.
+     */
     private void closeChannelAndConnection(Connection connection, Channel channel, String consumerTag) {
-        System.out.println("closeChannelAndConnection()");
+        logger.info("closeChannelAndConnection()");
         try {
             channel.basicCancel(consumerTag);
             channel.close(); // Might throw Timeout Exception
-
             connection.close();
         } catch (TimeoutException | IOException e) {
-            System.out.println("Error during closing connection.");
-            e.printStackTrace();
+            logger.error("Error during closing connection.", e);
         }
     }
 
+    /**
+     * Create a factory for connecting RabbitMQ.
+     * @return ConnectionFactory object, ready for connect RabbitMQ.
+     */
     private ConnectionFactory connectionFactory() {
-        ConnectionFactory connectionFactory = new CachingConnectionFactory("localhost");
-        return connectionFactory;
+        return new CachingConnectionFactory("localhost");
     }
 
+    /**
+     * Create a template for AMQP, typically RabbitMQ.
+     *
+     * @param exchangeName: Name of exchange. Typically a ConversationGroup ID.
+     * @return RabbitTemplate object ready to be used to add/retrieve messages.
+     */
     public RabbitTemplate amqpTemplate(String exchangeName) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setExchange(exchangeName);
@@ -179,6 +216,12 @@ public class RabbitMQServiceImpl implements RabbitMQService {
         return rabbitTemplate;
     }
 
+    /**
+     * Create/Get a queue into RabbitMQ.
+     *
+     * @param queueName: Name of a queue. Typically an ID of UserContact.
+     * @return Queue object to be used in connecting RabbitMQ queue.
+     */
     Queue createQueue(String queueName) {
         return new Queue(queueName);
     }
@@ -191,8 +234,17 @@ public class RabbitMQServiceImpl implements RabbitMQService {
         return BindingBuilder.bind(queue).to(exchange).with(routingKey);
     }
 
-    // The main guy
-    // TODO: Need a way to tell that is process is successful or failure (error management)
+    /**
+     * (Main) Create an Admin to manage the AMQP, typically is RabbitMQ.
+     * Create an admin to control RabbitMQ queues.
+     * <p>
+     * TODO: Need a way to tell that is process is successful or failure (error management)
+     *
+     * @param queueName:    Name of the queue. Typically an ID of UserContact object.
+     * @param exchangeName: Name of the exchange. Typically an ID of ConversationGroup object.
+     * @param routingKey:   A string that usually used to filter which type of message to be retrieved.
+     * @return RabbitAdmin object to be used for send/retreive messages from RabbitMQ.
+     */
     RabbitAdmin createAmqpAdmin(String queueName, String exchangeName, String routingKey) {
         Queue queue = createQueue(queueName);
         TopicExchange topicExchange = createTopicExchange(exchangeName);

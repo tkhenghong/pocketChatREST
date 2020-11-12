@@ -23,7 +23,7 @@ public class WebSocketSessionManager {
     public void addWebSocketSession(String userId, WebSocketSession webSocketSession) {
         logger.info("userId: {}", userId);
         logger.info("webSocketSession.getId(): {}", webSocketSession.getId());
-        List<WebSocketSession> existingWebSocketSessions = onlineWebsocketSessions.get(userId);
+        List<WebSocketSession> existingWebSocketSessions = getWebSocketSessions(userId);
 
         if (ObjectUtils.isEmpty(existingWebSocketSessions)) {
             existingWebSocketSessions = new ArrayList<>();
@@ -42,7 +42,7 @@ public class WebSocketSessionManager {
     }
 
     public void removeWebSocketSession(String userId, WebSocketSession webSocketSession) {
-        List<WebSocketSession> existingWebSocketSessions = onlineWebsocketSessions.get(userId);
+        List<WebSocketSession> existingWebSocketSessions = getWebSocketSessions(userId);
 
         if (!ObjectUtils.isEmpty(existingWebSocketSessions)) {
             Optional<WebSocketSession> webSocketSessionOptional = existingWebSocketSessions.stream().filter(existingWebSocketSession -> existingWebSocketSession.getId().equals(webSocketSession.getId())).findAny();
@@ -64,5 +64,15 @@ public class WebSocketSessionManager {
 
         onlineWebsocketSessions.put(userId, existingWebSocketSessions);
         logger.info("onlineWebsocketSessions.size(): {}", onlineWebsocketSessions.size());
+    }
+
+
+    /**
+     * Get a list of WebSocket sessions based on the user
+     * @param userId
+     * @return
+     */
+    public List<WebSocketSession> getWebSocketSessions(String userId) {
+        return onlineWebsocketSessions.get(userId);
     }
 }
