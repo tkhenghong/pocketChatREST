@@ -17,6 +17,21 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * Steps:
+ * 1. Connect to RabbitMQ (Create connectionFactory).
+ * 2. Create Channel and Connection.
+ * 3. Declare Queue, Exchanges and bind them together.
+ * 4. Get the remaining message count after Step 3 (must be in correct order, or else you won't get the correct remaining messages count)
+ * 5. If no messages, close the connection (not send anything to the user through WebSocket).
+ * 6. Read messages from the queue with a Consumer(Manual acknowledgement)
+ * 7. The message in handleDelivery() is coming in order. Delivery tag is the index number of the remaining messages.
+ * 8. Send the message to user through WebSocket.
+ * 9. When delivery tag is same with remaining message count(finish reading the queue's messages), close the connection.
+ * <p>
+ * NOTES:
+ * 1. Use empty exchange name as an argument will make the messages' that you're sending through using default RabbitMQ exchange.
+ */
 @Service
 public class RabbitMQServiceImpl implements RabbitMQService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -43,27 +58,24 @@ public class RabbitMQServiceImpl implements RabbitMQService {
     // Receive Conversation Group Normal messages: Exchange ID: conversationGroupId, queueName=g98sf0e8g0rsfead, routing key=g98sf0e8g0rsfead.chatMessage
     // Receive Conversation Group System messages: Exchange ID: conversationGroupId, queueName=g98sf0e8g0rsfead, routing key=g98sf0e8g0rsfead.systemMessage
 
+    /**
+     * Create connections to the RabbitMQ.
+     *
+     * @return Connection object.
+     */
     @Override
-    public void declareExchange(String exchangeName) {
-
-    }
-
-    @Override
-    public void declareQueue(String queueName) {
-
-    }
-
-    @Override
-    public void declareBinding(String exchangeName, String queueName) {
-
+    public Connection createConnection() {
+        ConnectionFactory connectionFactory = connectionFactory();
+        return connectionFactory.createConnection();
     }
 
     /**
      * Send message into RabbitMQ queue.
-     * @param queueName: Name of the queue. Typically an UserContact ID.
+     *
+     * @param queueName:    Name of the queue. Typically an UserContact ID.
      * @param exchangeName: Name of the exchange. Typically an ConversationGroup ID.
-     * @param routingKey: A string used to filter which type of message should be retrieved.
-     * @param message: A JSON message converted from object. Typically a WebSocketMessage object.
+     * @param routingKey:   A string used to filter which type of message should be retrieved.
+     * @param message:      A JSON message converted from object. Typically a WebSocketMessage object.
      */
     @Override
     public void addMessageToQueue(String queueName, String exchangeName, String routingKey, String message) {
@@ -73,16 +85,13 @@ public class RabbitMQServiceImpl implements RabbitMQService {
 
     /**
      * Get messages from RabbitMQ queue.
-     * @param queueName: Name of the queue. Typically an UserContact ID.
-     * @param exchangeName: Name of the exchange. Typically an ConversationGroup ID.
-     * @param routingKey: A string used to filter which type of message should be retrieved.
+     *
+     * @param queueName:   Name of the queue. Typically an UserContact ID.
      * @param consumerTag: Consumer ID to be identified in RabbitMQ. This is needee to identify the user when consuming RabbitMQ.
      */
     @Override
-    public void listenMessagesFromQueue(String queueName, String exchangeName, String routingKey, String consumerTag) {
-        // createAmqpAdmin(queueName, exchangeName, routingKey); // Create exchanges with it's binding if needed.
-        // this.listenRabbitMQMessagesOld(queueName);
-        listenRabbitMQMessagesNew(queueName, exchangeName, routingKey, consumerTag);
+    public void listenMessagesFromQueue(String queueName, String consumerTag) {
+        listenRabbitMQMessagesNew(queueName, consumerTag);
     }
 
     /**
@@ -94,33 +103,43 @@ public class RabbitMQServiceImpl implements RabbitMQService {
     }
 
     /**
-     * Comprehensive way to listen to RabbitMQ message.
+     * Get access to the queue with custom Connection object.
      *
-     * @param queueName:    Name of the queue. Normally is UserContact ID.
-     * @param exchangeName: Name of the exchange. Normally is conversation group ID.
-     * @param routingKey:   Routing key. Normally it means type of message wish to receive.
-     * @param consumerTag:  Consumer tag. Normally it's the ID of the user. It will help to differentiate consumers that listen the messages from the exchange.
-     *                      Steps:
-     *                      1. Connect to RabbitMQ (Create connectionFactory)
-     *                      2. Create Channel and Connection
-     *                      3. Declare Queue, Exchanges and bind them together.
-     *                      4. Get the remaining message count after Step 3 (must be in correct order, or else you won't get the correct remaining messages count)
-     *                      5. If no messages, close the connection (not send anything to the user through WebSocket).
-     *                      6. Read messages from the queue with a Consumer(Manual acknowledgement)
-     *                      7. The message in handleDelivery() is coming in order. Delivery tag is the index number of the remaining messages.
-     *                      8. Send the message to user through WebSocket.
-     *                      9. When delivery tag is same with remaining message count(finish reading the queue's messages), close the connection.
+     * @param connection: Connection object which has the connection of the RabbitMQ.
+     * @return Channel object which can be used for creating Consumer objects for consuming messages.
      */
-    private void listenRabbitMQMessagesNew(String queueName, String exchangeName, String routingKey, String consumerTag) {
-        logger.info("Getting {} messages in Kafka.", queueName);
+    @Override
+    public Channel getChannel(Connection connection) {
+        return connection.createChannel(true);
+    }
 
-        ConnectionFactory connectionFactory = connectionFactory();
-        Connection connection = connectionFactory.createConnection();
+    /**
+     * Get access to the queue.
+     *
+     * @return Channel object which can be used for creating Consumer objects for consuming messages.
+     */
+    @Override
+    public Channel getChannel() {
+        Connection connection = createConnection();
+        return connection.createChannel(true);
+    }
+
+    /**
+     * Comprehensive way to listen to RabbitMQ message.
+     * <p>
+     * NOTE: You don't need exchange name and routing key to consume a RabbitMQ queue.
+     * NOTE: Not using this for consuming messages. This is only used for testing in RabbitMQController.
+     *
+     * @param queueName:   Name of the queue. Normally is UserContact ID.
+     * @param consumerTag: Consumer tag. Normally it's the ID of the user. It will help to differentiate consumers that listen the messages from the exchange.
+     */
+    private void listenRabbitMQMessagesNew(String queueName, String consumerTag) {
+        logger.info("Getting {} messages in RabbitMQ.", queueName);
+
+        Connection connection = createConnection();
         Channel channel = connection.createChannel(true);
         try {
             AMQP.Queue.DeclareOk queueDeclareOkResponse = channel.queueDeclare(queueName, true, false, false, null);
-            AMQP.Exchange.DeclareOk exchangeDeclareOkResponse = channel.exchangeDeclare(exchangeName, "topic", true);
-            AMQP.Queue.BindOk queueBindOkResponse = channel.queueBind(queueName, exchangeName, routingKey);
 
             int remainingMessageCount = queueDeclareOkResponse.getMessageCount();
 
@@ -143,7 +162,6 @@ public class RabbitMQServiceImpl implements RabbitMQService {
                     // Send to websocket for each message
                     // Not recommend to gather all messages first
 
-
                     // If send to webSocket user successful, acknowledge this message.
                     channel.basicAck(deliveryTag, false);
 
@@ -152,10 +170,8 @@ public class RabbitMQServiceImpl implements RabbitMQService {
                     logger.info("Acknowledged the message.");
 
                     if (remainingMessageCount == deliveryTag) {
-                        System.out.println("if (remainingMessageCount == deliveryTag)");
+                        logger.info("Finish reading messages for {}.", queueName);
                         closeChannelAndConnection(connection, channel, consumerTag);
-                        // TODO: Gathered all messages? Good let's them to the WebSocket.
-                        // this.sendToUserWebSocket();
                     }
                 }
 
@@ -179,23 +195,29 @@ public class RabbitMQServiceImpl implements RabbitMQService {
 
     /**
      * Close RabbitMQ connection.
-     * @param connection: Connection object created from within @method listenRabbitMQMessagesNew().
-     * @param channel: Channel object created from within @method listenRabbitMQMessagesNew().
+     *
+     * @param connection:  Connection object created from within @method listenRabbitMQMessagesNew().
+     * @param channel:     Channel object created from within @method listenRabbitMQMessagesNew().
      * @param consumerTag: An ID for the RabbitMQ consumer. RabbitMQ requires a name from the consumer when using RabbitMQ.
      */
-    private void closeChannelAndConnection(Connection connection, Channel channel, String consumerTag) {
-        logger.info("closeChannelAndConnection()");
+    @Override
+    public Boolean closeChannelAndConnection(Connection connection, Channel channel, String consumerTag) {
         try {
             channel.basicCancel(consumerTag);
             channel.close(); // Might throw Timeout Exception
             connection.close();
+            logger.info("{}'s RabbitMQ connection and channel has been closed.", consumerTag);
+            return true;
         } catch (TimeoutException | IOException e) {
             logger.error("Error during closing connection.", e);
         }
+
+        return false;
     }
 
     /**
      * Create a factory for connecting RabbitMQ.
+     *
      * @return ConnectionFactory object, ready for connect RabbitMQ.
      */
     private ConnectionFactory connectionFactory() {

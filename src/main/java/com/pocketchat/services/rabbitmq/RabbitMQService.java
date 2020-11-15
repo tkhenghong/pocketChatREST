@@ -1,18 +1,19 @@
 package com.pocketchat.services.rabbitmq;
 
+import com.rabbitmq.client.Channel;
+import org.springframework.amqp.rabbit.connection.Connection;
+
 public interface RabbitMQService {
 
-    void declareExchange(String exchangeName);
+    Connection createConnection();
 
-    void declareQueue(String queueName);
-    
-    void declareBinding(String exchangeName, String queueName);
+    Channel getChannel(Connection connection);
+
+    Channel getChannel();
 
     void addMessageToQueue(String queueName, String exchangeName, String routingKey, String message);
 
-    // userId = queueName
-    // conversationGroupId = exchangeName
-    // messageType = routingKey
-    // deviceType = consumerTag
-    void listenMessagesFromQueue(String queueName, String exchangeName, String routingKey, String consumerTag);
+    void listenMessagesFromQueue(String queueName, String consumerTag);
+
+    Boolean closeChannelAndConnection(Connection connection, Channel channel, String consumerTag);
 }
