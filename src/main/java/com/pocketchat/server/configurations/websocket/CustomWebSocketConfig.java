@@ -1,5 +1,7 @@
 package com.pocketchat.server.configurations.websocket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.services.user_contact.UserContactService;
 import org.slf4j.Logger;
@@ -10,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
@@ -34,11 +38,21 @@ public class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final WebSocketMessageSender webSocketMessageSender;
 
+    private final WebsocketChannelInterceptor websocketChannelInterceptor;
+
+    private final ObjectMapper objectMapper;
+
     @Autowired
-    CustomWebSocketConfig(UserContactService userContactService, WebSocketSessionManager webSocketSessionManager, WebSocketMessageSender webSocketMessageSender) {
+    CustomWebSocketConfig(UserContactService userContactService,
+                          WebSocketSessionManager webSocketSessionManager,
+                          WebSocketMessageSender webSocketMessageSender,
+                          WebsocketChannelInterceptor websocketChannelInterceptor,
+                          ObjectMapper objectMapper) {
         this.userContactService = userContactService;
         this.webSocketSessionManager = webSocketSessionManager;
         this.webSocketMessageSender = webSocketMessageSender;
+        this.websocketChannelInterceptor = websocketChannelInterceptor;
+        this.objectMapper = objectMapper;
     }
 
     // STOMP over WebSocket
@@ -58,7 +72,7 @@ public class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new WebsocketChannelInterceptor());
+        registration.interceptors(websocketChannelInterceptor);
     }
 
     // TODO: How WL knows this and used this to add WebSocket user sessions?
@@ -76,7 +90,8 @@ public class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) session.getPrincipal();
                         if (!ObjectUtils.isEmpty(usernamePasswordAuthenticationToken)) {
-                            logger.info("Incoming connection for {}", usernamePasswordAuthenticationToken.getName());
+                            setSecurityContext(usernamePasswordAuthenticationToken);
+                            logger.info("Incoming connection for {}.", usernamePasswordAuthenticationToken.getName());
                             UserContact ownUserContact = userContactService.getOwnUserContact();
 
                             webSocketSessionManager.addWebSocketSession(ownUserContact.getId(), session);
@@ -91,7 +106,8 @@ public class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
                         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) session.getPrincipal();
                         if (!ObjectUtils.isEmpty(usernamePasswordAuthenticationToken)) {
-                            logger.info("Closing connection for usernamePasswordAuthenticationToken.getName(): {}", usernamePasswordAuthenticationToken.getName());
+                            setSecurityContext(usernamePasswordAuthenticationToken);
+                            logger.info("Closing connection for {}.", usernamePasswordAuthenticationToken.getName());
 
                             UserContact ownUserContact = userContactService.getOwnUserContact();
 
@@ -99,6 +115,21 @@ public class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         }
 
                         super.afterConnectionClosed(session, closeStatus);
+                    }
+
+                    void readUsernamePasswordAuthenticationToken(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+                        try {
+                            String usernamePasswordAuthenticationTokenString = objectMapper.writeValueAsString(usernamePasswordAuthenticationToken);
+                            logger.info("usernamePasswordAuthenticationTokenString: {}", usernamePasswordAuthenticationTokenString);
+                        } catch (JsonProcessingException jsonProcessingException) {
+                            logger.error("Unable to parse usernamePasswordAuthenticationToken into JSON string.");
+                        }
+                    }
+
+                    void setSecurityContext(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+                        readUsernamePasswordAuthenticationToken(usernamePasswordAuthenticationToken);
+                        // Straight set Authentication token into Spring Security Context, because the content is correct and already passed through JWT filter.
+                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                     }
                 };
             }
