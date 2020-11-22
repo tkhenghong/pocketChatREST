@@ -249,6 +249,16 @@
       "name": "server.file.macos.base.directory",
       "type": "java.lang.String",
       "description": "Directory for all files uploaded to the MacOS machine."
+    },
+    {
+      "name": "kafka.consumer.bootstrap-servers",
+      "type": "java.lang.String",
+      "description": "A list of server address can be put into the property to allow connect multiple Kafka brokers."
+    },
+    {
+      "name": "kafka.consumer.group-id",
+      "type": "java.lang.String",
+      "description": "Default Kafka Consumer Group ID."
     }
   ]
 }

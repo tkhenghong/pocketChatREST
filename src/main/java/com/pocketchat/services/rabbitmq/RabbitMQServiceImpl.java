@@ -3,6 +3,7 @@ package com.pocketchat.services.rabbitmq;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.Connection;
@@ -79,8 +80,8 @@ public class RabbitMQServiceImpl implements RabbitMQService {
      */
     @Override
     public void addMessageToQueue(String queueName, String exchangeName, String routingKey, String message) {
-        createAmqpAdmin(queueName, exchangeName, routingKey); // Create exchanges with it's binding if needed.
-        sendRabbitMQMessageOld(exchangeName, routingKey, message);
+        // RabbitAdmin rabbitAdmin = createAmqpAdmin(queueName, exchangeName, routingKey); // Create exchanges with it's binding if needed.
+        sendRabbitMQMessage(exchangeName, routingKey, message);
     }
 
     /**
@@ -95,9 +96,9 @@ public class RabbitMQServiceImpl implements RabbitMQService {
     }
 
     /**
-     * Tried channel.basicPublish not yet succeed, use the more common one first.
+     * Send a message to RabbitMQ, using standard AmqpTemplate object.
      **/
-    private void sendRabbitMQMessageOld(String exchangeName, String routingKey, String message) {
+    private void sendRabbitMQMessage(String exchangeName, String routingKey, String message) {
         AmqpTemplate amqpTemplate = amqpTemplate(exchangeName);
         amqpTemplate.convertAndSend(exchangeName, routingKey, message);
     }
@@ -114,7 +115,9 @@ public class RabbitMQServiceImpl implements RabbitMQService {
     }
 
     /**
-     * Get access to the queue.
+     * Get access to the RabbitMQ by getting Channel object.
+     * <p>
+     * NOTE: Connection configuration depends from the application.properties files.
      *
      * @return Channel object which can be used for creating Consumer objects for consuming messages.
      */
