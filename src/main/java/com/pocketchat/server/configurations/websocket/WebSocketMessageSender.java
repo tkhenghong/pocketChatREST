@@ -50,6 +50,9 @@ public class WebSocketMessageSender {
 
     /**
      * Create connection to the RabbitMQ, get messages and send them to WebSocket sessions.
+     * TODO: Probably need to reference the link below:
+     * TODO: https://stackoverflow.com/questions/47331469/easiest-way-to-construct-rabbitlistener-at-runtime/47332278
+     * TODO: for simpler way of getting messages from RabbitMQ.
      *
      * @param queueName:         Name of the queue in RabbitMQ, typically ID of the UserContact object.
      * @param webSocketSessions: A list of WebSocket sessions. Maybe alive or dead.
