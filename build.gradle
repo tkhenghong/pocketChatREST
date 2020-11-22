@@ -1,14 +1,14 @@
 plugins {
-    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'org.springframework.boot' version '2.4.0'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
 }
 
-apply plugin: 'io.spring.dependency-management'
+//apply plugin: 'io.spring.dependency-management'
 
 group = 'com.pocketchat'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '14'
+sourceCompatibility = '15'
 
 configurations {
     compileOnly {
@@ -18,10 +18,11 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
-    set('springCloudVersion', "Hoxton.SR8")
+    set('springCloudVersion', "2020.0.0-M5")
 }
 
 // Put it ahead of the dependencies below, so it can be recognized by the Spring Boot and remove invalid properties error.
@@ -37,9 +38,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-    implementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-amqp' // Used for RabbiMQ
+    implementation 'org.springframework.kafka:spring-kafka'
     // Create compatibility with libraries, solves problem when creating JWT token in JWTUtil.java file.
     compile('javax.xml.bind:jaxb-api')
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
@@ -62,13 +63,13 @@ dependencies {
     // Annotation process for recognizing properties' values
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
     testImplementation 'org.junit.jupiter:junit-jupiter' // Use JUnit 5. Following https://www.baeldung.com/junit-5-gradle
     testImplementation 'org.mockito:mockito-junit-jupiter'
 
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.integration:spring-integration-test'
 }
