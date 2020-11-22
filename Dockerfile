@@ -17,7 +17,7 @@
 # https://stackoverflow.com/questions/56861256/gradle-build-failed-main-class-name-has-not-been-configured-and-it-could-not-be/56882464
 
 # temp container to build using gradle
-FROM gradle:jdk14 as TEMP_BUILD_IMAGE
+FROM gradle:jdk15 as TEMP_BUILD_IMAGE
 
 MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 
