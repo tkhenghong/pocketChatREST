@@ -1,0 +1,245 @@
+package com.pocketchat.server.configurations.websocket.custom_configs;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pocketchat.server.configurations.websocket.WebSocketMessageSender;
+import com.pocketchat.server.configurations.websocket.WebSocketSessionManager;
+import com.pocketchat.server.configurations.websocket.interceptors.WebSocketHttpHandshakeInterceptor;
+import com.pocketchat.services.user_contact.UserContactService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+import java.util.List;
+
+/**
+ * A class for configuring the WebSocket broker, with complete control.
+ * TODO: Connect WebSocket with JWT Authentication reference link:
+ * https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#websocket-stomp-authentication-token-based
+ */
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketMessageBrokerConfigurerCustomConfig implements WebSocketMessageBrokerConfigurer {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Value("#{'${websocket.broker.endpoint.list}'.split(',')}")
+    private List<String> webSocketBrokerEndpointList;
+
+    @Value("#{'${websocket.broker.allowed.origin.list}'.split(',')}")
+    private List<String> webSocketBrokerAllowedOriginList;
+
+    @Value("#{'${websocket.stomp.broker.list}'.split(',')}")
+    private List<String> webSocketStompBrokerList;
+
+    @Value("#{'${websocket.stomp.destination.prefix.list}'.split(',')}")
+    private List<String> webSocketStompDestinationPrefixList;
+
+    private final UserContactService userContactService;
+
+    private final WebSocketSessionManager webSocketSessionManager;
+
+    private final WebSocketMessageSender webSocketMessageSender;
+
+    private final ObjectMapper objectMapper;
+
+    @Autowired
+    WebSocketMessageBrokerConfigurerCustomConfig(UserContactService userContactService,
+                                                 WebSocketSessionManager webSocketSessionManager,
+                                                 WebSocketMessageSender webSocketMessageSender,
+                                                 ObjectMapper objectMapper) {
+        this.userContactService = userContactService;
+        this.webSocketSessionManager = webSocketSessionManager;
+        this.webSocketMessageSender = webSocketMessageSender;
+        this.objectMapper = objectMapper;
+    }
+
+    /**
+     *
+     * Little knowledge to remove all confusions between WebSocket, STOMP and SockJS:
+     * WebSocket is a protocol that is used by web and mobile apps to send real time events from backend to front end.
+     * Normally, many apps use this technology to make frontend connect to backend to either having group conversations,
+     * or getting broadcast messages quickly without keep asking the server REST APIs.
+     *
+     * HTTP/HTTPS and WebSocket protocols are in 1st layer in 7 main OSI layers, which is Application layer.
+     *
+     * WebSocket is a bi-directional, full-duplex connection over persistent TCP connection.
+     *
+     * Unlike normal HTTP or HTTPs are stateless protocols, where no client's information is stored on the server for a period of time,
+     * WebSocket is a STATEFUL protocol where you'll have a session with the backend(backend have some information about you), and backend
+     * will check whether the client is still alive or not periodically.
+     *
+     * STOMP.js is a JS library that uses WebSocket connection to subscribe some topics or even send message to a particular topic in the backend.
+     * Remember, It's just utilizing WebSocket, it's not doing connect to WebSocket part. It doesn't relate to WebSocket protocol itself at all.
+     *
+     * SockJS is a JS library that is used by A LOT of web browsers for connecting WebSocket.
+     * It will connect to backend's WebSocket using ws or wss protocols.
+     * It will connect to backend's WebSocket using http or https protocols, If return status code is 200, it will upgrade from http/https to ws/wss protocol.
+     * For example, SockJS will send:
+     * GET http://localhost:8080/ws/info?t=1606836349023
+     * Then, it will send:
+     * GET ws://localhost:8080/ws/209/hyffywlk/websocket
+     * When backend return status code 101, the WebSocket has been successfully established.
+     *
+     */
+
+    /**
+     * FRONT END
+     * Using web browsers connect WebSocket using SockJS as fallback option, and using STOMP.js to step over WebSocket that SockJS has created.
+     * Roughly steps they are using:
+     * Step 1: Setup SockJS, using the ones listed in registry.addEndpoint(...)
+     * var socket = new SockJS('/ws'); <-- SockJS is an representative object comes from sock.js library.
+     * Step 2:
+     * var stompClient = Stomp.over(socket); <-- Stomp is an representative object comes from stomp.js library.
+     * Step 3: Listen to any topic available that listed in registry.enableSimpleBroker(....).
+     * stompClient.subscribe('/topic/public', onMessageReceived);
+     * Step 4: Send message to a particular topic listed in registry.setApplicationDestinationPrefixes("/app");
+     * stompClient.send("/app/chat.addUser",
+     *         {},
+     *         JSON.stringify({sender: username, type: 'JOIN'})
+     *     )
+     *
+     */
+
+    /**
+     * BACKEND
+     * How to setup WebSocket configuration perfectly:
+     * Step 1:
+     * Override 2 methods(mainly) from "implements WebSocketMessageBrokerConfigurer"
+     * registerStompEndpoints(...) and configureMessageBroker(...)
+     * Step 2:
+     * In registerStompEndpoints(StompEndpointRegistry registry) {....}, add some endpoints for WebSocket clients to connect(either using SockJS by web browser clients or WebSocket IO )
+     * registry.addEndpoint("/ws", "/greeting")
+     * Step 3:
+     * In configureMessageBroker(MessageBrokerRegistry registry) {....}, add some prefixes that your backend is going to use.
+     * registry.enableSimpleBroker("/topic", "/queue");
+     * Step 4: Set the prefixes for allow the frontend clients to send messages to:
+     * registry.setApplicationDestinationPrefixes("/app");
+     * Step 5(Optional): Add HandshakeInterceptor class to allow do something before and after handshake.
+     * Step 6(Optional): Add WebSocket listener class to allow hear WebSocket connected and disconnected event.
+     * Step 7(Optional): Add WebSocket Channel Interceptor to allow use hear STOMP commands sent from frontend clients.
+     * Step 8: Create @RestController classes with @MessageMapping(...) that allows frontend clients to send like FRONTEND Step 4.
+     * For example:
+     * ****Look at FRONTEND Step 4.****
+     * to
+     *
+     * @MessageMapping("/chat.sendMessage") ChatMessage sendMessage(@Payload ChatMessage chatMessage) {....}
+     * Step 9(Optional): Add @SendTo(....) to allow send to the topic that frontend clients listening to.
+     * For example:
+     * ****Look at FRONTEND Step 3.****
+     * to
+     * @MessageMapping("/chat.addUser")
+     * @SendTo("/topic/public") public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {...}
+     * NOTE: You may add SimpMessageHeaderAccessor object into the method to send STOMP command back to frontend client.
+     */
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        /**
+         * Connect to WebSocket using STOMP over SockJS (Web browser's way):
+         * http://localhost:8080/ws
+         * http://localhost:8080/greeting
+         * or (If using WebSocket)
+         * http://localhost:8080/ws/websocket
+         * http://localhost:8080/greeting/websocket
+         * Follow Step 1 of the Frontend above.
+         *
+         * IMPORTANT NOTE: If you're using Google Chrome, and using http://websocket.org/echo.html (Note that I'm not using https to reach the website)
+         * to test your WebSocket, you MUST add /websocket behind your endpoints below:
+         * For example: ws:/localhost:8080/greeting becomes ws:/localhost:8080/greeting/websocket
+         * Solution with explanation reference: https://stackoverflow.com/questions/51845452
+         */
+        // List<String> to String[]. Reference: https://stackoverflow.com/questions/2552420
+        registry.addEndpoint(webSocketBrokerEndpointList.toArray(new String[0]))
+                .addInterceptors(new WebSocketHttpHandshakeInterceptor())
+                .setAllowedOrigins(webSocketBrokerAllowedOriginList.toArray(new String[0]))
+                .withSockJS();
+    }
+
+    // STOMP over WebSocket
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        /**
+         * registry.enableSimpleBroker(...) is to tell here that everything your
+         * frontend client and backend @MessageMapping(...) are set up using
+         * the following destination prefixes. Such as your STOMP over SockJS client,
+         * When they are listening to any STOMP topics configured in the server, like:
+         * (stompClient is the object after FRONTEND Step 1 and Step 2, refer to top explanations)
+         *                  stompClient.subscribe('/topic/public', onMessageReceived);
+         *
+         * Backend has to configure like the below Line 1 in order to differentiate the STOMP commands that they are listening.
+         *
+         * When the frontend client, send a topic through the stompClient object, like:
+         *                  stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+         *
+         * The backend has to configure like the below Line 2 in order to differentiate the STOMP commands for sending messages.
+         */
+        registry.enableSimpleBroker(webSocketStompBrokerList.toArray(new String[0])); // Line 1
+        registry.setApplicationDestinationPrefixes(webSocketStompDestinationPrefixList.toArray(new String[0])); // Line 2
+    }
+
+    // TODO: How WL knows this and used this to add WebSocket user sessions?
+    // https://www.programcreek.com/java-api-examples/?api=org.springframework.web.socket.handler.WebSocketHandlerDecorator
+    // Example 7
+//    @Override
+//    public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
+//        registry.addDecoratorFactory(new WebSocketHandlerDecoratorFactory() {
+//            @Override
+//            public WebSocketHandlerDecorator decorate(WebSocketHandler handler) {
+//                return new WebSocketHandlerDecorator(handler) {
+//
+//                    // NOTE: Unauthenticated/authenticated users will trigger this method.
+//                    @Override
+//                    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+//                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) session.getPrincipal();
+//                        if (!ObjectUtils.isEmpty(usernamePasswordAuthenticationToken)) {
+//                            setSecurityContext(usernamePasswordAuthenticationToken);
+//                            logger.info("Incoming connection for {}.", usernamePasswordAuthenticationToken.getName());
+//                            UserContact ownUserContact = userContactService.getOwnUserContact();
+//
+//                            webSocketSessionManager.addWebSocketSession(ownUserContact.getId(), session);
+//                            List<WebSocketSession> webSocketSessionList = webSocketSessionManager.getWebSocketSessions(ownUserContact.getId());
+//                            webSocketMessageSender.sendMessage(ownUserContact.getId(), webSocketSessionList);
+//                        }
+//
+//                        super.afterConnectionEstablished(session);
+//                    }
+//
+//                    @Override
+//                    public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+//                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) session.getPrincipal();
+//                        if (!ObjectUtils.isEmpty(usernamePasswordAuthenticationToken)) {
+//                            setSecurityContext(usernamePasswordAuthenticationToken);
+//                            logger.info("Closing connection for {}.", usernamePasswordAuthenticationToken.getName());
+//
+//                            UserContact ownUserContact = userContactService.getOwnUserContact();
+//
+//                            webSocketSessionManager.removeWebSocketSession(ownUserContact.getId(), session);
+//                        }
+//
+//                        super.afterConnectionClosed(session, closeStatus);
+//                    }
+//
+//                    void readUsernamePasswordAuthenticationToken(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+//                        try {
+//                            String usernamePasswordAuthenticationTokenString = objectMapper.writeValueAsString(usernamePasswordAuthenticationToken);
+//                            logger.info("usernamePasswordAuthenticationTokenString: {}", usernamePasswordAuthenticationTokenString);
+//                        } catch (JsonProcessingException jsonProcessingException) {
+//                            logger.error("Unable to parse usernamePasswordAuthenticationToken into JSON string.");
+//                        }
+//                    }
+//
+//                    void setSecurityContext(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+//                        readUsernamePasswordAuthenticationToken(usernamePasswordAuthenticationToken);
+//                        // Straight set Authentication token into Spring Security Context, because the content is correct and already passed through JWT filter.
+//                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+//                    }
+//                };
+//            }
+//        });
+//    }
+}
