@@ -1,5 +1,6 @@
 package com.pocketchat.services.kafka;
 
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -8,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface KafkaService {
-    void addMessage(String id, String message);
+    void addMessage(String userId, String message);
 
-    List<String> getMessages(String id);
+    void addMessage(String userId, String kafkaTopic, String message);
+
+    List<String> getMessages(String userId, String kafkaTopic);
 
     Map<String, Object> generateProducerConfigurations(Map<String, Object> additionalConfigurations);
 
@@ -25,4 +28,6 @@ public interface KafkaService {
     Map<String, Object> generateConsumerConfigurations(String kafkaBroker, String groupId, Map<String, Object> additionalConfigurations);
 
     ConsumerFactory<String, String> generateConsumerFactory(Map<String, Object> consumerConfigurations);
+
+    ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(ConsumerFactory<String, String> consumerFactory);
 }

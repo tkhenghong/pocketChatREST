@@ -1,20 +1,27 @@
 package com.pocketchat.services.kafka;
 
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,45 +35,150 @@ import java.util.Map;
 public class KafkaServiceImpl implements KafkaService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final String defaultKafkaBroker;
+    private final String producerBootstrapServers;
 
-    private final String defaultGroupId;
+    private final String defaultProducerClientId;
+
+    private final String consumerBootstrapServers;
+
+    private final String defaultConsumerClientId;
+
+    private final String defaultConsumerGroupId;
+
+    private final KafkaTemplate kafkaTemplate;
 
     @Autowired
-    KafkaServiceImpl(@Value("${kafka.consumer.bootstrap-servers}") String defaultKafkaBroker,
-                     @Value("${kafka.consumer.group-id}") String defaultGroupId) {
-        this.defaultKafkaBroker = defaultKafkaBroker;
-        this.defaultGroupId = defaultGroupId;
+    KafkaServiceImpl(@Value("${kafka.producer.client-id}") String defaultProducerClientId,
+                     @Value("${kafka.consumer.client-id}") String defaultConsumerClientId,
+                     @Value("${kafka.consumer.group-id}") String defaultConsumerGroupId,
+                     @Value("${kafka.producer.bootstrap-servers}") String producerBootstrapServers,
+                     @Value("${kafka.consumer.bootstrap-servers}") String consumerBootstrapServers,
+                     @Lazy @Qualifier("customKafkaTemplate") KafkaTemplate kafkaTemplate) {
+        this.defaultProducerClientId = defaultProducerClientId;
+        this.defaultConsumerClientId = defaultConsumerClientId;
+        this.producerBootstrapServers = producerBootstrapServers;
+        this.consumerBootstrapServers = consumerBootstrapServers;
+        this.defaultConsumerGroupId = defaultConsumerGroupId;
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+    /**
+     * Add message into Kafka.
+     * Some reference: http://cloudurable.com/blog/kafka-tutorial-kafka-producer/index.html
+     *
+     * @param kafkaTopic: An identifier for the Kafka topic.
+     * @param message:    A String converted from object(typically WebSocketMessage object) to be store into Kafka.
+     */
+    @Override
+    public void addMessage(String kafkaTopic, String message) {
+        logger.info("Adding message into kafkaTopic: {}", kafkaTopic);
+
+        Map<String, Object> producerConfigurations = generateProducerConfigurations(null);
+
+        ProducerFactory<String, String> producerFactory = generateProducerFactory(producerConfigurations);
+
+        KafkaTemplate kafkaTemplate = generateKafkaTemplate(producerFactory);
+
+        kafkaTemplate.send(kafkaTopic, message).addCallback(new ListenableFutureCallback() {
+            @Override
+            public void onFailure(Throwable ex) {
+                logger.info("Message has failed to sent to {}.", kafkaTopic);
+                // TODO: Saved failed Kafka messages to DB table called PendingKafkaMessages.
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+                logger.info("Message has been sent to {} successfully.", kafkaTopic);
+                kafkaTemplate.flush();
+            }
+        });
     }
 
     /**
      * Add message into Kafka.
      *
-     * @param id:      An identifier for the Kafka topic.
-     * @param message: A String converted from object(typically WebSocketMessage object) to be store into Kafka.
+     * @param userId:     User ID to be identified in Kafka, allow better troubleshooting.
+     * @param kafkaTopic: An identifier for the Kafka topic.
+     * @param message:    A String converted from object(typically WebSocketMessage object) to be store into Kafka.
      */
     @Override
-    public void addMessage(String id, String message) {
-        logger.info("Adding message into Kafka with ID: {}", id);
-        // Find the user in Kafka topics.
+    public void addMessage(String userId, String kafkaTopic, String message) {
+        logger.info("Adding message into kafkaTopic: {}", kafkaTopic);
 
-        // Send messages into topics.
+        Map<String, Object> producerConfigurations = generateProducerConfigurations(null);
+        if (StringUtils.hasText(userId)) {
+            producerConfigurations.put(ProducerConfig.CLIENT_ID_CONFIG, userId);
+        }
+
+        ProducerFactory<String, String> producerFactory = generateProducerFactory(producerConfigurations);
+
+        KafkaTemplate kafkaTemplate = generateKafkaTemplate(producerFactory);
+
+        kafkaTemplate.send(kafkaTopic, message).addCallback(new ListenableFutureCallback() {
+            @Override
+            public void onFailure(Throwable ex) {
+                logger.info("Message has failed to sent to {}.", kafkaTopic);
+                // TODO: Saved failed Kafka messages to DB table called PendingKafkaMessages.
+            }
+
+            @Override
+            public void onSuccess(Object result) {
+                logger.info("Message has been sent to {} successfully.", kafkaTopic);
+            }
+        });
     }
+
 
     /**
      * Add message into Kafka topic based on @param id.
      *
-     * @param id: An identifier used to find the relative topic in Kafka.
+     * @param kafkaTopic: A list of identifiers used to find the relative topic in Kafka.
      * @return A list of messages from Kafka topic, typically can be converted into WebSocketMessage.
      */
     @Override
-    public List<String> getMessages(String id) {
-        logger.info("Get messages from Kafka using ID: {}", id);
-        // Find the user in Kafka topics.
+    public List<String> getMessages(String userId, String kafkaTopic) {
+        logger.info("getMessages()");
+        logger.info("kafkaTopic: {}", kafkaTopic);
 
-        // Get current not yet send messages.
+        List<String> messages = new ArrayList<>();
 
-        return new ArrayList<>();
+        // Create Kafka Consumer Factory.
+        Map<String, Object> consumerConfigurations = generateConsumerConfigurations(null);
+
+        ConsumerFactory<String, String> consumerFactory = generateConsumerFactory(consumerConfigurations);
+
+        ConcurrentKafkaListenerContainerFactory<String, String> concurrentKafkaListenerContainerFactory =
+                kafkaListenerContainerFactory(consumerFactory);
+
+        // Create KafkaConsumer.
+        ConsumerFactory consumerFactory1 = concurrentKafkaListenerContainerFactory.getConsumerFactory();
+        Consumer consumer = consumerFactory1.createConsumer();
+
+        List<String> kafkaTopics = new ArrayList<>();
+        kafkaTopics.add(kafkaTopic);
+        consumer.subscribe(kafkaTopics);
+
+        // Polling Consumer records.
+        LocalDateTime now = LocalDateTime.now();
+        // A polling for Consumer is a mechanism for the consumer app to wait for Kafka to return the result of a topic's messages.
+        // https://stackoverflow.com/questions/41030854/kafka-consumer-polling-timeout
+        ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.between(now, now.plusSeconds(1)));
+        logger.info("consumerRecords.count(): {}", consumerRecords.count());
+
+        logger.info("kafkaTopic: {}", kafkaTopic);
+        // Getting messages from one topic from ConsumerRecords object.
+        Iterable<ConsumerRecord<String, String>> consumerRecordIterable = consumerRecords.records(kafkaTopic);
+        consumerRecordIterable.forEach(consumerRecord -> {
+            String message = consumerRecord.value();
+            logger.info("Extracted message: {}.", message);
+            messages.add(message);
+
+            consumer.commitSync(); // Acknowledge this message has been received.
+        });
+
+        consumer.close();
+
+        return messages;
     }
 
     /******************************Kafka Producer Methods**********************************/
@@ -78,12 +190,11 @@ public class KafkaServiceImpl implements KafkaService {
      */
     @Override
     public Map<String, Object> generateProducerConfigurations(Map<String, Object> additionalConfigurations) {
-        Map<String, Object> configurations = new HashMap<>();
-        configurations.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, defaultKafkaBroker);
+        Map<String, Object> configurations = standardProducerConfigurations();
         if (!ObjectUtils.isEmpty(additionalConfigurations)) {
             configurations.putAll(additionalConfigurations);
         }
-        return standardProducerConfigurations(configurations);
+        return configurations;
     }
 
     /**
@@ -95,28 +206,32 @@ public class KafkaServiceImpl implements KafkaService {
      */
     @Override
     public Map<String, Object> generateProducerConfigurations(String kafkaBroker, Map<String, Object> additionalConfigurations) {
-        Map<String, Object> configurations = new HashMap<>();
+        Map<String, Object> configurations = standardProducerConfigurations();
         configurations.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBroker);
         if (!ObjectUtils.isEmpty(additionalConfigurations)) {
             configurations.putAll(additionalConfigurations);
         }
-        return standardProducerConfigurations(configurations);
+        return configurations;
     }
 
     /**
-     * @param configurations: Configurations for other Kafka Producer methods.
+     * For more standard configuration of Producer, see: https://kafka.apache.org/documentation/#producerconfigs
+     *
      * @return Final configurations for Kafka Producer.
      */
-    private Map<String, Object> standardProducerConfigurations(Map<String, Object> configurations) {
+    private Map<String, Object> standardProducerConfigurations() {
+        Map<String, Object> configurations = new HashMap<>();
+        configurations.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, producerBootstrapServers);
         configurations.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configurations.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configurations.put(ProducerConfig.CLIENT_ID_CONFIG, defaultProducerClientId);
         return configurations;
     }
 
     /**
      * Create a Kafka instance using producer factory class of Kafka.
-     * @param producerConfigurations: Producer Configurations from generateProducerConfigurations(...).
      *
+     * @param producerConfigurations: Producer Configurations from generateProducerConfigurations(...).
      * @return ProducerFactory object which has information of Kafka Producer.
      */
     public ProducerFactory<String, String> generateProducerFactory(Map<String, Object> producerConfigurations) {
@@ -144,16 +259,13 @@ public class KafkaServiceImpl implements KafkaService {
      */
     @Override
     public Map<String, Object> generateConsumerConfigurations(Map<String, Object> additionalConfigurations) {
-        Map<String, Object> configurations = new HashMap<>();
-
-        configurations.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, defaultKafkaBroker);
-        configurations.put(ConsumerConfig.GROUP_ID_CONFIG, defaultGroupId);
+        Map<String, Object> configurations = generateStandardConsumerConfigurations();
 
         if (!ObjectUtils.isEmpty(additionalConfigurations)) {
             configurations.putAll(additionalConfigurations);
         }
 
-        return generateStandardConsumerConfigurations(configurations);
+        return configurations;
     }
 
     /**
@@ -166,36 +278,35 @@ public class KafkaServiceImpl implements KafkaService {
      */
     @Override
     public Map<String, Object> generateConsumerConfigurations(String kafkaBroker, String groupId, Map<String, Object> additionalConfigurations) {
-        Map<String, Object> configurations = new HashMap<>();
+        Map<String, Object> configurations = generateStandardConsumerConfigurations();
 
         if (StringUtils.hasText(kafkaBroker)) {
-            configurations.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBroker);
-        } else {
-            configurations.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, defaultKafkaBroker);
+            configurations.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBroker);
         }
 
         if (StringUtils.hasText(groupId)) {
             configurations.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        } else {
-            configurations.put(ConsumerConfig.GROUP_ID_CONFIG, defaultGroupId);
         }
 
         if (!ObjectUtils.isEmpty(additionalConfigurations)) {
             configurations.putAll(additionalConfigurations);
         }
 
-        return generateStandardConsumerConfigurations(configurations);
+        return configurations;
     }
 
     /**
      * Add standard Kafka Consumer configurations here.
      *
-     * @param configurations: Configurations for other Kafka consumer methods.
      * @return Final configurations for Kafka Consumer.
      */
-    private Map<String, Object> generateStandardConsumerConfigurations(Map<String, Object> configurations) {
+    private Map<String, Object> generateStandardConsumerConfigurations() {
+        Map<String, Object> configurations = new HashMap<>();
+        configurations.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, consumerBootstrapServers);
         configurations.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configurations.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        configurations.put(ConsumerConfig.CLIENT_ID_CONFIG, defaultConsumerClientId);
+        configurations.put(ConsumerConfig.GROUP_ID_CONFIG, defaultConsumerGroupId);
         return configurations;
     }
 
@@ -221,6 +332,9 @@ public class KafkaServiceImpl implements KafkaService {
         factory.setConsumerFactory(consumerFactory);
         return factory;
     }
+
+    // How to use Kafka Consumer:
+    // https://www.tutorialspoint.com/apache_kafka/apache_kafka_consumer_group_example.htm
 
     /******************************Kafka Consumer Methods END**********************************/
 }

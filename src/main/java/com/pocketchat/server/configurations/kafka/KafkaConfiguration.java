@@ -1,57 +1,122 @@
 package com.pocketchat.server.configurations.kafka;
 
-//import org.apache.kafka.clients.consumer.ConsumerConfig;
-//import org.apache.kafka.clients.producer.ProducerConfig;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.kafka.annotation.EnableKafka;
-//import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-//import org.springframework.kafka.core.*;
-//
-//import java.util.HashMap;
-//import java.util.Map;
-//
-//@Configuration
-//@EnableKafka
-//public class KafkaConfiguration {
-//
-//    @Bean
-//    ConcurrentKafkaListenerContainerFactory<Integer, String>
-//    kafkaListenerContainerFactory() {
-//        ConcurrentKafkaListenerContainerFactory<Integer, String> factory =
-//                new ConcurrentKafkaListenerContainerFactory<>();
-//        factory.setConsumerFactory(consumerFactory());
-//        return factory;
-//    }
-//
-//    @Bean
-//    public ConsumerFactory<Integer, String> consumerFactory() {
-//        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
-//    }
-//
-//    @Bean
-//    public Map<String, Object> consumerConfigs() {
-//        Map<String, Object> props = new HashMap<>();
-//        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafka.getBrokersAsString());
-//        ...
-//        return props;
-//    }
-//
-//    @Bean
-//    public ProducerFactory<Integer, String> producerFactory() {
-//        return new DefaultKafkaProducerFactory<>(producerConfigs());
-//    }
-//
-//    @Bean
-//    public Map<String, Object> producerConfigs() {
-//        Map<String, Object> props = new HashMap<>();
-//        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafka.getBrokersAsString());
-//        return props;
-//    }
-//
-//    @Bean
-//    public KafkaTemplate<Integer, String> kafkaTemplate() {
-//        return new KafkaTemplate<Integer, String>(producerFactory());
-//    }
-//
-//}
+import com.pocketchat.services.kafka.KafkaService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+
+import java.util.Map;
+
+/**
+ * Setup default producer and consumer Kafka configuration for the application.
+ * <p>
+ * NOTE: It's not recommended to use the default producer/consumer KafkaTemplate / ConcurrentKafkaListenerContainerFactory objects sending/listening
+ * because it will be difficult to troubleshoot the problems in Kafka log in the future.
+ */
+@Configuration
+// Add @EnableKafka to let this application to listen for Kafka topic
+@EnableKafka
+public class KafkaConfiguration {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final KafkaService kafkaService;
+
+    private final String defaultProducerClientId;
+
+    private final String defaultConsumerClientId;
+
+    private final String defaultConsumerGroupId;
+
+    private final String producerBootstrapServers;
+
+    private final String consumerBootstrapServers;
+
+    @Autowired
+    public KafkaConfiguration(KafkaService kafkaService,
+                              @Value("${kafka.producer.client-id}") String defaultProducerClientId,
+                              @Value("${kafka.consumer.client-id}") String defaultConsumerClientId,
+                              @Value("${kafka.consumer.group-id}") String defaultConsumerGroupId,
+                              @Value("${kafka.producer.bootstrap-servers}") String producerBootstrapServers,
+                              @Value("${kafka.consumer.bootstrap-servers}") String consumerBootstrapServers) {
+        this.kafkaService = kafkaService;
+        this.defaultProducerClientId = defaultProducerClientId;
+        this.defaultConsumerClientId = defaultConsumerClientId;
+        this.defaultConsumerGroupId = defaultConsumerGroupId;
+        this.producerBootstrapServers = producerBootstrapServers;
+        this.consumerBootstrapServers = consumerBootstrapServers;
+    }
+
+    /**
+     * Default Producer factory for Kafka.
+     *
+     * @return ProducerFactory<String, String> object.
+     */
+    @Bean
+    ProducerFactory<String, String> producerFactory() {
+        Map<String, Object> producerConfigurations = kafkaService.generateProducerConfigurations(null);
+
+        return kafkaService.generateProducerFactory(producerConfigurations);
+    }
+
+    /**
+     * Default KafkaTemplate object for Kafka.
+     *
+     * @return KafkaTemplate<String, String> object.
+     */
+    @Bean
+    public KafkaTemplate<String, String> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory()); // The KafkaTemplate object loads with the Producer object in it.
+    }
+
+    /**
+     * Default consumer factory for Kafka Consumer.
+     *
+     * @return ConsumerFactory<String, String> object.
+     */
+    @Bean
+    public ConsumerFactory<String, String> consumerFactory() {
+        Map<String, Object> consumerConfigurations = kafkaService.generateConsumerConfigurations(null);
+
+        return kafkaService.generateConsumerFactory(consumerConfigurations);
+    }
+
+    /**
+     * Default Kafka listeners' configuration in the project.
+     *
+     * @return ConcurrentKafkaListenerContainerFactory<String, String> object.
+     */
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> concurrentKafkaListenerContainerFactory = new ConcurrentKafkaListenerContainerFactory<>();
+
+        concurrentKafkaListenerContainerFactory.setConsumerFactory(consumerFactory());
+
+        return concurrentKafkaListenerContainerFactory;
+    }
+
+    @Bean("customKafkaTemplate")
+    public KafkaTemplate generateKafkaTemplate() {
+        logger.info("generateKafkaTemplate()");
+        Map<String, Object> producerConfigurations = kafkaService.generateProducerConfigurations(null);
+        ProducerFactory<String, String> producerFactory = kafkaService.generateProducerFactory(producerConfigurations);
+        return kafkaService.generateKafkaTemplate(producerFactory);
+    }
+
+    private void readValueValues(String methodName) {
+        logger.info("{} defaultProducerClientId: {}", methodName, defaultProducerClientId);
+        logger.info("{} defaultConsumerClientId: {}", methodName, defaultConsumerClientId);
+        logger.info("{} defaultConsumerGroupId: {}", methodName, defaultConsumerGroupId);
+        logger.info("{} producerBootstrapServers: {}", methodName, producerBootstrapServers);
+        logger.info("{} consumerBootstrapServers: {}", methodName, consumerBootstrapServers);
+    }
+
+
+}

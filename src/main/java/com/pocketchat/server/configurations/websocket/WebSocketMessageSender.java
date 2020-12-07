@@ -10,11 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * A class which is used to send messages from Kafka and RabbitMQ to the frontend client when they have connected to the server.
+ */
 @Service
 public class WebSocketMessageSender {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -36,16 +40,9 @@ public class WebSocketMessageSender {
      * @param webSocketSessionList: List of WebSocketSessions. When the messages are found, all online WebSocketSessions will get the messages.
      */
     public void sendMessage(String id, List<WebSocketSession> webSocketSessionList) {
-
-        logger.info("Sending messages to id: {}", id);
-
+        logger.info("Sending messages to ID: {}", id);
         handleRabbitMQQueueMessages(id, webSocketSessionList);
-        // Find user in Kafka
-        logger.info("Found user queue to Kafka");
         handleKafkaTopicMessages(id, webSocketSessionList);
-        kafkaService.getMessages(id);
-        // Send message to it.
-        logger.info("Sending messages...");
     }
 
     /**
@@ -69,23 +66,15 @@ public class WebSocketMessageSender {
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
-                    logger.info("handleDelivery()");
-                    String routingKey = envelope.getRoutingKey();
-                    String contentType = properties.getContentType();
                     long deliveryTag = envelope.getDeliveryTag();
-
-                    logger.info("routingKey: {}", routingKey);
-                    logger.info("contentType: {}", contentType);
-                    logger.info("deliveryTag: {}", deliveryTag);
 
                     String message = new String(body);
 
-                    logger.info("The message: {}", message);
+                    logger.info("[routingKey: {}, contentType: {}, deliveryTag: {}, message: {}]", envelope.getRoutingKey(), properties.getContentType(), deliveryTag, message);
+
                     logger.info("Remaining message count from queue {}: {}", queueName, queueDeclareOkResponse.getMessageCount());
 
-                    sendMessageToWebSocketSessions(channel, deliveryTag, message, webSocketSessions);
-
-                    logger.info("Acknowledged the message.");
+                    sendRabbitMQMessageToAllWebSocketSessions(channel, deliveryTag, message, webSocketSessions);
 
                     if (remainingMessageCount == deliveryTag) {
                         logger.info("Finish reading messages for {}.", queueName);
@@ -113,7 +102,7 @@ public class WebSocketMessageSender {
      * @param message:           Message. The content.
      * @param webSocketSessions: List of WebSocketSession objects.
      */
-    void sendMessageToWebSocketSessions(Channel channel, long deliveryTag, String message, List<WebSocketSession> webSocketSessions) {
+    void sendRabbitMQMessageToAllWebSocketSessions(Channel channel, long deliveryTag, String message, List<WebSocketSession> webSocketSessions) {
         webSocketSessions.forEach(webSocketSession -> {
             try {
                 if (webSocketSession.isOpen()) {
@@ -134,13 +123,26 @@ public class WebSocketMessageSender {
     }
 
     /**
-     * TODO: Finish the logic here.
      * Create connection to Kafka, get messages and send them to WebSocket sessions.
      *
      * @param queueName:         Name of the queue in RabbitMQ, typically ID of the UserContact object.
      * @param webSocketSessions: A list of WebSocket sessions. Maybe alive or dead.
      */
     private void handleKafkaTopicMessages(String queueName, List<WebSocketSession> webSocketSessions) {
+        List<String> messages = kafkaService.getMessages(queueName, queueName); // Client ID and Kafka topic are both designed using User ID.
 
+        // Send every message to every WebSocketSession.
+        messages.forEach(message -> {
+            webSocketSessions.forEach(webSocketSession -> {
+                if (webSocketSession.isOpen()) {
+                    WebSocketMessage webSocketMessage = new TextMessage(message);
+                    try {
+                        webSocketSession.sendMessage(webSocketMessage);
+                    } catch (IOException e) {
+                        logger.info("Unable to to this message to webSocket session ID: {}.", webSocketSession.getId());
+                    }
+                }
+            });
+        });
     }
 }

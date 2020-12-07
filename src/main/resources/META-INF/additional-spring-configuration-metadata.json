@@ -259,6 +259,21 @@
       "name": "kafka.consumer.group-id",
       "type": "java.lang.String",
       "description": "Default Kafka Consumer Group ID."
+    },
+    {
+      "name": "kafka.producer.bootstrap-servers",
+      "type": "java.lang.String",
+      "description": "Server list in string for Kafka servers, splitted by ','."
+    },
+    {
+      "name": "kafka.producer.client-id",
+      "type": "java.lang.String",
+      "description": "Client Identifier to be sent to Kafka for better identification of Producer, better for logging and troubleshooting."
+    },
+    {
+      "name": "kafka.consumer.client-id",
+      "type": "java.lang.String",
+      "description": "Client Identifier to be sent to Kafka for better identification of Consumer, better for logging and troubleshooting."
     }
   ]
 }
