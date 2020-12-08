@@ -43,7 +43,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests().antMatchers("/authentication/**").permitAll()
-                .antMatchers("/socket/**").authenticated() // Close this when the JWT is ready
+                .antMatchers("/socket/**").authenticated() // WebSocket APIs
+                .antMatchers("/api/kafka/advanced/**").permitAll() // Kafka APIs.
                 // .antMatchers("/csrf").permitAll()
                 // .and() // Temporary allow all endpoints to be used without authentication (For development only)
                 // .authorizeRequests().antMatchers("/**").permitAll()
