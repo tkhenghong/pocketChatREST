@@ -138,7 +138,7 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         try {
             // All authenticated users should have UsernamePasswordAuthenticationToken object.
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            isAuthenticated = ObjectUtils.isEmpty(usernamePasswordAuthenticationToken);
+            isAuthenticated = !ObjectUtils.isEmpty(usernamePasswordAuthenticationToken);
         } catch (ClassCastException ignored) {
             // Ignored due to only checking.
         }
