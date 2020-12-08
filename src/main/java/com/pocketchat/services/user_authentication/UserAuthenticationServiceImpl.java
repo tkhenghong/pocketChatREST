@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,6 +49,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -128,6 +130,20 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
         this.emailUtil = emailUtil;
         this.countryCodeUtil = countryCodeUtil;
         this.passwordUtil = passwordUtil;
+    }
+
+    @Override
+    public Boolean checkIsAuthenticated() {
+        boolean isAuthenticated = false;
+        try {
+            // All authenticated users should have UsernamePasswordAuthenticationToken object.
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+            isAuthenticated = ObjectUtils.isEmpty(usernamePasswordAuthenticationToken);
+        } catch (ClassCastException ignored) {
+            // Ignored due to only checking.
+        }
+
+        return isAuthenticated;
     }
 
     @Override

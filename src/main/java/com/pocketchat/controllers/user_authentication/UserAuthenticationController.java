@@ -7,10 +7,7 @@ import com.pocketchat.models.controllers.response.user_authentication.UserAuthen
 import com.pocketchat.models.controllers.response.user_authentication.VerifyEmailAddressResponse;
 import com.pocketchat.services.user_authentication.UserAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -23,6 +20,11 @@ public class UserAuthenticationController {
     @Autowired
     UserAuthenticationController(UserAuthenticationService userAuthenticationService) {
         this.userAuthenticationService = userAuthenticationService;
+    }
+
+    @GetMapping("")
+    public boolean isAuthenticated() {
+        return userAuthenticationService.checkIsAuthenticated();
     }
 
     @PostMapping("/register/mobileNumber")

@@ -11,6 +11,8 @@ import com.pocketchat.models.otp.OTP;
 
 public interface UserAuthenticationService {
 
+    Boolean checkIsAuthenticated();
+
     PreVerifyMobileNumberOTPResponse registerMobileNumber(RegisterUsingMobileNumberRequest registerUsingMobileNumberRequest);
 
     PreVerifyMobileNumberOTPResponse loginMobileNumber(PreVerifyMobileNumberOTPRequest preVerifyMobileNumberOTPRequest);
