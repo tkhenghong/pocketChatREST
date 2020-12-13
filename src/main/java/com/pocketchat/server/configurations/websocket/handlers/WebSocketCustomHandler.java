@@ -85,6 +85,7 @@ public class WebSocketCustomHandler implements WebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
         logger.info("handleTransportError()");
+        logger.info("Exception message: ", exception.getMessage());
     }
 
     /**
