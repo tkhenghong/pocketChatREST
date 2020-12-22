@@ -14,6 +14,7 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,10 +28,13 @@ public class WebSocketMessageSender {
 
     private final KafkaService kafkaService;
 
+    private final WebSocketSessionManager webSocketSessionManager;
+
     @Autowired
-    WebSocketMessageSender(@Lazy RabbitMQService rabbitMQService, @Lazy KafkaService kafkaService) {
+    WebSocketMessageSender(@Lazy RabbitMQService rabbitMQService, @Lazy KafkaService kafkaService, WebSocketSessionManager webSocketSessionManager) {
         this.rabbitMQService = rabbitMQService;
         this.kafkaService = kafkaService;
+        this.webSocketSessionManager = webSocketSessionManager;
     }
 
     /**
@@ -43,6 +47,39 @@ public class WebSocketMessageSender {
         logger.info("Sending messages to ID: {}", id);
         handleRabbitMQQueueMessages(id, webSocketSessionList);
         handleKafkaTopicMessages(id, webSocketSessionList);
+    }
+
+    /**
+     * Send object to current WebSocket sessions that linked to the userIds.
+     * Mainly used to send messages to the target users that connected to the WebSocket currently.
+     * @param payload: The message that has been converted to JSON string.
+     * @param userIds: The IDs to be used to find the WebSocketSession objects.
+     */
+    public void sendMessageToWebSocketUsers(String payload, List<String> userIds) {
+        List<WebSocketSession> webSocketSessionList = getWebSocketSessionsOfUserIds(userIds);
+        webSocketSessionList.forEach(webSocketSession -> {
+            if(webSocketSession.isOpen()) {
+                TextMessage textMessage = new TextMessage(payload);
+                try {
+                    webSocketSession.sendMessage(textMessage);
+                } catch (IOException ioException) {
+                    logger.error("Unable to send message to WebSocket Session ID {}. Message: {}", webSocketSession.getId(), ioException.getMessage());
+                    ioException.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * Get WebSocketSession objects related to the user IDs.
+     * @param userIds: A list of User IDs(Typically ID of UserContact object).
+     * @return A list of WebSocketSession object.
+     */
+    private List<WebSocketSession> getWebSocketSessionsOfUserIds(List<String> userIds) {
+        List<WebSocketSession> webSocketSessionList = new ArrayList<>();
+        userIds.forEach(userId -> webSocketSessionList.addAll(webSocketSessionManager.getWebSocketSessions(userId)));
+
+        return webSocketSessionList;
     }
 
     /**

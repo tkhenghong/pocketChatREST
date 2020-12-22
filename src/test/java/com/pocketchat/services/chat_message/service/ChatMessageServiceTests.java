@@ -9,6 +9,7 @@ import com.pocketchat.db.repo_services.chat_message.ChatMessageRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
+import com.pocketchat.server.configurations.websocket.WebSocketMessageSender;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupNotFoundException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
 import com.pocketchat.services.chat_message.ChatMessageService;
@@ -65,6 +66,9 @@ class ChatMessageServiceTests {
     private RabbitMQService rabbitMQService;
 
     @Mock
+    WebSocketMessageSender webSocketMessageSender;
+
+    @Mock
     private FileUtil fileUtil;
 
     @Mock
@@ -79,6 +83,7 @@ class ChatMessageServiceTests {
                 userContactService,
                 multimediaService,
                 rabbitMQService,
+                webSocketMessageSender,
                 fileUtil,
                 objectMapper
         );

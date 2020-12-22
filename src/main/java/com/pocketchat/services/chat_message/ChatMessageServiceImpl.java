@@ -11,7 +11,9 @@ import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageR
 import com.pocketchat.models.controllers.response.chat_message.ChatMessageResponse;
 import com.pocketchat.models.controllers.response.multimedia.MultimediaResponse;
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
+import com.pocketchat.models.enums.websocket.WebSocketEvent;
 import com.pocketchat.models.websocket.WebSocketMessage;
+import com.pocketchat.server.configurations.websocket.WebSocketMessageSender;
 import com.pocketchat.server.exceptions.chat_message.ChatMessageNotFoundException;
 import com.pocketchat.server.exceptions.conversation_group.WebSocketObjectConversionFailedException;
 import com.pocketchat.server.exceptions.file.UploadFileException;
@@ -52,6 +54,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private final RabbitMQService rabbitMQService;
 
+    private final WebSocketMessageSender webSocketMessageSender;
+
     private final FileUtil fileUtil;
 
     private final ObjectMapper objectMapper;
@@ -65,6 +69,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                                   UserContactService userContactService,
                                   MultimediaService multimediaService,
                                   RabbitMQService rabbitMQService,
+                                  WebSocketMessageSender webSocketMessageSender,
                                   FileUtil fileUtil,
                                   ObjectMapper objectMapper) {
         this.chatMessageRepoService = chatMessageRepoService;
@@ -72,6 +77,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         this.userContactService = userContactService;
         this.multimediaService = multimediaService;
         this.rabbitMQService = rabbitMQService;
+        this.webSocketMessageSender = webSocketMessageSender;
         this.fileUtil = fileUtil;
         this.objectMapper = objectMapper;
     }
@@ -93,14 +99,24 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
         ChatMessage newChatMessage = chatMessageRepoService.save(chatMessage);
 
-        sendMessageToRabbitMQ(conversationGroup, newChatMessage);
+        String webSocketMessageString = convertChatMessageToWebSocketMessageString(newChatMessage, WebSocketEvent.ADDED_CHAT_MESSAGE);
+
+        sendMessageToRabbitMQ(conversationGroup, webSocketMessageString);
+
+        // Send to WebSocket users.(Current connected frontend clients)
+        webSocketMessageSender.sendMessageToWebSocketUsers(webSocketMessageString, conversationGroup.getMemberIds());
+
+        // TODO: Send notifications for current not connected frontend clients. (Phone & Web)
 
         return newChatMessage;
     }
 
     @Override
     public MultimediaResponse uploadChatMessageMultimedia(String chatMessageId, MultipartFile multipartFile) {
-        getSingleChatMessage(chatMessageId);
+        ChatMessage chatMessage = getSingleChatMessage(chatMessageId);
+
+        ConversationGroup conversationGroup = conversationGroupService.getSingleConversation(chatMessage.getConversationId());
+
         Multimedia savedMultimedia;
         try {
             savedMultimedia = multimediaService.addMultimedia(fileUtil.createMultimedia(multipartFile, moduleDirectory));
@@ -111,6 +127,15 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         if (ObjectUtils.isEmpty(savedMultimedia)) {
             throw new UploadFileException("Unable to upload chat message multimedia to the server due to savedMultimedia object is empty! chatMessageId: " + chatMessageId);
         }
+
+        String webSocketMessageString = convertChatMessageToWebSocketMessageString(chatMessage, WebSocketEvent.UPLOADED_CHAT_MESSAGE_MULTIMEDIA);
+
+        sendMessageToRabbitMQ(conversationGroup, webSocketMessageString);
+
+        // Send to WebSocket users.(Current connected frontend clients)
+        webSocketMessageSender.sendMessageToWebSocketUsers(webSocketMessageString, conversationGroup.getMemberIds());
+
+        // TODO: Send notifications for current not connected frontend clients. (Phone & Web)
 
         return multimediaService.multimediaResponseMapper(savedMultimedia);
     }
@@ -125,12 +150,20 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Transactional
     public void deleteChatMessage(String messageId) {
         ChatMessage chatMessage = getSingleChatMessage(messageId);
+        ConversationGroup conversationGroup = conversationGroupService.getSingleConversation(chatMessage.getConversationId());
 
         if (StringUtils.hasText(chatMessage.getMultimediaId())) {
             multimediaService.deleteMultimedia(chatMessage.getMultimediaId(), moduleDirectory);
         }
 
         // TODO: Send Websocket message and notification to replace the message to "Message removed" to the correct conversation group members.
+
+        String webSocketMessageString = convertChatMessageToWebSocketMessageString(chatMessage, WebSocketEvent.DELETED_CHAT_MESSAGE);
+
+        sendMessageToRabbitMQ(conversationGroup, webSocketMessageString);
+
+        // Send to WebSocket users.(Current connected frontend clients)
+        webSocketMessageSender.sendMessageToWebSocketUsers(webSocketMessageString, conversationGroup.getMemberIds());
 
         chatMessageRepoService.delete(chatMessage);
     }
@@ -185,17 +218,23 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         return chatMessages.map(this::chatMessageResponseMapper);
     }
 
-    private void sendMessageToRabbitMQ(ConversationGroup conversationGroup, ChatMessage chatMessage) {
+    private void sendMessageToRabbitMQ(ConversationGroup conversationGroup, String webSocketMessageString) {
+        conversationGroup.getMemberIds().forEach(memberId ->
+                rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(),
+                        conversationGroup.getId(), webSocketMessageString));
+    }
+
+    private String convertChatMessageToWebSocketMessageString(ChatMessage chatMessage, WebSocketEvent webSocketEvent) {
         WebSocketMessage webSocketMessage = WebSocketMessage.builder()
                 .chatMessage(chatMessage)
+                .webSocketEvent(webSocketEvent)
                 .build();
+        return convertWebSocketMessageToString(webSocketMessage);
+    }
 
+    private String convertWebSocketMessageToString(WebSocketMessage webSocketMessage) {
         try {
-            String webSocketMessageString = objectMapper.writeValueAsString(webSocketMessage);
-
-            conversationGroup.getMemberIds().forEach(memberId ->
-                    rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(),
-                            conversationGroup.getId(), webSocketMessageString));
+            return objectMapper.writeValueAsString(webSocketMessage);
         } catch (JsonProcessingException e) {
             throw new WebSocketObjectConversionFailedException("Failed to convert Chat message to JSON string. Message: "
                     + e.getMessage());

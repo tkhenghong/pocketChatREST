@@ -7,6 +7,7 @@ import com.pocketchat.db.models.conversation_group.ConversationGroup;
 import com.pocketchat.db.models.conversation_group_block.ConversationGroupBlock;
 import com.pocketchat.db.models.conversation_group_mute_notification.ConversationGroupMuteNotification;
 import com.pocketchat.db.models.multimedia.Multimedia;
+import com.pocketchat.db.models.unread_message.UnreadMessage;
 import com.pocketchat.db.models.user_contact.UserContact;
 import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoService;
 import com.pocketchat.models.controllers.request.chat_message.CreateChatMessageRequest;
@@ -120,15 +121,16 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
         ConversationGroup conversationGroup = createConversationGroupRequestToConversationGroupMapper(createConversationGroupRequest);
 
-        String message = "You have been added into this conversation by" + creatorUserContact.getDisplayName() + ".";
-
         conversationGroup.setCreatorUserId(creatorUserContact.getId());
+
+        boolean conversationGroupIsCreated = false;
 
         switch (conversationGroup.getConversationGroupType()) {
             case Group:
             case Broadcast:
                 // Group/Broadcast
                 conversationGroup = createConversationGroup(conversationGroup);
+                conversationGroupIsCreated = true;
                 break;
             case Personal:
                 // 1. Find a list of conversationGroup that has same memberIds
@@ -145,6 +147,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                     conversationGroup = personalConversationGroupList.iterator().next();
                 } else if (personalConversationGroupList.isEmpty()) { // Must be 0 conversationGroup
                     conversationGroup = createConversationGroup(conversationGroup);
+                    conversationGroupIsCreated = true;
                 } else {
                     throw new InvalidPersonalConversationGroupException("Found Multiple Personal Conversation Group with" +
                             " same members, which shouldn't be happening. Please contact developer.");
@@ -154,8 +157,16 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 throw new InvalidConversationGroupTypeException("Invalid Conversation Group Type detected.");
         }
 
-        createUnreadMessage(conversationGroup, creatorUserContact);
-        sendMessage(conversationGroup, creatorUserContact, WebSocketEvent.JOINED_CONVERSATION_GROUP, message);
+        if (conversationGroupIsCreated) {
+            UnreadMessage newUnreadMessage = createUnreadMessage(conversationGroup, creatorUserContact);
+
+            // Send message and notification to WebSocket, notification service providers.
+            sendConversationGroupToRabbitMQ(conversationGroup, WebSocketEvent.NEW_CONVERSATION_GROUP);
+            sendUnreadMessageToRabbitMQ(newUnreadMessage, conversationGroup, WebSocketEvent.NEW_UNREAD_MESSAGE);
+
+            sendChatMessageToRabbitMQ(conversationGroup, creatorUserContact, "New conversation Group has been created.", WebSocketEvent.NEW_CONVERSATION_GROUP);
+            sendChatMessageToRabbitMQ(conversationGroup, creatorUserContact, "You have been added into this conversation by" + creatorUserContact.getDisplayName() + ".", WebSocketEvent.JOINED_CONVERSATION_GROUP);
+        }
 
         return conversationGroup;
     }
@@ -192,7 +203,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
             webSocketEvent = WebSocketEvent.CHANGED_GROUP_PHOTO;
         }
 
-        sendMessage(conversationGroup, ownUserContact, webSocketEvent, messageContent);
+        sendChatMessageToRabbitMQ(conversationGroup, ownUserContact, messageContent, webSocketEvent);
 
         return multimediaService.multimediaResponseMapper(savedMultimedia);
     }
@@ -223,7 +234,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
         String messageContent = "has deleted the group photo.";
 
-        sendMessage(conversationGroup, ownUserContact, WebSocketEvent.DELETED_GROUP_PHOTO, messageContent);
+        sendChatMessageToRabbitMQ(conversationGroup, ownUserContact, messageContent, WebSocketEvent.DELETED_GROUP_PHOTO);
     }
 
     @Override
@@ -303,7 +314,10 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
         ConversationGroup existingConversationGroup = getSingleConversation(conversationGroupId);
 
+        // UserContact must be the group member of the conversation group.
         boolean userContactIsConversationGroupMember = userContactIsConversationGroupMember(ownUserContact.getId(), existingConversationGroup);
+
+        // UserContact must be the group admin of the conversation group.
         boolean userContactIsConversationGroupAdmin = userContactIsConversationGroupAdmin(ownUserContact.getId(), existingConversationGroup);
 
         if (!userContactIsConversationGroupMember || !userContactIsConversationGroupAdmin) {
@@ -311,13 +325,27 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         }
 
         checkUserContactsExist(removeConversationGroupAdminRequest.getGroupMemberIds());
+
+        // If the group admin only has one group admin, we can know he/she is the admin and he/she wants to remove himself/herself.
+        if (existingConversationGroup.getAdminMemberIds().size() == 1) {
+            throw new NoConversationGroupAdminException("Unable to remove yourself. Please promote someone else to become group admin first.");
+        }
+
         List<String> existingGroupAdminIds = existingConversationGroup.getAdminMemberIds();
 
         existingGroupAdminIds.removeAll(removeConversationGroupAdminRequest.getGroupMemberIds());
 
+        // UserContact cannot remove all group admins including him/herself in the group. Him/herself must promote more members than demoting members.
+        if (existingConversationGroup.getAdminMemberIds().isEmpty()) {
+            throw new NoConversationGroupAdminException("No group admins left. Promote someone else first before remove yourself.");
+        }
+
         List<String> updatedGroupAdminIds = existingGroupAdminIds.stream().distinct().collect(Collectors.toList());
 
         existingConversationGroup.setAdminMemberIds(updatedGroupAdminIds);
+
+        String messageContent = "has been demoted to group member.";
+        sendChatMessageToRabbitMQ(existingConversationGroup, ownUserContact, messageContent, WebSocketEvent.DEMOTE_GROUP_ADMIN);
 
         return conversationGroupRepoService.save(existingConversationGroup);
     }
@@ -355,14 +383,14 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 UserContact newGroupAdmin = userContactService.getUserContact(existingConversationGroupMembers.get(0));
                 existingConversationGroupAdmins.add(newGroupAdmin.getId());
                 String messageContent = "has been promoted to group admin.";
-                sendMessage(existingConversationGroup, newGroupAdmin, WebSocketEvent.PROMOTE_GROUP_ADMIN, messageContent);
+                sendChatMessageToRabbitMQ(existingConversationGroup, ownUserContact, messageContent, WebSocketEvent.PROMOTE_GROUP_ADMIN);
             }
         }
 
         existingConversationGroup.setMemberIds(existingConversationGroupMembers);
         existingConversationGroup.setAdminMemberIds(existingConversationGroupAdmins);
         String messageContent = "has left the conversation group.";
-        sendMessage(existingConversationGroup, ownUserContact, WebSocketEvent.LEFT_CONVERSATION_GROUP, messageContent);
+        sendChatMessageToRabbitMQ(existingConversationGroup, ownUserContact, messageContent, WebSocketEvent.LEFT_CONVERSATION_GROUP);
 
         return conversationGroupRepoService.save(existingConversationGroup);
     }
@@ -565,7 +593,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
      * @param conversationGroup:  Saved conversationGroup object.
      * @param creatorUserContact: UserContact object of the creator.
      */
-    private void createUnreadMessage(ConversationGroup conversationGroup, UserContact creatorUserContact) {
+    private UnreadMessage createUnreadMessage(ConversationGroup conversationGroup, UserContact creatorUserContact) {
         CreateUnreadMessageRequest createUnreadMessageRequest = CreateUnreadMessageRequest.builder()
                 .conversationId(conversationGroup.getId())
                 .count(0)
@@ -574,18 +602,17 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
                 .userId(creatorUserContact.getUserId())
                 .build();
 
-        unreadMessageService.addUnreadMessage(createUnreadMessageRequest);
+        return unreadMessageService.addUnreadMessage(createUnreadMessageRequest);
     }
 
     /**
-     * Send a ChatMessage object as welcome message, and ConversationGroup object into a WebSocketMessage object
-     * to be sent to group members.
+     * Send Chat Message to the conversationGroup, along with it's members.
      *
-     * @param conversationGroup: Saved ConversationGroup object.
-     * @param userContact:       The group member who has done the action.
-     * @param message:           Welcome Message for the conversation group.
+     * @param conversationGroup: The ConversationGroup object.
+     * @param message:           Message content.
+     * @param webSocketEvent:    WebSocketEvent enum object to indicate what event of the message is belonged to, to allow the frontend client to analyse the message and determine actions.
      */
-    private void sendMessage(ConversationGroup conversationGroup, UserContact userContact, WebSocketEvent webSocketEvent, String message) {
+    private void sendChatMessageToRabbitMQ(ConversationGroup conversationGroup, UserContact responsibleUserContact, String message, WebSocketEvent webSocketEvent) {
         CreateChatMessageRequest createChatMessageRequest = CreateChatMessageRequest.builder()
                 .conversationId(conversationGroup.getId())
                 .messageContent(message)
@@ -595,19 +622,58 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
 
         WebSocketMessage webSocketMessage = WebSocketMessage.builder()
                 .webSocketEvent(webSocketEvent)
-                .userContact(userContact)
                 .conversationGroup(conversationGroup)
                 .chatMessage(chatMessage)
+                .userContact(responsibleUserContact)
                 .build();
 
-        try {
-            String webSocketMessageString = objectMapper.writeValueAsString(webSocketMessage);
+        sendMessageToRabbitMQ(webSocketMessage, conversationGroup.getId(), conversationGroup.getMemberIds());
+    }
 
-            conversationGroup.getMemberIds().forEach(memberId ->
-                    rabbitMQService.addMessageToQueue(memberId, conversationGroup.getId(),
-                            conversationGroup.getId(), webSocketMessageString));
+    /**
+     * Send ConversationGroup object to the conversationGroup, along with it's members.
+     *
+     * @param conversationGroup: The ConversationGroup object.
+     * @param webSocketEvent:    WebSocketEvent enum object to indicate what event of the message is belonged to, to allow the frontend client to analyse the message and determine actions.
+     */
+    private void sendConversationGroupToRabbitMQ(ConversationGroup conversationGroup, WebSocketEvent webSocketEvent) {
+        WebSocketMessage webSocketMessage = WebSocketMessage.builder()
+                .webSocketEvent(webSocketEvent)
+                .conversationGroup(conversationGroup)
+                .build();
+
+        sendMessageToRabbitMQ(webSocketMessage, conversationGroup.getId(), conversationGroup.getMemberIds());
+    }
+
+    /**
+     * Send UnreadMessage object to the conversationGroup, along with it's members.
+     *
+     * @param unreadMessage:     The UnreadMessage object.
+     * @param conversationGroup: The ConversationGroup object.
+     * @param webSocketEvent:    WebSocketEvent enum object to indicate what event of the message is belonged to, to allow the frontend client to analyse the message and determine actions.
+     */
+    private void sendUnreadMessageToRabbitMQ(UnreadMessage unreadMessage, ConversationGroup conversationGroup, WebSocketEvent webSocketEvent) {
+        WebSocketMessage webSocketMessage = WebSocketMessage.builder()
+                .webSocketEvent(webSocketEvent)
+                .unreadMessage(unreadMessage)
+                .build();
+
+        sendMessageToRabbitMQ(webSocketMessage, conversationGroup.getId(), conversationGroup.getMemberIds());
+    }
+
+    private void sendMessageToRabbitMQ(WebSocketMessage webSocketMessage, String conversationGroupId, List<String> userIds) {
+        String webSocketMessageString = convertWebSocketMessageToString(webSocketMessage);
+
+        userIds.forEach(userId ->
+                rabbitMQService.addMessageToQueue(userId, conversationGroupId,
+                        conversationGroupId, webSocketMessageString));
+    }
+
+    private String convertWebSocketMessageToString(WebSocketMessage webSocketMessage) {
+        try {
+            return objectMapper.writeValueAsString(webSocketMessage);
         } catch (JsonProcessingException e) {
-            throw new WebSocketObjectConversionFailedException("Failed to convert Welcome Chat Message. Message: "
+            throw new WebSocketObjectConversionFailedException("Failed to convert WebSocket message to JSON string. Message: "
                     + e.getMessage());
         }
     }

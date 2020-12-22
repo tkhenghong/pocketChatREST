@@ -88,7 +88,8 @@ public class GeneralResponseEntityExceptionHandler extends ResponseEntityExcepti
             EditSettingsException.class,
             BlockConversationGroupException.class,
             UnblockConversationGroupException.class,
-            UnmuteConversationGroupException.class
+            UnmuteConversationGroupException.class,
+            NoConversationGroupAdminException.class
     })
     public ResponseEntity<ExceptionResponse> handleNotAcceptableExceptions(Exception ex, WebRequest request) {
         return generateResponseEntity(ex, request, HttpStatus.NOT_ACCEPTABLE);
