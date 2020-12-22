@@ -308,6 +308,8 @@ class ConversationGroupServiceTests {
         userContacts.add(creatorUserContact);
         memberUserContactStrings.add(creatorUserContact.getId()); // Add creatorUserContact ID to member list, but not admin member list.
 
+        int finalNumberOfGroupMembers = userContacts.size();
+
         CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
         createConversationGroupRequest.setMemberIds(memberUserContactStrings);
         createConversationGroupRequest.setAdminMemberIds(memberUserContactStrings);
@@ -333,8 +335,10 @@ class ConversationGroupServiceTests {
                 createConversationGroupRequest.getMemberIds().size();
         Mockito.verify(userContactService, times(totalNumberOfUserContacts)).getUserContact(any());
         Mockito.verify(conversationGroupRepoService).save(any());
-        Mockito.verify(chatMessageService).addChatMessage(any());
-        Mockito.verify(rabbitMQService, times(21)).addMessageToQueue(anyString(), anyString(), anyString(), anyString());
+        Mockito.verify(chatMessageService, times(2)).addChatMessage(any());
+
+        // 4 messages is sent to RabbitMQ for creating a new conversation group.
+        Mockito.verify(rabbitMQService, times(finalNumberOfGroupMembers * 4)).addMessageToQueue(anyString(), anyString(), anyString(), anyString());
 
         assertNotNull(savedConversationGroup);
         assertEquals(savedConversationGroup.getId(), conversationGroupId);
