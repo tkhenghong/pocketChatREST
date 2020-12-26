@@ -9,6 +9,7 @@ import com.pocketchat.models.controllers.request.conversation_group.CreateConver
 import com.pocketchat.models.enums.chat_message.ChatMessageStatus;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import com.pocketchat.models.websocket.WebSocketMessage;
+import com.pocketchat.server.configurations.websocket.WebSocketMessageSender;
 import com.pocketchat.server.exceptions.conversation_group.ConversationGroupAdminNotInMemberIdListException;
 import com.pocketchat.server.exceptions.conversation_group.CreatorIsNotConversationGroupMemberException;
 import com.pocketchat.server.exceptions.user_contact.UserContactNotFoundException;
@@ -136,6 +137,9 @@ class ConversationGroupServiceTests {
     private RabbitMQService rabbitMQService;
 
     @Mock
+    private WebSocketMessageSender webSocketMessageSender;
+
+    @Mock
     private FileUtil fileUtil;
 
     @BeforeEach
@@ -151,6 +155,7 @@ class ConversationGroupServiceTests {
                 unreadMessageService,
                 multimediaService,
                 rabbitMQService,
+                webSocketMessageSender,
                 fileUtil,
                 new ObjectMapper());
     }
