@@ -8,6 +8,7 @@ public enum WebSocketEvent {
     UPLOADED_GROUP_PHOTO,  // Informs the group photo of the ConversationGroup object has been added.
     CHANGED_GROUP_PHOTO,  // Informs the group photo of the ConversationGroup object has been changed.
     DELETED_GROUP_PHOTO, // Informs the group photo of the ConversationGroup object has been removed.
+    CHANGED_GROUP_NAME, // Informs the name of the ConversationGroup object has been changed.
     CHANGED_GROUP_DESCRIPTION, // Informs the description of the ConversationGroup object has been changed.
     PROMOTE_GROUP_ADMIN, // Informs a group member of the ConversationGroup object has been promoted from group member to group admin.
     DEMOTE_GROUP_ADMIN, // Informs a group member of the ConversationGroup object has been demoted from group admin to normal group member.
