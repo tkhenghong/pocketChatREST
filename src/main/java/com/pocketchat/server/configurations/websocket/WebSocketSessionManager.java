@@ -68,11 +68,16 @@ public class WebSocketSessionManager {
 
 
     /**
-     * Get a list of WebSocket sessions based on the user
-     * @param userId
-     * @return
+     * Get a list of WebSocket sessions based on the user ID.
+     * @param userId: ID of the user.
+     * @return List of WebSocketSession object.
      */
     public List<WebSocketSession> getWebSocketSessions(String userId) {
-        return onlineWebsocketSessions.get(userId);
+        List<WebSocketSession> webSocketSesions = new ArrayList<>();
+        List<WebSocketSession> foundWebSocketSessions = onlineWebsocketSessions.get(userId);
+        if(!ObjectUtils.isEmpty(foundWebSocketSessions) && !foundWebSocketSessions.isEmpty()) {
+            webSocketSesions.addAll(foundWebSocketSessions);
+        }
+        return webSocketSesions;
     }
 }

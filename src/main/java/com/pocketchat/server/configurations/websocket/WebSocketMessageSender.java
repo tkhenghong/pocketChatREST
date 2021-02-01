@@ -52,13 +52,14 @@ public class WebSocketMessageSender {
     /**
      * Send object to current WebSocket sessions that linked to the userIds.
      * Mainly used to send messages to the target users that connected to the WebSocket currently.
+     *
      * @param payload: The message that has been converted to JSON string.
      * @param userIds: The IDs to be used to find the WebSocketSession objects.
      */
     public void sendMessageToWebSocketUsers(String payload, List<String> userIds) {
         List<WebSocketSession> webSocketSessionList = getWebSocketSessionsOfUserIds(userIds);
         webSocketSessionList.forEach(webSocketSession -> {
-            if(webSocketSession.isOpen()) {
+            if (webSocketSession.isOpen()) {
                 TextMessage textMessage = new TextMessage(payload);
                 try {
                     webSocketSession.sendMessage(textMessage);
@@ -72,6 +73,7 @@ public class WebSocketMessageSender {
 
     /**
      * Get WebSocketSession objects related to the user IDs.
+     *
      * @param userIds: A list of User IDs(Typically ID of UserContact object).
      * @return A list of WebSocketSession object.
      */
