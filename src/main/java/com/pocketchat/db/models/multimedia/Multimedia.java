@@ -1,6 +1,5 @@
 package com.pocketchat.db.models.multimedia;
 
-import com.pocketchat.models.enums.multimedia_type.MultimediaType;
 import com.pocketchat.models.file.UploadedFile;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,13 +9,10 @@ public class Multimedia extends UploadedFile {
     @Id
     private String id;
 
-    private MultimediaType multimediaType;
-
-    Multimedia(String id, MultimediaType multimediaType, String fileDirectory, Long fileSize, String fileExtension,
+    Multimedia(String id, String fileDirectory, Long fileSize, String fileExtension,
                String contentType, String fileName) {
         super(fileDirectory, fileSize, fileExtension, contentType, fileName);
         this.id = id;
-        this.multimediaType = multimediaType;
     }
 
     public Multimedia() {
@@ -30,16 +26,8 @@ public class Multimedia extends UploadedFile {
         return this.id;
     }
 
-    public MultimediaType getMultimediaType() {
-        return this.multimediaType;
-    }
-
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void setMultimediaType(MultimediaType multimediaType) {
-        this.multimediaType = multimediaType;
     }
 
     public boolean equals(final Object o) {
@@ -50,10 +38,6 @@ public class Multimedia extends UploadedFile {
         final Object this$id = this.getId();
         final Object other$id = other.getId();
         if (this$id == null ? other$id != null : !this$id.equals(other$id)) return false;
-        final Object this$multimediaType = this.getMultimediaType();
-        final Object other$multimediaType = other.getMultimediaType();
-        if (this$multimediaType == null ? other$multimediaType != null : !this$multimediaType.equals(other$multimediaType))
-            return false;
         return true;
     }
 
@@ -66,18 +50,15 @@ public class Multimedia extends UploadedFile {
         int result = 1;
         final Object $id = this.getId();
         result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-        final Object $multimediaType = this.getMultimediaType();
-        result = result * PRIME + ($multimediaType == null ? 43 : $multimediaType.hashCode());
         return result;
     }
 
     public String toString() {
-        return "Multimedia(id=" + this.getId() + ", multimediaType=" + this.getMultimediaType() + ")";
+        return "Multimedia(id=" + this.getId() + ")";
     }
 
     public static class MultimediaBuilder {
         private String id;
-        private MultimediaType multimediaType;
         private String fileDirectory;
         private Long fileSize;
         private String fileExtension;
@@ -89,11 +70,6 @@ public class Multimedia extends UploadedFile {
 
         public Multimedia.MultimediaBuilder id(String id) {
             this.id = id;
-            return this;
-        }
-
-        public Multimedia.MultimediaBuilder multimediaType(MultimediaType multimediaType) {
-            this.multimediaType = multimediaType;
             return this;
         }
 
@@ -123,11 +99,11 @@ public class Multimedia extends UploadedFile {
         }
 
         public Multimedia build() {
-            return new Multimedia(id, multimediaType, fileDirectory, fileSize, fileExtension, contentType, fileName);
+            return new Multimedia(id, fileDirectory, fileSize, fileExtension, contentType, fileName);
         }
 
         public String toString() {
-            return "Multimedia.MultimediaBuilder(id=" + this.id + ", multimediaType=" + this.multimediaType + ", fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", contentType=" + this.contentType + ", fileName=" + this.fileName + ")";
+            return "Multimedia.MultimediaBuilder(id=" + this.id + ", fileDirectory=" + this.fileDirectory + ", fileSize=" + this.fileSize + ", fileExtension=" + this.fileExtension + ", contentType=" + this.contentType + ", fileName=" + this.fileName + ")";
         }
     }
 }

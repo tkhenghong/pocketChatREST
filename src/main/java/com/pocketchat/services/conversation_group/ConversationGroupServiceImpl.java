@@ -391,7 +391,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         boolean userContactIsConversationGroupAdmin = userContactIsConversationGroupAdmin(ownUserContact.getId(), existingConversationGroup);
 
         if (!userContactIsConversationGroupMember || !userContactIsConversationGroupAdmin) {
-            throw new ConversationGroupMemberPermissionException("Group member has no permission to remove promote a group admin, id: " + ownUserContact.getId());
+            throw new ConversationGroupMemberPermissionException("Group member has no permission to remove/promote a group admin, id: " + ownUserContact.getId());
         }
 
         List<UserContact> userContacts = checkUserContactsExist(addConversationGroupAdminRequest.getGroupMemberIds());
