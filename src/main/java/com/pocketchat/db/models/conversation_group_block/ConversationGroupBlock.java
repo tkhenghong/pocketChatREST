@@ -16,7 +16,7 @@ public class ConversationGroupBlock extends Auditable {
     @Id
     private String id;
 
-    private String userContactId;
+    private String userContactId; // Who blocked the notification?
 
     private String conversationGroupId;
 

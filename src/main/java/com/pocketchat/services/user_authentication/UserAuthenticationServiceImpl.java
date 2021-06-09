@@ -446,6 +446,6 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     @Override
     public OTPResponse otpResponseMapper(OTP otp) {
-        return OTPResponse.builder().otpExpirationDateTime(otp.getOtpExpirationDateTime()).build();
+        return OTPResponse.builder().otpExpirationDateTime(otp.getOtpExpirationDateTime()).secureKeyword(otp.getKeyword()).build();
     }
 }
