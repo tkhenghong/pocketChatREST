@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.0'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'org.springframework.boot' version '2.5.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
@@ -8,7 +8,7 @@ plugins {
 
 group = 'com.pocketchat'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '15'
+sourceCompatibility = '16'
 
 configurations {
     compileOnly {
@@ -44,7 +44,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp' // Used for RabbiMQ
     implementation 'org.springframework.kafka:spring-kafka'
     // Create compatibility with libraries, solves problem when creating JWT token in JWTUtil.java file.
-    compile('javax.xml.bind:jaxb-api')
+    implementation 'javax.xml.bind:jaxb-api'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

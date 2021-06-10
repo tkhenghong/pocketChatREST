@@ -30,8 +30,8 @@ dist: bionic
 jdk:
 #  - oraclejdk14
 #  - openjdk14
-  - oraclejdk15
-  - openjdk15
+  - oraclejdk16
+  - openjdk16
 
 # Login into Docker before start performing scripts
 # Already added $DOCKER_PASSWORD and $DOCKER_USERNAME variables in Travis CI website before write the command here.
