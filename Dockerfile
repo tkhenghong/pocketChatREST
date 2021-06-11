@@ -35,7 +35,7 @@ COPY . .
 RUN gradle clean build --stacktrace
 
 # actual container
-FROM openjdk:15.0.1
+FROM openjdk:16.0.1
 
 MAINTAINER Teoh Kheng Hong tkhenghong@gmail.com
 
