@@ -5,7 +5,6 @@ import com.pocketchat.db.repo_services.conversation_group.ConversationGroupRepoS
 import com.pocketchat.db.repositories.conversation_group.ConversationGroupRepository;
 import com.pocketchat.models.enums.conversation_group.ConversationGroupType;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -17,14 +16,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 
 /**
@@ -37,6 +36,7 @@ import static org.mockito.ArgumentMatchers.eq;
  * (If use constructor injection, you don't have to use @InjectMocks anymore)
  * (@InjectMocks will ONLY work when there's no @Value need to be stubbed for the target testing service.)
  * 4. If you perform Mockito.when unnecessary methods in the test cases, it will cause UnnecessaryStubbingException.
+ * NOTE: JUnit 4 is removed (within JUnit 5 Vintage) in Spring Boot 2.4.0 and above.
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)

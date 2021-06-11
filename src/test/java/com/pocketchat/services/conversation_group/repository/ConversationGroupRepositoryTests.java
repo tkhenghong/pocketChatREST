@@ -16,14 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 
 /**
@@ -70,6 +68,7 @@ class ConversationGroupRepositoryTests {
         Mockito.when(conversationGroupRepoService.save(eq(entity))).thenAnswer(i -> i.getArguments()[0]);
 
         ConversationGroup conversationGroup = conversationGroupRepoService.save(entity);
+        // NOTE: Read README.md for testing.
         assertNotNull(conversationGroup);
         assertEquals(entity.getName(), conversationGroup.getName());
     }

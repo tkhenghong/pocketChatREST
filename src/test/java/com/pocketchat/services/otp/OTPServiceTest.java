@@ -32,7 +32,7 @@ class OTPServiceTest {
 //    @BeforeTestMethod
 //    public void setUp() {
 //        otpService = spy(new OTPService(maximumOTPAliveMinutes, maximumOTPRetryAttempt));
-//        MockitoAnnotations.initMocks(this);
+//        MockitoAnnotations.openMocks(this);
 //    }
 
     @Test

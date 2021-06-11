@@ -54,7 +54,7 @@ class PasswordUtilTest {
     @BeforeEach
     void setup() {
         //if we don't call below, we will get NullPointerException
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         passwordUtil = new PasswordUtil(
                 passwordEncoder,
                 lowerCaseCharacterLength,

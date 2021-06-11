@@ -16,9 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
@@ -28,25 +26,25 @@ class SMSServiceTests {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Value("${server.sms.twilio.account.sid}")
-    private String accountSid = "ACb8bfda44c37c2c6e476ba1fda795c668";
+    private final String accountSid = "ACb8bfda44c37c2c6e476ba1fda795c668";
 
     @Value("${server.sms.twilio.auth.token}")
-    private String authToken = "7d05382c81b39d86c8635d7f195e1093";
+    private final String authToken = "7d05382c81b39d86c8635d7f195e1093";
 
     @Value("${server.sms.twilio.phone.number}")
-    private String fromNumber = "+14042058771";
+    private final String fromNumber = "+14042058771";
 
     @Value("${email.send.sms.to.email}")
     private boolean allowSendSMStoEmail = true;
 
     @Value("${email.send.sms.to.email.address}")
-    private String emailAddressForSendingSMSContent = "tkhenghong@yahoo.com";
+    private final String emailAddressForSendingSMSContent = "tkhenghong@yahoo.com";
 
     @Value("${server.sms.twilio.verified.phone.number}")
-    private String verifiedPhoneNumber = "+60182262663";
+    private final String verifiedPhoneNumber = "+60182262663";
 
     @Value("${server.sms.allow.send.sms}")
-    private boolean allowSendSms = false;
+    private final boolean allowSendSms = false;
 
     SMSService smsService;
 
@@ -78,27 +76,22 @@ class SMSServiceTests {
     void sendSMSWithoutMobileNumber() {
         SendSMSRequest sendSMSRequest = generateSendSMSRequestObject();
         sendSMSRequest.setMobileNumber(null);
-        try {
+        assertThrows(InvalidSendSMSRequestException.class, () -> {
             smsService.sendSMS(sendSMSRequest);
-            failBecauseExceptionWasNotThrown(Exception.class);
-        } catch (Exception exception) {
-            assertThat(exception).isInstanceOf(InvalidSendSMSRequestException.class);
-        }
+        });
     }
 
     /**
      * Send SMS but no content in SendSMSRequest object.
      */
     @Test
+    @DisplayName("throws InvalidSendSMSRequestException when SMS doesn't have any content")
     void sendSMSWithoutMessageContent() {
         SendSMSRequest sendSMSRequest = generateSendSMSRequestObject();
         sendSMSRequest.setMessage(null);
-        try {
+        assertThrows(InvalidSendSMSRequestException.class, () -> {
             smsService.sendSMS(sendSMSRequest);
-            failBecauseExceptionWasNotThrown(Exception.class);
-        } catch (Exception exception) {
-            assertThat(exception).isInstanceOf(InvalidSendSMSRequestException.class);
-        }
+        });
     }
 
     /**

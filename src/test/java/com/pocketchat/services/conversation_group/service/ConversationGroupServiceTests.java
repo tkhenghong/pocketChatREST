@@ -40,10 +40,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 
@@ -100,7 +97,7 @@ class ConversationGroupServiceTests {
      * 5. Then, for ALL dependencies that used Constructor Injection in the ServiceImpl class that implements
      * the Service Interface MUST be annotated with @Mock. Even the RepoService class has to be annotated with @Mock.
      * 6.And you need to have @BeforeEach void setup() {..}, write:
-     * 6a. MockitoAnnotations.initMocks(this); // Initiate mocks to all dependencies.
+     * 6a. MockitoAnnotations.openMocks(this); // Initiate mocks to all dependencies.
      * 6b. Instantiate the Service Interface with the ServiceImpl with the constructor
      * that has all mocked dependencies in it. Go to Step .
      * <p>
@@ -145,7 +142,7 @@ class ConversationGroupServiceTests {
     @BeforeEach
     void setup() {
         //if we don't call below, we will get NullPointerException
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         conversationGroupService = new ConversationGroupServiceImpl(
                 conversationGroupRepoService,
                 conversationGroupBlockService,
@@ -164,14 +161,11 @@ class ConversationGroupServiceTests {
     void testAddConversationGroupButOwnUserContactNotFound() {
         CreateConversationGroupRequest createConversationGroupRequest = generateCreateConversationGroupRequest();
 
-        try {
-            Mockito.when(userContactService.getOwnUserContact()).thenThrow(UserContactNotFoundException.class);
-            conversationGroupService.addConversation(createConversationGroupRequest);
-            failBecauseExceptionWasNotThrown(Exception.class);
-        } catch (Exception exception) {
-            Mockito.verify(userContactService).getOwnUserContact();
-            assertThat(exception).isInstanceOf(UserContactNotFoundException.class);
-        }
+        Mockito.when(userContactService.getOwnUserContact()).thenThrow(UserContactNotFoundException.class);
+
+        assertThrows(UserContactNotFoundException.class, () -> conversationGroupService.addConversation(createConversationGroupRequest));
+
+        Mockito.verify(userContactService).getOwnUserContact();
     }
 
     @Test
@@ -181,14 +175,10 @@ class ConversationGroupServiceTests {
 
         createConversationGroupRequest.setAdminMemberIds(new ArrayList<>());
 
-        try {
-            Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
-            conversationGroupService.addConversation(createConversationGroupRequest);
-            failBecauseExceptionWasNotThrown(Exception.class);
-        } catch (Exception exception) {
-            Mockito.verify(userContactService).getOwnUserContact();
-            assertThat(exception).isInstanceOf(CreatorIsNotConversationGroupMemberException.class);
-        }
+        Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
+        assertThrows(CreatorIsNotConversationGroupMemberException.class, () -> conversationGroupService.addConversation(createConversationGroupRequest));
+
+        Mockito.verify(userContactService).getOwnUserContact();
     }
 
     @Test
@@ -198,14 +188,9 @@ class ConversationGroupServiceTests {
 
         createConversationGroupRequest.setMemberIds(new ArrayList<>());
 
-        try {
-            Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
-            conversationGroupService.addConversation(createConversationGroupRequest);
-            failBecauseExceptionWasNotThrown(Exception.class);
-        } catch (Exception exception) {
-            Mockito.verify(userContactService).getOwnUserContact();
-            assertThat(exception).isInstanceOf(CreatorIsNotConversationGroupMemberException.class);
-        }
+        Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
+        assertThrows(CreatorIsNotConversationGroupMemberException.class, () -> conversationGroupService.addConversation(createConversationGroupRequest));
+        Mockito.verify(userContactService).getOwnUserContact();
     }
 
     @Test
@@ -228,17 +213,12 @@ class ConversationGroupServiceTests {
         conversationGroup.setMemberIds(createConversationGroupRequest.getMemberIds());
         conversationGroup.setAdminMemberIds(Collections.singletonList(unknownUserContact.getId())); // Empty or wrong value
 
-        try {
-            Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
-            conversationGroupService.addConversation(createConversationGroupRequest);
-            failBecauseExceptionWasNotThrown(Exception.class);
-        } catch (Exception exception) {
-            Mockito.verify(userContactService).getOwnUserContact();
-            Mockito.verify(userContactService, times(0)).getUserContact(any());
-            Mockito.verify(conversationGroupRepoService, times(0)).save(any());
 
-            assertThat(exception).isInstanceOf(CreatorIsNotConversationGroupMemberException.class);
-        }
+        Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
+        assertThrows(CreatorIsNotConversationGroupMemberException.class, () -> conversationGroupService.addConversation(createConversationGroupRequest));
+        Mockito.verify(userContactService).getOwnUserContact();
+        Mockito.verify(userContactService, times(0)).getUserContact(any());
+        Mockito.verify(conversationGroupRepoService, times(0)).save(any());
     }
 
     @Test
@@ -270,28 +250,22 @@ class ConversationGroupServiceTests {
         conversationGroup.setMemberIds(memberUserContactStrings);
         conversationGroup.setAdminMemberIds(userContactStringsWithForeignUserContact);
 
-        try {
-            Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
-            Mockito.when(userContactService.getUserContact(argThat(t ->
-                    createConversationGroupRequest.getMemberIds().contains(t)))).thenAnswer(i ->
-                    // In .thenAnswer(), you can get the arguments inside the Mockito.when(the method that you are mocking in mockBean.mockMethodName)
-                    // If the mocking method has 1 argument, then i.getArguments() will have size of 1, and vice versa.
-                    // The arguments are Objects.class, you just have to cast to the correct ones to get the argument out.
-                    userContacts.stream().filter(userContact -> userContact.getId().equals(i.getArguments()[0]))
-                            .findAny().orElseThrow(NullPointerException::new)
-            );
+        Mockito.when(userContactService.getOwnUserContact()).thenReturn(creatorUserContact);
+        Mockito.when(userContactService.getUserContact(argThat(t ->
+                createConversationGroupRequest.getMemberIds().contains(t)))).thenAnswer(i ->
+                // In .thenAnswer(), you can get the arguments inside the Mockito.when(the method that you are mocking in mockBean.mockMethodName)
+                // If the mocking method has 1 argument, then i.getArguments() will have size of 1, and vice versa.
+                // The arguments are Objects.class, you just have to cast to the correct ones to get the argument out.
+                userContacts.stream().filter(userContact -> userContact.getId().equals(i.getArguments()[0]))
+                        .findAny().orElseThrow(NullPointerException::new)
+        );
 
-            conversationGroupService.addConversation(createConversationGroupRequest);
-            failBecauseExceptionWasNotThrown(Exception.class);
-        } catch (Exception exception) {
-            Mockito.verify(userContactService).getOwnUserContact();
-            int totalNumberOfUserContacts = createConversationGroupRequest.getAdminMemberIds().size() +
-                    createConversationGroupRequest.getMemberIds().size();
-            Mockito.verify(userContactService, times(totalNumberOfUserContacts)).getUserContact(any());
-            Mockito.verify(conversationGroupRepoService, times(0)).save(any());
-
-            assertThat(exception).isInstanceOf(ConversationGroupAdminNotInMemberIdListException.class);
-        }
+        assertThrows(ConversationGroupAdminNotInMemberIdListException.class, () -> conversationGroupService.addConversation(createConversationGroupRequest));
+        Mockito.verify(userContactService).getOwnUserContact();
+        int totalNumberOfUserContacts = createConversationGroupRequest.getAdminMemberIds().size() +
+                createConversationGroupRequest.getMemberIds().size();
+        Mockito.verify(userContactService, times(totalNumberOfUserContacts)).getUserContact(any());
+        Mockito.verify(conversationGroupRepoService, times(0)).save(any());
     }
 
     @Test

@@ -12,7 +12,10 @@ import com.pocketchat.services.conversation_group.ConversationGroupService;
 import com.pocketchat.services.unread_message.UnreadMessageService;
 import com.pocketchat.services.unread_message.UnreadMessageServiceImpl;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -27,7 +30,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 
@@ -47,7 +50,7 @@ class UnreadMessageServiceTests {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         unreadMessageService = new UnreadMessageServiceImpl(
                 unreadMessageRepoService,
                 conversationGroupService);

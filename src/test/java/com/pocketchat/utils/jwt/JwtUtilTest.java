@@ -55,7 +55,7 @@ class JwtUtilTest {
     @BeforeEach
     void setup() {
         //if we don't call below, we will get NullPointerException
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         jwtUtil = new JwtUtil(
                 SECRET_KEY,
                 jwtAliveSeconds
