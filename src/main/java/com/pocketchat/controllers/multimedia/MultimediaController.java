@@ -31,8 +31,8 @@ public class MultimediaController {
      * @param getMultimediaListRequest: GetMultimediaListRequest object which has a list of Multimedia object IDs.
      * @return A list of MultimediaResponse object.
      */
-    @PostMapping("")
-    public List<MultimediaResponse> getMultimediaList(@Valid @RequestBody GetMultimediaListRequest getMultimediaListRequest) {
+    @GetMapping("")
+    public List<MultimediaResponse> getMultimediaList(@Valid GetMultimediaListRequest getMultimediaListRequest) {
         return multimediaService.getMultipleMultimedia(getMultimediaListRequest.getMultimediaList()).stream().map(multimediaService::multimediaResponseMapper).collect(Collectors.toList());
     }
 }

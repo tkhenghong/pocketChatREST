@@ -133,7 +133,7 @@ public class UserContactController {
      * @return Page of UserContact object.
      */
     @GetMapping("/user")
-    public Page<UserContactResponse> getUserContactsOfAUser(@Valid @RequestBody GetUserOwnUserContactsRequest getUserOwnUserContactsRequest) {
+    public Page<UserContactResponse> getUserContactsOfAUser(@Valid GetUserOwnUserContactsRequest getUserOwnUserContactsRequest) {
         Pageable pageable = paginationUtil.convertPageableImplToPageable(getUserOwnUserContactsRequest.getPageable());
         Page<UserContact> userContacts = userContactService.getUserContactsOfAUser(getUserOwnUserContactsRequest.getSearchTerm(), pageable);
         return userContactService.userContactPageResponseMapper(userContacts);

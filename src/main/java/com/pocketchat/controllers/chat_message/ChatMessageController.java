@@ -51,8 +51,8 @@ public class ChatMessageController {
     }
 
     @GetMapping("{chatMessageId}/multimedia")
-    public ResponseEntity<Resource> getChatMessageMultimedia(@PathVariable String chatMessageId,
-                                                             HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Resource> downloadChatMessageMultimedia(@PathVariable String chatMessageId,
+                                                                  HttpServletRequest httpServletRequest) {
         File file;
         Resource resource;
         try {
@@ -78,9 +78,9 @@ public class ChatMessageController {
     }
 
     // Get messages with Pageable. https://reflectoring.io/spring-boot-paging/
-    @PostMapping("/conversation/{conversationGroupId}")
+    @GetMapping("/conversation/{conversationGroupId}")
     public Page<ChatMessageResponse> getChatMessagesOfAConversation(@PathVariable String conversationGroupId,
-                                                                    @Valid @RequestBody PageableImpl pageable) {
+                                                                    @Valid PageableImpl pageable) {
         Pageable pageable1 = paginationUtil.convertPageableImplToPageable(pageable);
         Page<ChatMessage> chatMessagesList = chatMessageService.getChatMessagesOfAConversation(conversationGroupId, pageable1);
         return chatMessageService.pageChatMessageResponseMapper(chatMessagesList);

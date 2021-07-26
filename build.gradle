@@ -58,7 +58,7 @@ dependencies {
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.66' // Used BouncyCastle APIs(libraries) to provide RSA with PKCS8 algorithm provider
     implementation 'io.springfox:springfox-boot-starter:3.0.0' // Swagger
     implementation 'org.javers:javers-spring-boot-starter-mongo:5.12.0' // JaVers for Auditing object state changes. https://javers.org/
-
+//    implementation 'cn.hutool:hutool-all'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

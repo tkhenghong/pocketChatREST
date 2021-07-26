@@ -216,8 +216,8 @@ public class ConversationGroupController {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.getSingleConversation(conversationGroupId));
     }
 
-    @PostMapping("/user")
-    public ConversationPageableResponse getUserOwnConversationGroups(@Valid @RequestBody GetConversationGroupsRequest getConversationGroupsRequest) {
+    @GetMapping("/user")
+    public ConversationPageableResponse getUserOwnConversationGroups(@Valid GetConversationGroupsRequest getConversationGroupsRequest) {
         Pageable pageable = paginationUtil.convertPageableImplToPageable(getConversationGroupsRequest.getPageable());
         Page<ConversationGroup> conversationGroupList = conversationGroupService.getUserOwnConversationGroups(pageable);
         Page<ConversationGroupResponse> conversationGroupResponses = conversationGroupService.conversationGroupResponsePageMapper(conversationGroupList);
