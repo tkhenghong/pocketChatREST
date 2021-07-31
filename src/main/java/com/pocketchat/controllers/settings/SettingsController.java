@@ -19,7 +19,7 @@ public class SettingsController {
         this.settingsService = settingsService;
     }
 
-    @PutMapping(value = "")
+    @PatchMapping(value = "")
     public SettingsResponse editSettings(@Valid @RequestBody UpdateSettingsRequest settings) {
         return settingsService.settingsResponseMapper(settingsService.editSettings(settings));
     }

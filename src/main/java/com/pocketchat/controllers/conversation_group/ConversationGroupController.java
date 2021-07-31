@@ -18,6 +18,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,7 +84,7 @@ public class ConversationGroupController {
         conversationGroupService.deleteConversationGroupProfilePhoto(conversationGroupId);
     }
 
-    @PutMapping("")
+    @PatchMapping("")
     public ConversationGroupResponse editConversationGroup(@Valid @RequestBody UpdateConversationGroupRequest updateConversationGroupRequest) {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.editConversationGroup(updateConversationGroupRequest));
     }
@@ -94,7 +96,7 @@ public class ConversationGroupController {
      * @param addConversationGroupMemberRequest: AddConversationGroupMemberRequest. Contains a list of IDs to be added into the conversation group.
      * @return Updated ConversationGroupResponse object.
      */
-    @PutMapping("{conversationGroupId}/groupMember/add")
+    @PatchMapping("{conversationGroupId}/groupMember/add")
     public ConversationGroupResponse addConversationGroupMember(@PathVariable String conversationGroupId, @Valid @RequestBody AddConversationGroupMemberRequest addConversationGroupMemberRequest) {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.addConversationGroupMember(conversationGroupId, addConversationGroupMemberRequest));
     }
@@ -106,7 +108,7 @@ public class ConversationGroupController {
      * @param removeConversationGroupMemberRequest: RemoveConversationGroupMemberRequest. Contains a list of IDs to be removed from the conversation group.
      * @return Updated ConversationGroupResponse object.
      */
-    @PutMapping("{conversationGroupId}/groupMember/remove")
+    @PatchMapping("{conversationGroupId}/groupMember/remove")
     public ConversationGroupResponse removeConversationGroupMember(@PathVariable String conversationGroupId, @Valid @RequestBody RemoveConversationGroupMemberRequest removeConversationGroupMemberRequest) {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.removeConversationGroupMember(conversationGroupId, removeConversationGroupMemberRequest));
     }
@@ -119,7 +121,7 @@ public class ConversationGroupController {
      * @param addConversationGroupAdminRequest: AddConversationGroupAdminRequest object. Contains a list of ID to be promoted to group admin.
      * @return Updated ConversationGroupResponse object.
      */
-    @PutMapping("{conversationGroupId}/groupAdmin/add")
+    @PatchMapping("{conversationGroupId}/groupAdmin/add")
     public ConversationGroupResponse addConversationGroupAdmin(@PathVariable String conversationGroupId, @Valid @RequestBody AddConversationGroupAdminRequest addConversationGroupAdminRequest) {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.addConversationGroupAdmin(conversationGroupId, addConversationGroupAdminRequest));
     }
@@ -131,7 +133,7 @@ public class ConversationGroupController {
      * @param removeConversationGroupAdminRequest: RemoveConversationGroupAdminRequest object. Contains a list of ID to be demoted.
      * @return Updated ConversationGroupResponse object.
      */
-    @PutMapping("{conversationGroupId}/groupAdmin/remove")
+    @PatchMapping("{conversationGroupId}/groupAdmin/remove")
     public ConversationGroupResponse removeConversationGroupAdmin(@PathVariable String conversationGroupId, @Valid @RequestBody RemoveConversationGroupAdminRequest removeConversationGroupAdminRequest) {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.removeConversationGroupAdmin(conversationGroupId, removeConversationGroupAdminRequest));
     }
@@ -143,7 +145,7 @@ public class ConversationGroupController {
      * @param conversationGroupId: ID of the ConversationGroup object.
      * @return Updated ConversationGroupResponse object.
      */
-    @PutMapping("{conversationGroupId}/leave")
+    @PatchMapping("{conversationGroupId}/leave")
     public ConversationGroupResponse leaveConversationGroup(@PathVariable String conversationGroupId) {
         return conversationGroupService.conversationGroupResponseMapper(conversationGroupService.leaveConversationGroup(conversationGroupId));
     }
@@ -155,7 +157,7 @@ public class ConversationGroupController {
      * @param conversationGroupId: ID of the ConversationGroup object.
      * @return ConversationGroupBlockResponse for the reference.
      */
-    @PutMapping("{conversationGroupId}/block")
+    @PatchMapping("{conversationGroupId}/block")
     public ConversationGroupBlockResponse blockConversationGroup(@PathVariable String conversationGroupId) {
         return conversationGroupService.conversationGroupBlockResponseMapper(conversationGroupService.blockConversationGroup(conversationGroupId));
     }
@@ -166,7 +168,7 @@ public class ConversationGroupController {
      * @param conversationGroupId:             ID of the ConversationGroup object.
      * @param unblockConversationGroupRequest: UnblockConversationGroupRequest object. Contains ID of the UnblockConversationGroupRequest object.
      */
-    @PutMapping("{conversationGroupId}/unblock")
+    @PatchMapping("{conversationGroupId}/unblock")
     public void unblockConversationGroup(@PathVariable String conversationGroupId, @Valid @RequestBody UnblockConversationGroupRequest unblockConversationGroupRequest) {
         conversationGroupService.unblockConversationGroup(conversationGroupId, unblockConversationGroupRequest);
     }
@@ -178,7 +180,7 @@ public class ConversationGroupController {
      * @param muteConversationGroupNotificationRequest: MuteConversationGroupNotificationRequest object. It states the expiry date of the mute conversation group record.
      * @return ConversationGroupMuteNotificationResponse for reference.
      */
-    @PutMapping("{conversationGroupId}/notification/mute")
+    @PatchMapping("{conversationGroupId}/notification/mute")
     public ConversationGroupMuteNotificationResponse muteConversationGroupNotification(@PathVariable String conversationGroupId, @Valid @RequestBody MuteConversationGroupNotificationRequest muteConversationGroupNotificationRequest) {
         return conversationGroupService.conversationGroupMuteNotificationResponseMapper(conversationGroupService.muteConversationGroupNotification(conversationGroupId, muteConversationGroupNotificationRequest));
     }
@@ -189,7 +191,7 @@ public class ConversationGroupController {
      * @param conversationGroupId:                        ID of the ConversationGroup object.
      * @param unmuteConversationGroupNotificationRequest: UnmuteConversationGroupNotificationRequest object. It contains the ID of the UnmuteConversationGroupNotification object.
      */
-    @PutMapping("{conversationGroupId}/notification/unmute")
+    @PatchMapping("{conversationGroupId}/notification/unmute")
     public void unmuteConversationGroupNotification(@PathVariable String conversationGroupId, @Valid @RequestBody UnmuteConversationGroupNotificationRequest unmuteConversationGroupNotificationRequest) {
         conversationGroupService.unmuteConversationGroupNotification(conversationGroupId, unmuteConversationGroupNotificationRequest);
     }
@@ -201,9 +203,9 @@ public class ConversationGroupController {
      * @param joinConversationGroupRequest: JoinConversationGroupRequest object. Contains the details of the conversation group invitation details.
      * @return ConversationGroupBlockResponse for reference.
      */
-    @PostMapping("join")
-    public ConversationGroupResponse joinConversationGroup(@Valid @RequestBody JoinConversationGroupRequest joinConversationGroupRequest) {
-        return null;
+    @PatchMapping("join")
+    public ResponseEntity<?> joinConversationGroup(@Valid @RequestBody JoinConversationGroupRequest joinConversationGroupRequest, HttpServletResponse response) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @DeleteMapping("/{conversationGroupId}")

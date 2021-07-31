@@ -19,7 +19,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PutMapping("")
+    @PatchMapping("")
     public UserResponse editUser(@Valid @RequestBody UpdateUserRequest updateUserRequest) {
         return userService.userResponseMapper(userService.editUser(updateUserRequest));
     }
